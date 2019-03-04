@@ -18,6 +18,13 @@ async def eight_ball(context):
     ]
     await client.say(random.choice(possible_responses))
 
+@client.command(name='draw')
+async def draw(message):
+    extension = ['.jpg', '.png', '.jpeg']
+    for ext in extension:
+        if message.content.endswith(ext):
+            
+
 @client.command()
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
