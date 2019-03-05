@@ -29,25 +29,34 @@ async def eight_ball(context):
 
 @client.command(name='draw', pass_context = True)
 async def draw(ctx):
+    url = get_image_url(ctx)
+    if url == 0:
+        await client.say("Please input a valid image")
+    output = overlay_image(url_to_image(url), 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
+    output.save('temp.png')
+    await client.send_file(ctx.message.channel, 'temp.png')
+    os.remove('temp.png')
+
+def get_image_url(ctx):
     image_url = ''
     try:
         image_url = ctx.message.attachments[0]['url']
-        
     except:
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if ctx.message.content.endswith(ext):
                 image_url = ctx.message.content[5:]
         if (image_url == ''):
-            await client.say("Please input a valid image")
-    image = url_to_image(image_url)
-    output = overlay_image(image, 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
-    if output == 0:
-        return
-    output.save('temp.png')
-    await client.send_file(ctx.message.channel, 'temp.png')
-    os.remove('temp.png')
-    # await client.send_file(ctx.message.channel, output)
+            return 0
+    return image_url
+    
+@client.command(name ='drawrec', pass_context = True) 
+async def draw_loop(ctx):
+    i = 5
+    while (i > 0):
+        ctx = get_image_url(ctx)
+        i+=1
+    draw(ctx)
 
 @client.command(name='drawt', pass_context = True)
 async def draw_on_text(ctx):
