@@ -1,19 +1,14 @@
-from PIL import Image
+from PIL import Image, ImageFile
 import requests
 from io import BytesIO
 
-def overlay_image(background, overlay_image):
+def overlay_image(target, overlay_image):
     overlay = Image.open(overlay_image) #opens the overlay image
-    white_background = Image.open('C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/white-background.png').convert("RGBA")
-    size = 1440, 810
-    print("testing")
-    try:
-        background.thumbnail(size)
-    except:
-        print("Too small")
-        return 0
-    white_background.paste(background, (0, 0), background)
-    white_background.paste(overlay, (800, 250), overlay)
+    width, heigth = target.size
+    white_background = Image.new("RGBA", (width + 500, heigth + 400), (255, 255, 255))
+    #white_background = Image.open('C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/white-background.png').convert("RGBA")
+    white_background.paste(target, (0, 0), target)
+    white_background.paste(overlay, (width - 450, heigth - 450), overlay)
     # print("test1")
     # background.paste(overlay, (0, 0), overlay) #pastes the overlay image on top of the background image
     # print("test2")
@@ -21,5 +16,6 @@ def overlay_image(background, overlay_image):
 
 def url_to_image(url):
     response = requests.get(url)
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
