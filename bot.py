@@ -41,21 +41,14 @@ async def draw(ctx):
     image_url = ctx.message.attachments[0]['url']
     image = url_to_image(image_url)
     image.show()
-    output = overlay_image(image, 'memes/marius/draw.png')
-    await client.send_file(ctx.message.channel, output)
+    output = overlay_image(image, 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
+    output.show()
+    # await client.send_file(ctx.message.channel, output)
 
 
 @client.command()
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
-
-# async def list_servers():
-#     await client.wait_until_ready()
-#     while not client.is_closed:
-#         print("Current servers: ")
-#         for server in client.servers:
-#             print(server.name)
-#         await asyncio.sleep(6)
 
 
 print("Test")
