@@ -40,7 +40,6 @@ async def draw(ctx):
                 image_url = ctx.message.content[5:]
         if (image_url == ''):
             await client.say("Please input a valid image")
-    print("url:" + image_url)
     image = url_to_image(image_url)
     output = overlay_image(image, 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
     if output == 0:
@@ -50,13 +49,14 @@ async def draw(ctx):
     os.remove('temp.png')
     # await client.send_file(ctx.message.channel, output)
 
+@client.command(name='drawt', pass_context = True)
+async def draw_on_text(ctx):
+    # Allows the user to input text into the draw meme
+    print("fill")
 
 @client.command()
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
-
-
-print("Test")
 
 # client.loop.create_taks(list_servers())
 client.run(BOT_TOKEN)
