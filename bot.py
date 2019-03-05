@@ -5,6 +5,7 @@ from discord.ext.commands import Bot
 import asyncio
 from overlay import overlay_image
 from overlay import url_to_image
+import os
 
 BOT_PREFIX = "$"
 BOT_TOKEN = "NTUyMjU0NTk4Mjc5MDY5NzA4.D1823Q.77zzMatjVJRQ0OmyOENOheYS03w"
@@ -42,7 +43,13 @@ async def draw(ctx):
     image = url_to_image(image_url)
     image.show()
     output = overlay_image(image, 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
+    if output == 0:
+        return
+    
     output.show()
+    output.save('temp.png')
+    await client.send_file(ctx.message.channel, 'temp.png')
+    os.remove('temp.png')
     # await client.send_file(ctx.message.channel, output)
 
 
