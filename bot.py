@@ -30,23 +30,21 @@ async def eight_ball(context):
 @client.command(name='draw', pass_context = True)
 async def draw(ctx):
     image_url = ''
-    # try:
-    #     image = message.attachments[0]['url']
-    # except IndexError:
-    #     extension = ['.jpg', '.png', '.jpeg']
-    #     for ext in extension:
-    #         if message.content.endswith(ext):
-    #             image = message.content
-    #     if (image == ''):
-    #         await client.say("Please input a valid image")
-    image_url = ctx.message.attachments[0]['url']
+    try:
+        image_url = ctx.message.attachments[0]['url']
+        
+    except:
+        extension = ['.jpg', '.png', '.jpeg']
+        for ext in extension:
+            if ctx.message.content.endswith(ext):
+                image_url = ctx.message.content[5:]
+        if (image_url == ''):
+            await client.say("Please input a valid image")
+    print("url:" + image_url)
     image = url_to_image(image_url)
-    image.show()
     output = overlay_image(image, 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
     if output == 0:
         return
-    
-    output.show()
     output.save('temp.png')
     await client.send_file(ctx.message.channel, 'temp.png')
     os.remove('temp.png')
