@@ -17,7 +17,7 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 - drawrec
   - The bot responds with marius drawing recursively
 - mdraw [text]
-  -The bot responds with an image of marius drawing inputed text
+  - The bot responds with an image of marius drawing inputed text
 - bdraw [image/image link]
   - The bot responds with an image of barrington drawing on whatever image is passed into the argument
 - bdraw [text]
