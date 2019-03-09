@@ -27,8 +27,8 @@ async def eight_ball(context):
 # async def on_message(message):
 #     print(message.attachments[0]['url'])
 
-@client.command(name='draw', pass_context = True)
-async def draw(ctx):
+@client.command(name='mdraw', pass_context = True)
+async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
         await client.say("Please input a valid image")
@@ -56,7 +56,7 @@ async def draw_loop(ctx):
     while (i > 0):
         ctx = get_image_url(ctx)
         i+=1
-    draw(ctx)
+    mdraw(ctx)
 
 @client.command(name='drawt', pass_context = True)
 async def draw_on_text(ctx):
