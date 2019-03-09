@@ -8,7 +8,7 @@ from overlay import url_to_image
 import os
 
 BOT_PREFIX = "$"
-BOT_TOKEN = "XXXXXXXXXXXXXXXXXX"
+BOT_TOKEN = "NTUyMjU0NTk4Mjc5MDY5NzA4.D2WMQg.X0p3qUE8maJENIJvCYD-aYv8-Vg"
 
 client = Bot(command_prefix=BOT_PREFIX)
 
@@ -32,10 +32,24 @@ async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
         await client.say("Please input a valid image")
-    output = overlay_image(url_to_image(url), 'C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png')
-    output.save('temp.png')
-    await client.send_file(ctx.message.channel, 'temp.png')
-    os.remove('temp.png')
+    # C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png for desktop
+    output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/marius/draw.png')
+    name = 'marius-drawing.png'
+    output.save(name)
+    await client.send_file(ctx.message.channel, name)
+    os.remove(name)
+
+@client.command(name='bdraw', pass_context = True)
+async def bdraw(ctx):
+    url = get_image_url(ctx)
+    if url == 0:
+        await client.say("Please input a valid image")
+    # C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/barrington/bdraw.png
+    output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/barrington/bdraw.png')
+    output.save('barrington-drawing.png')
+    await client.send_file(ctx.message.channel, 'barrington-drawing.png')
+    os.remove('barrington-drawing.png')
+    
 
 def get_image_url(ctx):
     image_url = ''
@@ -66,6 +80,14 @@ async def draw_on_text(ctx):
 @client.command()
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
+
+
+@client.event
+async def on_ready():
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
 
 # client.loop.create_taks(list_servers())
 client.run(BOT_TOKEN)
