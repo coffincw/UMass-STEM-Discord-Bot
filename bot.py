@@ -8,7 +8,6 @@ from overlay import url_to_image
 import os
 
 BOT_PREFIX = "$"
-BOT_TOKEN = "NTUyMjU0NTk4Mjc5MDY5NzA4.D2WMQg.X0p3qUE8maJENIJvCYD-aYv8-Vg"
 
 client = Bot(command_prefix=BOT_PREFIX)
 
