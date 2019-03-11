@@ -1,5 +1,6 @@
 import random
 from io import BytesIO
+from pathlib import Path
 import discord
 from discord.ext.commands import Bot
 import asyncio
@@ -32,7 +33,10 @@ async def mdraw(ctx):
     if url == 0:
         await client.say("Please input a valid image")
     # C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png for desktop
-    output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/marius/draw.png')
+    try:
+        output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/marius/draw.png')
+    except:
+        await client.say("error with overlay_image function")
     name = 'marius-drawing.png'
     output.save(name)
     await client.send_file(ctx.message.channel, name)
