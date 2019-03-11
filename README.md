@@ -6,20 +6,20 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 
 ## Add to your server
 
-[Invite bot to server](https://discordapp.com/api/oauth2/authorize?client_id=552254598279069708&permissions=0&scope=bot)
+[Invite bot to server](https://discordapp.com/api/oauth2/authorize?client_id=552254598279069708&permissions=1342179392&scope=bot)
 
 ## Commands
 
 - mdraw [image/image link]
   - The bot responds with an image of marius drawing on whatever image is passed into the argument
+- bdraw [image/image link]
+  - The bot responds with an image of barrington drawing on whatever image is passed into the argument
   
 ### To Add
 - drawrec
   - The bot responds with marius drawing recursively
 - mdraw [text]
   - The bot responds with an image of marius drawing inputed text
-- bdraw [image/image link]
-  - The bot responds with an image of barrington drawing on whatever image is passed into the argument
 - bdraw [text]
   - The bot responds with an image of barrington drawing inputed text
 - marius
