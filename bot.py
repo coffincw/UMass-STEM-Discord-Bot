@@ -1,6 +1,6 @@
 import random
 from io import BytesIO
-# from pathlib import Path
+from pathlib import Path
 import discord
 from discord.ext.commands import Bot
 import asyncio
@@ -9,6 +9,7 @@ from overlay import url_to_image
 import os
 
 BOT_PREFIX = "$"
+
 
 client = Bot(command_prefix=BOT_PREFIX)
 
@@ -32,11 +33,8 @@ async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
         await client.say("Please input a valid image")
-    # C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/marius/draw.png for desktop
-    
-    output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/marius/draw.png')
-    if output == 0:
-        await client.say("error with overlay_image function")
+
+    output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
     name = 'marius-drawing.png'
     output.save(name)
     await client.send_file(ctx.message.channel, name)
@@ -47,8 +45,7 @@ async def bdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
         await client.say("Please input a valid image")
-    # C:/Users/Caleb/Documents/Programming-Projects/UMassMemeBot/memes/barrington/bdraw.png
-    output = overlay_image(url_to_image(url), 'C:/Users/ccoffin/Documents/CS230/Other/UMassMemeBot/memes/barrington/bdraw.png')
+    output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
     output.save('barrington-drawing.png')
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     os.remove('barrington-drawing.png')
