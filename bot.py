@@ -1,6 +1,6 @@
 import random
 from io import BytesIO
-from pathlib import Path
+# from pathlib import Path
 import discord
 from discord.ext.commands import Bot
 import asyncio
