@@ -9,6 +9,7 @@ from overlay import url_to_image
 import os
 
 BOT_PREFIX = "$"
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
 client = Bot(command_prefix=BOT_PREFIX)
 
@@ -89,4 +90,4 @@ async def on_ready():
     print('------')
 
 # client.loop.create_taks(list_servers())
-client.run(os.environ.get('BOT_TOKEN'))
+client.run(BOT_TOKEN)
