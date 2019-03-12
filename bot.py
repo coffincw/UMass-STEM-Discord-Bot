@@ -10,16 +10,30 @@ import os
 
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
-HOUSING_ROLE_IDS = [501529720932925441, #alumni
-                    444332276483096586, #sylvan
-                    444332646307201034, #ohill
-                    444332880894754818, #central
-                    444332735838814210, #southwest
-                    444332948322517003, #northeast
-                    444588763427897344, #north apts
-                    444333125670010890, #honors college
-                    405025553448566795, #off-campus
-                    524016335299280908] #prospective student
+HOUSING_ROLE_IDS = {'Alumni': 501529720932925441, 
+                    'Sylvan': 444332276483096586, 
+                    'OHill': 444332646307201034, 
+                    'Central': 444332880894754818, 
+                    'Southwest': 444332735838814210, 
+                    'Northeast': 444332948322517003, 
+                    'North Apts': 444588763427897344, 
+                    'Honors College': 444333125670010890, 
+                    'Off-Campus': 405025553448566795, 
+                    'Prospective Student': 524016335299280908
+} 
+
+MAJOR_ROLE_IDS = {'Electrical Engineering': 442786317273792523, 
+                  'Comp-Engineering': 506504010585604132, 
+                  'Chemical Engineering': 504715524152754199, 
+                  'Biomedical Engineering': 506504177242079241, 
+                  'Environmental-Engineering': 442806923025186817, 
+                  'Civil Engineering': 506211361945288735, 
+                  'Industrial and Mechanical Engineering': 501524792436981791, 
+                  'ECE': 439552642415460353, 
+                  'Computer Science': 387619060633829377, 
+                  'Environmental Science': 442784019369951252, 
+                  'Mathematics': 442785279493799966 
+}
                    
 
 client = Bot(command_prefix=BOT_PREFIX)
@@ -96,14 +110,16 @@ async def square(number):
 async def on_message(message):
     member = message.author
 
-    member_has_hr = false
-    member_has_m = false
+    member_has_hr = False
+    member_has_m = False
     for role in member.roles:
-        if role in HOUSING_ROLE_IDS:
+        if member.roles[role] in HOUSING_ROLE_IDS:
             member_has_hr = True
-async def detect_roles():
-    mhom_role = discord.utils.get(server.roles, name="Missing Housing or Major Role")
-    await client.remove_roles()
+        if member.roles[role] in MAJOR_ROLE_IDS:
+            member_has_m = True
+    if member_has_hr and member_has_m:
+        await client.remove_roles(member, 444868818997608460) #removes missing housing or major role
+
 @client.event
 async def on_ready():
     print('Logged in as')
