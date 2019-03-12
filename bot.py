@@ -10,6 +10,17 @@ import os
 
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
+HOUSING_ROLE_IDS = [501529720932925441, #alumni
+                    444332276483096586, #sylvan
+                    444332646307201034, #ohill
+                    444332880894754818, #central
+                    444332735838814210, #southwest
+                    444332948322517003, #northeast
+                    444588763427897344, #north apts
+                    444333125670010890, #honors college
+                    405025553448566795, #off-campus
+                    524016335299280908] #prospective student
+                   
 
 client = Bot(command_prefix=BOT_PREFIX)
 
@@ -81,7 +92,18 @@ async def draw_on_text(ctx):
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
 
+@client.event
+async def on_message(message):
+    member = message.author
 
+    member_has_hr = false
+    member_has_m = false
+    for role in member.roles:
+        if role in HOUSING_ROLE_IDS:
+            member_has_hr = True
+async def detect_roles():
+    mhom_role = discord.utils.get(server.roles, name="Missing Housing or Major Role")
+    await client.remove_roles()
 @client.event
 async def on_ready():
     print('Logged in as')
