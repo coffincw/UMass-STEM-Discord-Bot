@@ -82,7 +82,7 @@ async def on_message(message):
     if message.server.id == '387465995176116224' and "missing housing or major role" in [role.name.lower() for role in member.roles]: #UMass Amherst STEM
         member_has_hr = False
         member_has_m = False
-        time.sleep(8)
+        time.sleep(12)
         for role in member.roles:
             if role.name.lower() == 'missing housing or major role':
                 mhom = role
