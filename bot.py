@@ -106,19 +106,19 @@ async def draw_on_text(ctx):
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
 
-@client.event
-async def on_message(message):
-    member = message.author
+# @client.event
+# async def on_message(message):
+#     member = message.author
 
-    member_has_hr = False
-    member_has_m = False
-    for role in member.roles:
-        if member.roles[role] in HOUSING_ROLE_IDS:
-            member_has_hr = True
-        if member.roles[role] in MAJOR_ROLE_IDS:
-            member_has_m = True
-    if member_has_hr and member_has_m:
-        await client.remove_roles(member, 444868818997608460) #removes missing housing or major role
+#     member_has_hr = False
+#     member_has_m = False
+#     for role in member.roles:
+#         if member.roles[role] in HOUSING_ROLE_IDS:
+#             member_has_hr = True
+#         if member.roles[role] in MAJOR_ROLE_IDS:
+#             member_has_m = True
+#     if member_has_hr and member_has_m:
+#         await client.remove_roles(member, 444868818997608460) #removes missing housing or major role
 
 @client.event
 async def on_ready():
