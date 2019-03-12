@@ -15,7 +15,11 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 - bdraw [image/image link]
   - The bot responds with an image of barrington drawing on whatever image is passed into the argument
   
-### To Add
+## Other functionality
+- remove missing housing and major role
+  - bot removes the missing housing and major role if someone has set both a housing and major role
+
+### Commands to add
 - drawrec
   - The bot responds with marius drawing recursively
 - mdraw [text]
@@ -29,9 +33,5 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 - tim
   - The bot responds with a random tim meme
 
-### Other functionality
-- set roles
-  - bot sends a message to a user to set their roles in #role-assignment if they have the missing housing and major role
-- remove missing housing and major role
-  - bot removes the missing housing and major role if someone has set both a housing and major role
+
 
