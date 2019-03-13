@@ -108,6 +108,10 @@ async def eight_ball(context):
 # async def on_message(message):
 #     print(message.attachments[0]['url'])
 
+@client.command(name='get', pass_context = True)
+async def get_role(ctx):
+    
+
 @client.command(name='mdraw', pass_context = True)
 async def mdraw(ctx):
     url = get_image_url(ctx)
