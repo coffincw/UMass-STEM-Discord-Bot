@@ -110,7 +110,7 @@ async def eight_ball(context):
 
 @client.command(name='get', pass_context = True)
 async def get_role(ctx):
-    
+    print("s")
 
 @client.command(name='mdraw', pass_context = True)
 async def mdraw(ctx):
