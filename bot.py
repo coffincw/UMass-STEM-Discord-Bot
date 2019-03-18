@@ -11,6 +11,7 @@ import time
 
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
+
 HOUSING_ROLE_IDS = {'Alumni': '501529720932925441', 
                     'Sylvan': '444332276483096586', 
                     'OHill': '444332646307201034', 
@@ -77,6 +78,12 @@ async def on_ready():
     print('------')
 
 @client.event
+async def on_message_delete(message):
+    author = message.author
+    content = message.content
+    await client.send_message(client.get_channel('557002016782680076'), '**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*')
+
+@client.event
 async def on_message(message):
     member = message.author
     if message.server.id == '387465995176116224' and "missing housing or major role" in [role.name.lower() for role in member.roles]: #UMass Amherst STEM
@@ -92,21 +99,19 @@ async def on_message(message):
                 member_has_m = True
         if member_has_hr and member_has_m:
             await client.remove_roles(member, mhom) #removes missing housing or major role
+    await client.process_commands(message)
 
 @client.command(name='8ball',
                 description="Answers from the 8ball",
                 pass_context = True)
 async def eight_ball(context):
+    print("test")
     possible_responses = [
         'That is a resounding no',
         'It is not looking likely',
         'Too hard to tell'
     ]
     await client.say(random.choice(possible_responses))
-
-# @client.event
-# async def on_message(message):
-#     print(message.attachments[0]['url'])
 
 @client.command(name='get', pass_context = True)
 async def get_role(ctx):
