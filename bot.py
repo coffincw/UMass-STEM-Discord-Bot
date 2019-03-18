@@ -12,7 +12,7 @@ import time
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
-BOT_ROLE = 'BOTS'
+BOT_ROLE = "bots"
 
 HOUSING_ROLE_IDS = {'Alumni': '501529720932925441', 
                     'Sylvan': '444332276483096586', 
@@ -84,14 +84,14 @@ async def on_ready():
 @client.event
 async def on_message_delete(message):
     author = message.author
-    if (BOT_ROLE not in author.roles):
+    if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
         content = message.content
         await client.send_message(client.get_channel('557002016782680076'), '--------------\n_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
 
 @client.event
 async def on_message_edit(before, after):
     author = before.author
-    if (BOT_ROLE not in author.roles):
+    if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
         before_content = before.content
         after_content = after.content
         await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
