@@ -12,6 +12,8 @@ import time
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
+BOT_ROLE = 'BOTS'
+
 HOUSING_ROLE_IDS = {'Alumni': '501529720932925441', 
                     'Sylvan': '444332276483096586', 
                     'OHill': '444332646307201034', 
@@ -67,8 +69,10 @@ MAJOR_ROLE_IDS = {'Electrical Engineering': '442786317273792523',
                   'Engineering-Undecided': '506211413564325919',
                   'Undecided': '501908170654875648'
 }
+
                    
 client = Bot(command_prefix=BOT_PREFIX)
+
 
 @client.event
 async def on_ready():
@@ -80,15 +84,17 @@ async def on_ready():
 @client.event
 async def on_message_delete(message):
     author = message.author
-    content = message.content
-    await client.send_message(client.get_channel('557002016782680076'), '--------------\n_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
+    if (BOT_ROLE not in author.roles):
+        content = message.content
+        await client.send_message(client.get_channel('557002016782680076'), '--------------\n_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
 
 @client.event
 async def on_message_edit(before, after):
     author = before.author
-    before_content = before.content
-    after_content = after.content
-    await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
+    if (BOT_ROLE not in author.roles):
+        before_content = before.content
+        after_content = after.content
+        await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
 
 
 @client.event
