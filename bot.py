@@ -86,7 +86,7 @@ async def on_message_delete(message):
     author = message.author
     if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
         content = message.content
-        await client.send_message(client.get_channel('557002016782680076'), '--------------\n_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
+        await client.send_message(client.get_channel('557002016782680076'), '_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
 
 @client.event
 async def on_message_edit(before, after):
