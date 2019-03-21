@@ -137,7 +137,6 @@ def merge_dict(x, y):
 @client.command(name='get', pass_context = True)
 async def get_role(requested_role):
     member = requested_role.message.author
-    print(requested_role.message.content[5:])
     if requested_role.message.server.id == '387465995176116224':
         available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
         for role_names in available_roles.values():
@@ -146,18 +145,18 @@ async def get_role(requested_role):
                     # check if member already has the requested role
                     for member_role in member.roles:
                         if member_role.name.lower() == role_names[0]:
-                            await client.say("I'm sorry, " + member.mention + ", you already have this role!")
+                            await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold())) 
                             return
                     # if the member doesnt already have the requested role
                     for role in requested_role.message.server.roles:
                         if role.name.lower() == role_names[0]:
                             role_to_add = role
                     await client.add_roles(member, role_to_add)
-                    await client.say("Added the " + role_to_add.name + "role to " + member.mention)
+                    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added the " + role_to_add.name + " role to " + member.name, color=discord.Color.green())) 
                     return
-        await client.say("I'm sorry, " + member.mention + ", there is no role with that name!\nUse the $getlist command to see the available roles") # invalid role requested  
+        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
     else:
-        await client.say("Roles are not yet supported on this server")
+        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 
 # add command to list gettable roles
 # move checking whether missing a housing or major role to after get is called instead of every message
