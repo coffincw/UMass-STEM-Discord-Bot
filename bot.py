@@ -117,7 +117,7 @@ async def on_message(message):
             await client.remove_roles(member, mhom) #removes missing housing or major role
     await client.process_commands(message)
 
-@client.command(name='get')
+# @client.command(name='getrole')
 
 @client.command(name='8ball',
                 description="Answers from the 8ball",
