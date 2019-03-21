@@ -1,7 +1,5 @@
 import discord
 
-
-
 HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
                     '444332276483096586': ('sylvan', 'syl'),
                     '444332646307201034': ('ohill', 'orchard hill', 'o hill'),
@@ -13,6 +11,7 @@ HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
                     '405025553448566795': ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
                     '524016335299280908': ('prospective student', 'hs', 'high school')
 }
+# add aliases for buildings in residential area
 
 MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electrical-engineering'),
                   '506504010585604132': ('computer engineering', 'ce', 'comp-engineering', 'computer-engineering'),
@@ -49,7 +48,6 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '522166045939597335': ('japanese',),
                   '524039481486213151': ('psychology', 'psych'),
                   '543109471136645161': ('public health', 'pub health', 'pub hlth'),
-                  '541744140191268894': ('women, gender, and sexuality studies'),
                   '524777786972307477': ('education', 'educ'),
                   '539870761754820628': ('english',),
                   '387619488880787457': ('cics exploratory', 'cs exploratory', 'cs explo', 'exploratory computer science', 'computer science exploratory', 'exporatory cs', 'exploratory'), 
@@ -57,13 +55,55 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '501908170654875648': ('undecided',)
 }
 
-def merge_dict(x, y):
+CLASS_ROLE_IDS = {'539872888124211200': ('cs 121', 'cs121', '121'),
+                  '539872925902438400': ('cs 186', 'cs186', '186'),
+                  '539872976523362305': ('cs 187', 'cs187', '187'),
+                  '505504445728161812': ('cs 220', 'cs220', '220'),
+                  '505504337590484992': ('cs 230', 'cs230', '230'),
+                  '506226744001560596': ('cs 240', 'cs240', '240'),
+                  '505504252110831629': ('cs 250', 'cs250', '250'),
+                  '550746699468111872': ('cs 305', 'cs305', '305'),
+                  '532274256063627296': ('cs 311', 'cs311', '311'),
+                  '543883289296109578': ('cs 320', 'cs320', '320'),
+                  '543883169385021450': ('cs 326', 'cs326', '326'),
+                  '540257612332269588': ('cs 377', 'cs377', '377'),
+                  '539871233622278144': ('cs 383', 'cs383', '383'),
+                  '539871350731309116': ('math 131', 'math131', '131', 'calc 1'),
+                  '539871571028738078': ('math 132', 'math132', '132', 'calc 2'),
+                  '539871622627196939': ('math 233', 'math233', '233', 'calc 3'),
+                  '539871699085295626': ('math 235', 'math235', '235', 'linear algebra'),
+                  '544265492081410048': ('math 300', 'math300', '300'),
+                  '544265410309259265': ('math 331', 'math331', '331', 'calc 4'),
+                  '544268317725294593': ('math 411', 'math411', '411'),
+                  '550746745613582361': ('math 425', 'math425', '425'),
+                  '544265554492653569': ('math 551', 'math551', '551'),
+                  '543882513131765791': ('math 523h', 'math523h', '523h'),
+                  '543882645738619095': ('math 534h', 'math534h', '534h'),
+                  '539871808883785748': ('stats 515', 'stat 515', 'stats515', 'stat515' '515'),
+                  '543882390888513546': ('stats 516', 'stat 516', 'stat516', 'stats516', '516'),
+                  '543883063923310602': ('micro 160', 'microbio 160', 'micro160', 'microbio160')
+}
+
+def merge_dict(w, x, y): # merges dictionaries w, x, y together
     z = x.copy()
     z.update(y)
+    z.update(w)
     return z
 
+async def list_roles(ctx, client):
+    role_list = '-- Housing Roles --\n'
+    for role in HOUSING_ROLE_IDS.values():
+        role_list += role[0].capitalize() + '\n'
+    role_list += '\n-- Major Roles --\n'
+    for role in MAJOR_ROLE_IDS.values():
+        role_list += role[0].capitalize() + '\n'
+    role_list += '\n-- Class Specific Roles --\n'
+    for role in CLASS_ROLE_IDS.values():
+        role_list += role[0].capitalize() + '\n'
+    await client.send_message(ctx.message.channel, embed=discord.Embed(title='Roles | Use $get [role] to add a role', description=role_list, color=discord.Color.blue())) 
+
 async def stem_add_role(requested_role, member, client):
-    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
+    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower()
     for role_names in available_roles.values():
         for alias in role_names:
@@ -98,12 +138,11 @@ async def check_major_housing_role(member, client):
         if member_has_hr and member_has_m:
             await client.remove_roles(member, mhom) #removes missing housing or major role
     else: # if not then add it to them if they need it
-        print("test")
         if not member_has_hr or not member_has_m:  
             await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
 
 async def stem_remove_role(requested_role, member, client):
-    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
+    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
     role_lower = requested_role.message.content[8:].lower()
     for role in member.roles:
         if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:

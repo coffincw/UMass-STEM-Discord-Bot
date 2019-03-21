@@ -6,7 +6,7 @@ from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 from overlay import overlay_image, url_to_image
-from stem_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, stem_add_role, stem_remove_role
+from stem_roles import stem_add_role, stem_remove_role, list_roles
 import os
 import time
 
@@ -14,11 +14,9 @@ BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
 BOT_ROLE = "bots"
-
-
-                   
+ 
 client = Bot(command_prefix=BOT_PREFIX)
-
+client.remove_command('help')
 
 @client.event
 async def on_ready():
@@ -44,6 +42,16 @@ async def on_message_edit(before, after):
             before_content = before.content
             after_content = after.content
             await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
+
+@client.command()
+async def help():
+    embed = discord.Embed(
+        color = discord.Color.orange()
+    )
+    embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
+    embed.add_field(name = 'Roles', value='*$getlist* - Sends a list of all the available roles\n*$get [role]* - Gives you the specified role\n*$remove [role]* - Removes the specified role from you', inline=True)
+    embed.add_field(name = 'Memes', value='*$mdraw [image/url]* - Sends a photo of <:smugmarius:557699496767651840> drawing on the specified image\n*$bdraw [image/url]* - Sends a photo of <:barr:557186728167997445> drawing on the specified image', inline=True)
+    await client.say(embed=embed)
 
 @client.command(name='8ball',
                 description="Answers from the 8ball",
@@ -78,14 +86,9 @@ async def remove_role(requested_role):
     else:
         await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 
-# add command to list gettable roles
-# move checking whether missing a housing or major role to after get is called instead of every message
-
-# @client.command(name'getlist', pass_context = True)
-# async def getlist(ctx):
-#     member = ctx.message.author
-#     if ctx.message.server.id == '387465995176116224':
-
+@client.command(name='getlist', pass_context = True)
+async def get_list(ctx):
+    await list_roles(ctx, client) # found in stem_roles.py
 
 @client.command(name='mdraw', pass_context = True)
 async def mdraw(ctx):
@@ -118,7 +121,7 @@ def get_image_url(ctx):
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if ctx.message.content.endswith(ext):
-                image_url = ctx.message.content[5:]
+                image_url = ctx.message.content[7:]
         if (image_url == ''):
             return 0
     return image_url
