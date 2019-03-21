@@ -6,7 +6,7 @@ from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 from overlay import overlay_image, url_to_image
-from stem_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS
+from stem_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, stem_add_role, stem_remove_role
 import os
 import time
 
@@ -45,25 +45,6 @@ async def on_message_edit(before, after):
             after_content = after.content
             await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
 
-
-@client.event
-async def on_message(message):
-    member = message.author
-    if message.server.id == '387465995176116224' and "missing housing or major role" in [role.name.lower() for role in member.roles]: #UMass Amherst STEM
-        member_has_hr = False
-        member_has_m = False
-        # time.sleep(20)
-        for role in member.roles:
-            if role.name.lower() == 'missing housing or major role':
-                mhom = role
-            if role.id in HOUSING_ROLE_IDS:
-                member_has_hr = True
-            if role.id in MAJOR_ROLE_IDS:
-                member_has_m = True
-        if member_has_hr and member_has_m:
-            await client.remove_roles(member, mhom) #removes missing housing or major role
-    await client.process_commands(message)
-
 @client.command(name='8ball',
                 description="Answers from the 8ball",
                 pass_context = True)
@@ -85,23 +66,15 @@ def merge_dict(x, y):
 async def get_role(requested_role):
     member = requested_role.message.author
     if requested_role.message.server.id == '387465995176116224':
-        available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
-        for role_names in available_roles.values():
-            for option in role_names:
-                if requested_role.message.content[5:] == option: # valid role
-                    # check if member already has the requested role
-                    for member_role in member.roles:
-                        if member_role.name.lower() == role_names[0]:
-                            await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold())) 
-                            return
-                    # if the member doesnt already have the requested role
-                    for role in requested_role.message.server.roles:
-                        if role.name.lower() == role_names[0]:
-                            role_to_add = role
-                    await client.add_roles(member, role_to_add)
-                    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added the " + role_to_add.name + " role to " + member.name, color=discord.Color.green())) 
-                    return
-        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
+        await stem_add_role(requested_role, member, client)
+    else:
+        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
+
+@client.command(name='remove', pass_context = True)
+async def remove_role(requested_role):
+    member = requested_role.message.author
+    if requested_role.message.server.id == '387465995176116224':
+        await stem_remove_role(requested_role, member, client)
     else:
         await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 

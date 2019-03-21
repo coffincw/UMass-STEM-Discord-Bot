@@ -1,4 +1,4 @@
-
+import discord
 
 
 
@@ -56,3 +56,66 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '506211413564325919': ('engineering undecided', 'engineering-undecided', 'undecided engineering', 'engineering'),
                   '501908170654875648': ('undecided',)
 }
+
+def merge_dict(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
+
+async def stem_add_role(requested_role, member, client):
+    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
+    role_lower = requested_role.message.content[5:].lower()
+    for role_names in available_roles.values():
+        for alias in role_names:
+            if role_lower == alias: # valid role
+                # check if member already has the requested role
+                for member_role in member.roles:
+                    if member_role.name.lower() == role_names[0]:
+                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold())) 
+                        return
+                # if the member doesnt already have the requested role
+                for role in requested_role.message.server.roles:
+                    if role.name.lower() == role_names[0]:
+                        role_to_add = role
+                await client.add_roles(member, role_to_add)
+                await check_major_housing_role(member, client)
+                await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green())) 
+                return
+    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
+
+async def check_major_housing_role(member, client):
+    member_has_hr = False
+    member_has_m = False
+    for role in member.roles:
+        if role.id in HOUSING_ROLE_IDS:
+            member_has_hr = True
+        if role.id in MAJOR_ROLE_IDS:
+            member_has_m = True
+    for role in member.server.roles:
+        if role.name.lower() == 'missing housing or major role':
+            mhom = role
+    if mhom in member.roles: # check if the member has the missing housing or major role             
+        if member_has_hr and member_has_m:
+            await client.remove_roles(member, mhom) #removes missing housing or major role
+    else: # if not then add it to them if they need it
+        print("test")
+        if not member_has_hr or not member_has_m:  
+            await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
+
+async def stem_remove_role(requested_role, member, client):
+    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS)
+    role_lower = requested_role.message.content[8:].lower()
+    for role in member.roles:
+        if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
+            for housing_major_role in removable_roles.values():
+                for alias in housing_major_role:
+                    if role_lower == alias:
+                        await client.remove_roles(member, role)
+                        await check_major_housing_role(member, client)
+                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Removed " + role.name + " from " + member.name, color=discord.Color.green()))
+                        return
+            await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role", color=discord.Color.red()))
+            return
+    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name", color=discord.Color.red()))
+
+            
