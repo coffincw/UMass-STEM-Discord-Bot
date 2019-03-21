@@ -2,6 +2,7 @@ import random
 from io import BytesIO
 from pathlib import Path
 import discord
+from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 from overlay import overlay_image
@@ -14,68 +15,67 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
 BOT_ROLE = "bots"
 
-HOUSING_ROLE_IDS = {'Alumni': '501529720932925441', 
-                    'Sylvan': '444332276483096586', 
-                    'OHill': '444332646307201034', 
-                    'Central': '444332880894754818', 
-                    'Southwest': '444332735838814210', 
-                    'Northeast': '444332948322517003', 
-                    'North Apts': '444588763427897344', 
-                    'Honors College': '444333125670010890', 
-                    'Off-Campus': '405025553448566795', 
-                    'Prospective Student': '524016335299280908'
-} 
-
-MAJOR_ROLE_IDS = {'Electrical Engineering': '442786317273792523', 
-                  'Comp-Engineering': '506504010585604132', 
-                  'Chemical Engineering': '504715524152754199', 
-                  'Biomedical Engineering': '506504177242079241', 
-                  'Environmental-Engineering': '442806923025186817', 
-                  'Civil Engineering': '506211361945288735', 
-                  'Industrial and Mechanical Engineering': '501524792436981791', 
-                  'ECE': '439552642415460353', 
-                  'Computer Science': '387619060633829377', 
-                  'Environmental Science': '442784019369951252', 
-                  'Mathematics': '442785279493799966',
-                  'Economics': '387670593987805184',
-                  'Informatics': '405032140040830998',
-                  'Information Technology': '506223375056633856',
-                  'Political Science': '405035782269829121',
-                  'Biology': '442784136457879567',
-                  'Plant Science': '442784769273626626',
-                  'Food Science': '506253630714806272',
-                  'Geology': '442822241135230978',
-                  'History': '443558312794128407',
-                  'Physics': '447463828398145537',
-                  'BDIC': '536247576496701440',
-                  'Communication': '405932216808505355',
-                  'Nutrition': '490210619270889486',
-                  'Biochemistry': '501525484257935360',
-                  'Microbiology': '501608246579167233',
-                  'Animal Science': '502556060171894785',
-                  'Animation': '502624207390244864',
-                  'Business': '507634130842812441',
-                  'Accounting': '509005908072726533',
-                  'Linguistics': '517414427390378041',
-                  'Comparative Literature': '551464859301314572',
-                  'Chinese': '522165967481208833',
-                  'Japanese': '522166045939597335',
-                  'Psychology': '524039481486213151',
-                  'Public Health': '543109471136645161',
-                  'Women, Gender, and Sexuality Studies': '541744140191268894',
-                  'Education': '524777786972307477',
-                  'English': '539870761754820628',
-                  'CICS Exploratory': '387619488880787457',
-                  'Engineering-Undecided': '506211413564325919',
-                  'Undecided': '501908170654875648'
+HOUSING_ROLE_IDS = {'501529720932925441', ['alumni', 'alum', 'alumn'],
+                    '444332276483096586', ['sylvan', 'syl'],
+                    '444332646307201034', ['ohill', 'orchard hill', 'o hill'],
+                    '444332880894754818', ['central'], 
+                    '444332735838814210', ['southwest', 'sw', 'swest'],
+                    '444332948322517003', ['northeast', 'ne'],
+                    '444588763427897344', ['north apts', 'north apartments', 'north apartment'], 
+                    '444333125670010890', ['honors college'],
+                    '405025553448566795', ['off-campus', 'off campus', 'offcampus', 'commute', 'commuter'],
+                    '524016335299280908', ['prospective student', 'hs', 'high school']
 }
 
+MAJOR_ROLE_IDS = {'442786317273792523', ['electrical engineering', 'ee', 'electrical-engineering'],
+                  '506504010585604132', ['computer engineering', 'ce', 'comp-engineering', 'computer-engineering'],
+                  '504715524152754199', ['biomedical engineering', 'be', 'bio-engineering'],
+                  '506504177242079241', ['environmental engineering', 'environmental-engineering'],
+                  '506211361945288735', ['civil engineering', 'civil-engineering'],
+                  '501524792436981791', ['industrial and mechanical engineering', 'ime', 'industrial engineering', 'me', 'ie', 'mechanical engineering', 'industrial mechanical engineering'],
+                  '439552642415460353', ['ece', 'electrical and computer engineering', 'ec engineering'],
+                  '387619060633829377', ['computer science', 'cs', 'compsci', 'comp-sci'],
+                  '442784019369951252', ['environmental science', 'es'],
+                  '442785279493799966', ['math', 'mathematics'],
+                  '387670593987805184', ['economics', 'econ'],
+                  '405032140040830998', ['informatics', 'info'],
+                  '506223375056633856', ['information technology', 'information tech', 'it'],
+                  '405035782269829121', ['political science', 'polisci', 'poli-sci'],
+                  '442784136457879567', ['biology', 'bio'],
+                  '442784769273626626', ['plant science'], 
+                  '442822241135230978', ['geology', 'geo'], 
+                  '506253630714806272', ['food science'],
+                  '443558312794128407', ['history'],
+                  '447463828398145537', ['physics'],
+                  '536247576496701440', ['bdic', 'bachelors degree with individual concentration'],
+                  '405932216808505355', ['communications', 'communication', 'comm', 'com'],
+                  '490210619270889486', ['nutrition'],
+                  '501525484257935360', ['biochemistry', 'biochem'],
+                  '501608246579167233', ['microbiology', 'microbio'],
+                  '502556060171894785', ['animal science', 'animal'],
+                  '502624207390244864', ['animation'],
+                  '507634130842812441', ['business', 'isenberg'],
+                  '509005908072726533', ['accounting', 'account'],
+                  '517414427390378041', ['linguistics', 'ling'],
+                  '551464859301314572', ['comparative literature', 'comp lit', 'comp-lit'],
+                  '522165967481208833', ['chinese'],
+                  '522166045939597335', ['japanese'],
+                  '524039481486213151', ['psychology', 'psych'],
+                  '543109471136645161', ['public health', 'pub health', 'pub hlth'],
+                  '541744140191268894', ['women, gender, and sexuality studies'],
+                  '524777786972307477', ['education', 'educ'],
+                  '539870761754820628', ['english'],
+                  '387619488880787457', ['cics exploratory', 'cs exploratory', 'cs explo', 'exploratory computer science', 'computer science exploratory', 'exporatory cs', 'exploratory'], 
+                  '506211413564325919', ['engineering undecided', 'engineering-undecided', 'undecided engineering', 'engineering'],
+                  '501908170654875648', ['undecided']
+}
                    
 client = Bot(command_prefix=BOT_PREFIX)
 
 
 @client.event
 async def on_ready():
+    await client.change_presence(game = Game(name = '#rules'))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -107,13 +107,15 @@ async def on_message(message):
         for role in member.roles:
             if role.name.lower() == 'missing housing or major role':
                 mhom = role
-            if role.id in HOUSING_ROLE_IDS.values():
+            if role.id in HOUSING_ROLE_IDS:
                 member_has_hr = True
-            if role.id in MAJOR_ROLE_IDS.values():
+            if role.id in MAJOR_ROLE_IDS:
                 member_has_m = True
         if member_has_hr and member_has_m:
             await client.remove_roles(member, mhom) #removes missing housing or major role
     await client.process_commands(message)
+
+@client.command(name='get')
 
 @client.command(name='8ball',
                 description="Answers from the 8ball",
