@@ -14,6 +14,7 @@ HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
 
 MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electrical-engineering'),
                   '506504010585604132': ('computer engineering', 'ce', 'comp-engineering', 'computer-engineering'),
+                  '504715524152754199': ('chemical engineering', 'cheme'),
                   '504715524152754199': ('biomedical engineering', 'be', 'bio-engineering'),
                   '506504177242079241': ('environmental engineering', 'environmental-engineering'),
                   '506211361945288735': ('civil engineering', 'civil-engineering'),
