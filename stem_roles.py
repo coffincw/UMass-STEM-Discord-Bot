@@ -91,16 +91,36 @@ def merge_dict(w, x, y): # merges dictionaries w, x, y together
     return z
 
 async def list_roles(ctx, client):
-    role_list = '-- Housing Roles --\n'
+    getlist = discord.Embed(color=discord.Color.blue())
+    getlist.set_author(name='Roles | Use $get [role] to add a role', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
+    housing_role_list = ''
     for role in HOUSING_ROLE_IDS.values():
-        role_list += role[0].capitalize() + '\n'
-    role_list += '\n-- Major Roles --\n'
+        housing_role_list += role[0].capitalize() + '\n'
+    getlist.add_field(name = 'Housing Roles', value=housing_role_list, inline=False)
+    major_role_list = ''
     for role in MAJOR_ROLE_IDS.values():
-        role_list += role[0].capitalize() + '\n'
-    role_list += '\n-- Class Specific Roles --\n'
+        major_role_list += role[0].capitalize() + '\n'
+    getlist.add_field(name = 'Major Roles', value=major_role_list, inline=False)
+    class_role_list = ''
     for role in CLASS_ROLE_IDS.values():
-        role_list += role[0].capitalize() + '\n'
-    await client.send_message(ctx.message.channel, embed=discord.Embed(title='Roles | Use $get [role] to add a role', description=role_list, color=discord.Color.blue())) 
+        if class_role_list == '':
+            class_role_list += '**Computer Science**\n'
+        if role[0].startswith('cs'):
+            class_role_list += role[0][0].capitalize() 
+            class_role_list += role[0][1:].capitalize() + ', '
+            continue
+        if role[0].endswith('131'):
+            class_role_list = class_role_list[:len(class_role_list)-2]
+            class_role_list += '\n**Mathematics**\n'
+        if role[0].startswith('math') or role[0].startswith('stats'):
+            class_role_list += role[0].capitalize() + ', '
+            continue
+        class_role_list = class_role_list[:len(class_role_list)-2]
+        class_role_list += '\n**Other**\n'
+        class_role_list += role[0].capitalize()
+    getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
+    getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
+    await client.send_message(ctx.message.channel, embed=getlist) 
 
 async def stem_add_role(requested_role, member, client):
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
