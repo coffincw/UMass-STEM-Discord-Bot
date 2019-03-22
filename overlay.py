@@ -18,3 +18,16 @@ def url_to_image(url):
     ImageFile.LOAD_TRUNCATED_IMAGES = True                                                  # needed to avoid uneeded errors caused by weird image input
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
+
+def get_image_url(ctx):
+    image_url = ''
+    try:                                                                                    # if the member used a url with the command
+        image_url = ctx.message.attachments[0]['url']
+    except:                                                                                 
+        extension = ['.jpg', '.png', '.jpeg']
+        for ext in extension:
+            if ctx.message.content.endswith(ext):
+                image_url = ctx.message.content[7:]
+        if (image_url == ''):                                                               # if member didnt use a url or send a file
+            return 0
+    return image_url

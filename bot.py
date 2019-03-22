@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image
+from overlay import overlay_image, url_to_image, get_image_url
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 import os
 import time
@@ -20,7 +20,7 @@ client.remove_command('help')
 
 @client.event
 async def on_ready():
-    await client.change_presence(game = Game(name = '#rules'))
+    await client.change_presence(game = Game(name = '#rules | $help'))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -52,23 +52,6 @@ async def help():
     embed.add_field(name = 'Roles', value='*$getlist* - Sends a list of all the available roles\n*$get [role]* - Gives you the specified role\n*$remove [role]* - Removes the specified role from you', inline=True)
     embed.add_field(name = 'Memes', value='*$mdraw [image/url]* - Sends a photo of <:smugmarius:557699496767651840> drawing on the specified image\n*$bdraw [image/url]* - Sends a photo of <:barr:557186728167997445> drawing on the specified image', inline=True)
     await client.say(embed=embed)
-
-@client.command(name='8ball',
-                description="Answers from the 8ball",
-                pass_context = True)
-async def eight_ball(context):
-    print("test")
-    possible_responses = [
-        'That is a resounding no',
-        'It is not looking likely',
-        'Too hard to tell'
-    ]
-    await client.say(random.choice(possible_responses))
-
-def merge_dict(x, y):
-    z = x.copy()
-    z.update(y)
-    return z
 
 @client.command(name='get', pass_context = True)
 async def get_role(requested_role):
@@ -112,27 +95,13 @@ async def bdraw(ctx):
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     os.remove('barrington-drawing.png')
     
-
-def get_image_url(ctx):
-    image_url = ''
-    try:
-        image_url = ctx.message.attachments[0]['url']
-    except:
-        extension = ['.jpg', '.png', '.jpeg']
-        for ext in extension:
-            if ctx.message.content.endswith(ext):
-                image_url = ctx.message.content[7:]
-        if (image_url == ''):
-            return 0
-    return image_url
-    
-@client.command(name ='drawrec', pass_context = True) 
-async def draw_loop(ctx):
-    i = 5
-    while (i > 0):
-        ctx = get_image_url(ctx)
-        i+=1
-    mdraw(ctx)
+# @client.command(name ='drawrec', pass_context = True) 
+# async def draw_loop(ctx):
+#     i = 5
+#     while (i > 0):
+#         ctx = get_image_url(ctx)
+#         i+=1
+#     mdraw(ctx)
 
 @client.command(name='drawt', pass_context = True)
 async def draw_on_text(ctx):

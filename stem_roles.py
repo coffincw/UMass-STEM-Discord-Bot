@@ -1,17 +1,16 @@
 import discord
 
 HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
-                    '444332276483096586': ('sylvan', 'syl'),
-                    '444332646307201034': ('ohill', 'orchard hill', 'o hill'),
-                    '444332880894754818': ('central',), 
-                    '444332735838814210': ('southwest', 'sw', 'swest'),
-                    '444332948322517003': ('northeast', 'ne'),
+                    '444332276483096586': ('sylvan', 'syl', 'brown', 'cashin', 'mcnamara'),
+                    '444332646307201034': ('ohill', 'orchard hill', 'o hill', 'grayson', 'field', 'dickinson', 'webster'),
+                    '444332880894754818': ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'), 
+                    '444332735838814210': ('southwest', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
+                    '444332948322517003': ('northeast', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
                     '444588763427897344': ('north apts', 'north apartments', 'north apartment'), 
-                    '444333125670010890': ('honors college',),
+                    '444333125670010890': ('honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
                     '405025553448566795': ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
-                    '524016335299280908': ('prospective student', 'hs', 'high school')
+                    '524016335299280908': ('prospective student', 'hs', 'high school', 'accepted', 'accepted student')
 }
-# add aliases for buildings in residential area
 
 MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electrical-engineering'),
                   '506504010585604132': ('computer engineering', 'ce', 'comp-engineering', 'computer-engineering'),
