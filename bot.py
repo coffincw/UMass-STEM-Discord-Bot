@@ -104,11 +104,6 @@ async def bdraw(ctx):
 #         i+=1
 #     mdraw(ctx)
 
-@client.command(name='drawt', pass_context = True)
-async def draw_on_text(ctx):
-    # Allows the user to input text into the draw meme
-    print("fill")
-
 @client.command()
 async def square(number):
     await client.say(str(number) + " squared is " + str(int(number) * int(number)))
