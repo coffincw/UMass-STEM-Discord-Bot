@@ -1,6 +1,52 @@
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, ImageDraw, ImageFont
 import requests
 from io import BytesIO
+
+def draw_text(text, image):
+    person_image = Image.open(image)
+    lines = text.split('|')
+    largest_line = 0
+    largest_line_capitals = 0
+    for line in lines:
+        if len(line) > largest_line:
+            largest_line = len(line)
+            for char in line:
+                if char.isupper():
+                    largest_line_capitals += 1
+    if largest_line < 15:
+        largest_line = 15
+    line_height = len(lines)
+    if line_height < 3:
+        line_height = 3
+    (width, height) = ((largest_line * 55) + (largest_line_capitals * 30) + 400, (line_height * 150)+ 200)
+    white_background = Image.new("RGBA", (width, height) , (255, 255, 255))
+    white_background.paste(person_image, (width -1000, height - 600), person_image)
+
+    draw = ImageDraw.Draw(white_background) # create the drawing context
+
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)
+    #font = ImageFont.load_default()
+    #font = ImageFont.load("Elephant.pil")
+
+    # starting position
+    (x, y) = (50, 50)
+
+    color='rgb(0, 0, 0)' #black
+
+    lines = text.split('|')
+
+    offset = 0
+    for line in lines:
+        draw.text((x, y + offset), line, fill=color, font=font)
+        offset += 150
+    
+    return white_background
+    
+    
+
+    
+    
+
 
 def overlay_image(target, overlay_image):
     try:

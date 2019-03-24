@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url
+from overlay import overlay_image, url_to_image, get_image_url, draw_text
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 import os
 import time
@@ -77,9 +77,9 @@ async def get_list(ctx):
 async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        await client.say("Please input a valid image")
-
-    output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
+        output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'))
+    else:
+        output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
     name = 'marius-drawing.png'
     output.save(name)
     await client.send_file(ctx.message.channel, name)
@@ -90,6 +90,7 @@ async def bdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
         await client.say("Please input a valid image")
+        return
     output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
     output.save('barrington-drawing.png')
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
