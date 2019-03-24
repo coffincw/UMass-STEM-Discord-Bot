@@ -1,4 +1,4 @@
-# UMassMemeBot
+# UMass STEM Discord Bot
 
 Bot designed for the UMass STEM Discord server for memes and other functionality.
 
@@ -9,7 +9,15 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 [Invite bot to server](https://discordapp.com/api/oauth2/authorize?client_id=552254598279069708&permissions=1342179392&scope=bot)
 
 ## Commands
-
+### Roles
+- get [role]
+  - The bot gives the specified role to the user
+- remove [role]
+  - The bot removes the specified role from the user (if they have it)
+- getlist
+  - Prints out an organized list of roles available with the get command
+  
+ ### Memes
 - mdraw [image/image link]
   - The bot responds with an image of marius drawing on whatever image is passed into the argument
 - bdraw [image/image link]
