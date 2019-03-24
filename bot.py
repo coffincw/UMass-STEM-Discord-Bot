@@ -89,9 +89,9 @@ async def mdraw(ctx):
 async def bdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        await client.say("Please input a valid image")
-        return
-    output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
+        output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'))
+    else:
+        output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
     output.save('barrington-drawing.png')
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     os.remove('barrington-drawing.png')
