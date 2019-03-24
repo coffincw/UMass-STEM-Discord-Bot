@@ -18,10 +18,10 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
   - Prints out an organized list of roles available with the get command
   
  ### Memes
-- mdraw [image/image link]
-  - The bot responds with an image of marius drawing on whatever image is passed into the argument
-- bdraw [image/image link]
-  - The bot responds with an image of barrington drawing on whatever image is passed into the argument
+- mdraw [image/image link/text]
+  - The bot responds with an image of marius drawing whatever image or text is passed into the argument
+- bdraw [image/image link/text]
+  - The bot responds with an image of barrington drawing whatever image or text is passed into the argument
   
 ## Other functionality
 - remove missing housing and major role
