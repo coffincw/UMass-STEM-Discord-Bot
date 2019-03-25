@@ -81,7 +81,6 @@ async def mdraw(ctx):
     else:
         output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
     name = 'marius-drawing.png'
-    print(output)
     output.save(name)
     await client.send_file(ctx.message.channel, name)
     os.remove(name)
