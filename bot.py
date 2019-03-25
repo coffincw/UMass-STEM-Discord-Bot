@@ -77,10 +77,11 @@ async def get_list(ctx):
 async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('../memes/marius/draw.png'))
+        output = draw_text(ctx.message.content[7:], Path('/memes/marius/draw.png'))
     else:
-        output = overlay_image(url_to_image(url), Path('../memes/marius/draw.png'))
+        output = overlay_image(url_to_image(url), Path('/memes/marius/draw.png'))
     name = 'marius-drawing.png'
+    print(output)
     output.save(name)
     await client.send_file(ctx.message.channel, name)
     os.remove(name)
@@ -89,9 +90,9 @@ async def mdraw(ctx):
 async def bdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('../memes/barrington/bdraw.png'))
+        output = draw_text(ctx.message.content[7:], Path('/memes/barrington/bdraw.png'))
     else:
-        output = overlay_image(url_to_image(url), Path('../memes/barrington/bdraw.png'))
+        output = overlay_image(url_to_image(url), Path('/memes/barrington/bdraw.png'))
     output.save('barrington-drawing.png')
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     os.remove('barrington-drawing.png')
