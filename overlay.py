@@ -24,7 +24,7 @@ def draw_text(text, image):
 
     draw = ImageDraw.Draw(white_background)                                                 # create the drawing context
 
-    font = ImageFont.truetype('/fonts/PermanentMarker-Regular.ttf', size=100)             # load in font
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)             # load in font
 
     (x, y) = (50, 50)                                                                       # starting position
 
