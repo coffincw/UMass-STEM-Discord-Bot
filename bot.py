@@ -95,17 +95,5 @@ async def bdraw(ctx):
     output.save('barrington-drawing.png')
     await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     os.remove('barrington-drawing.png')
-    
-# @client.command(name ='drawrec', pass_context = True) 
-# async def draw_loop(ctx):
-#     i = 5
-#     while (i > 0):
-#         ctx = get_image_url(ctx)
-#         i+=1
-#     mdraw(ctx)
-
-@client.command()
-async def square(number):
-    await client.say(str(number) + " squared is " + str(int(number) * int(number)))
 
 client.run(BOT_TOKEN)
