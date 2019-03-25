@@ -13,8 +13,8 @@ def draw_text(text, image):
             for char in line:
                 if char.isupper():
                     largest_line_capitals += 1
-    if largest_line < 15:                                                                   # set minimum width
-        largest_line = 15
+    if largest_line < 10:                                                                   # set minimum width
+        largest_line = 10
     line_height = len(lines)
     if line_height < 3:                                                                     # set minimum height
         line_height = 3
