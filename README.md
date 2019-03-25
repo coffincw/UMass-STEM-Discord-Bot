@@ -28,12 +28,6 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
   - bot removes the missing housing and major role if someone has set both a housing and major role
 
 ### Commands to add
-- drawrec
-  - The bot responds with marius drawing recursively
-- mdraw [text]
-  - The bot responds with an image of marius drawing inputed text
-- bdraw [text]
-  - The bot responds with an image of barrington drawing inputed text
 - marius
   - The bot responds with a random marius meme
 - barr
