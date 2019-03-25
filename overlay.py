@@ -4,27 +4,20 @@ from io import BytesIO
 
 def draw_text(text, image):
     person_image = Image.open(image)
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
     lines = text.split('|')                                                                 # new line every time the user includes a |
-    largest_line = 0
-    largest_line_capitals = 0
+    largest_line = ''
     for line in lines:                                                                      # used for scaling the size of the text space
-        if len(line) > largest_line:
-            largest_line = len(line)
-            for char in line:
-                if char.isupper():
-                    largest_line_capitals += 1
-    if largest_line < 10:                                                                   # set minimum width
-        largest_line = 10
+        if len(line) > len(largest_line):
+            largest_line = line
     line_height = len(lines)
     if line_height < 3:                                                                     # set minimum height
         line_height = 3
-    (width, height) = ((largest_line * 55) + (largest_line_capitals * 30) + 475, (line_height * 150)+ 200)
+    (width, height) = (line_size(font, largest_line) + 475, (line_height * 150)+ 200)
     white_background = Image.new("RGBA", (width, height) , (255, 255, 255))
     white_background.paste(person_image, (width -1000, height - 600), person_image)
 
     draw = ImageDraw.Draw(white_background)                                                 # create the drawing context
-
-    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)             # load in font
 
     (x, y) = (50, 50)                                                                       # starting position
 
@@ -37,6 +30,12 @@ def draw_text(text, image):
     
     return white_background
     
+def line_size(font, line):
+    width = 0
+    for c in line:
+        width += font.getsize(c)[0]
+    return width
+
 def overlay_image(target, overlay_image):
     try:
         overlay = Image.open(overlay_image)
