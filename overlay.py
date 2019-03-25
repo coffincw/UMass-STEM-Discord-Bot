@@ -18,7 +18,7 @@ def draw_text(text, image):
     line_height = len(lines)
     if line_height < 3:                                                                     # set minimum height
         line_height = 3
-    (width, height) = ((largest_line * 55) + (largest_line_capitals * 30) + 420, (line_height * 150)+ 200)
+    (width, height) = ((largest_line * 55) + (largest_line_capitals * 30) + 475, (line_height * 150)+ 200)
     white_background = Image.new("RGBA", (width, height) , (255, 255, 255))
     white_background.paste(person_image, (width -1000, height - 600), person_image)
 
