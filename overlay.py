@@ -34,6 +34,8 @@ def line_size(font, line):
     width = 0
     for c in line:
         width += font.getsize(c)[0]
+    if width < 15:
+        width = 15
     return width
 
 def overlay_image(target, overlay_image):
