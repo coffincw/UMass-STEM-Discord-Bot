@@ -29,8 +29,9 @@ async def on_ready():
 @client.event
 async def on_message_delete(message):
     author = message.author
+    print(author.id)
     if message.server.id == '387465995176116224':
-        if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
+        if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
             content = message.content
             await client.send_message(client.get_channel('557002016782680076'), '_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
 
@@ -38,7 +39,7 @@ async def on_message_delete(message):
 async def on_message_edit(before, after):
     author = before.author
     if before.server.id == '387465995176116224':
-        if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
+        if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
             before_content = before.content
             after_content = after.content
             await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
