@@ -12,8 +12,9 @@ import time
 
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
-
 BOT_ROLE = "bots"
+
+bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
  
 client = Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
@@ -83,7 +84,8 @@ async def mdraw(ctx):
         output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
     name = 'marius-drawing.png'
     output.save(name)
-    await client.send_file(ctx.message.channel, name)
+    message = await client.send_file(ctx.message.channel, name)
+    track_command(ctx.message.author.id, message)
     os.remove(name)
 
 @client.command(name='bdraw', pass_context = True)
@@ -94,7 +96,18 @@ async def bdraw(ctx):
     else:
         output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
     output.save('barrington-drawing.png')
-    await client.send_file(ctx.message.channel, 'barrington-drawing.png')
+    message = await client.send_file(ctx.message.channel, 'barrington-drawing.png')
+    track_command(ctx.message.author.id, message)
     os.remove('barrington-drawing.png')
+
+#Deletes image based messages, such as bdraw, that the user requesting just sent.
+@client.command(name='erase', pass_context = True)
+async def erase(ctx):
+    if bot_last_command[ctx.message.author.id] is not None:
+        await client.delete_message(bot_last_command[ctx.message.author.id])
+        bot_last_command[ctx.message.author.id] = None #Clears this back up to avoid errors
+
+def track_command(author, bot_message):
+    bot_last_command[author] = bot_message
 
 client.run(BOT_TOKEN)
