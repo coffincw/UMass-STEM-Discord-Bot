@@ -11,22 +11,23 @@ def draw_text(text, image):
         if len(line) > len(largest_line):
             largest_line = line
     line_height = len(lines)
-    if line_height < 3:                                                                     # set minimum height
+    if line_height < 3:
         line_height = 3
-    (width, height) = (line_size(font, largest_line) + 475, (line_height * 150)+ 200)
+    (width, height) = (line_size(font, largest_line) + 520, (line_height * 150)+ 200)
     white_background = Image.new("RGBA", (width, height) , (255, 255, 255))
     white_background.paste(person_image, (width -1000, height - 600), person_image)
 
     draw = ImageDraw.Draw(white_background)                                                 # create the drawing context
 
-    (x, y) = (50, 50)                                                                       # starting position
+    (x, y) = (50, height - 300)                                                             # starting position
 
     color='rgb(0, 0, 0)'                                                                    # black
 
     offset = 0
+    lines.reverse()
     for line in lines:                                                                      # iterate through lines and draw them on the white background
         draw.text((x, y + offset), line, fill=color, font=font)
-        offset += 150                                                                       # increments offset so that the text isnt drawn on top of the previous line
+        offset -= 125                                                                       # increments offset so that the text isnt drawn on top of the previous line
     
     return white_background
     
@@ -34,8 +35,8 @@ def line_size(font, line):
     width = 0
     for c in line:
         width += font.getsize(c)[0]
-    if width < 15:
-        width = 15
+    if width < 150:
+        width = 150
     return width
 
 def overlay_image(target, overlay_image):
