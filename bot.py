@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, draw_text
+from overlay import overlay_image, url_to_image, get_image_url, draw_text, marius_origin, barr_origin
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 import os
 import time
@@ -79,9 +79,9 @@ async def get_list(ctx):
 async def mdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'))
+        output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'), marius_origin)
     else:
-        output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'))
+        output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'), marius_origin)
     name = 'marius-drawing.png'
     output.save(name)
     message = await client.send_file(ctx.message.channel, name)
@@ -92,9 +92,9 @@ async def mdraw(ctx):
 async def bdraw(ctx):
     url = get_image_url(ctx)
     if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'))
+        output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'), barr_origin)
     else:
-        output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'))
+        output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'), barr_origin)
     output.save('barrington-drawing.png')
     message = await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     track_command(ctx.message.author.id, message)
