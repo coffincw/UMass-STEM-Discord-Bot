@@ -31,15 +31,19 @@ Bot designed for the UMass STEM Discord server for memes and other functionality
 
 ## Other functionality
 - remove missing housing and major role
-  - bot removes the missing housing and major role if someone has set both a housing and major role
+    - bot removes the missing housing and major role if someone has set both a housing and major role
 
 ### Commands to add
 - marius
-  - The bot responds with a random marius meme
+    - The bot responds with a random marius meme
 - barr
-  - The bot responds with a random barrington meme
+    - The bot responds with a random barrington meme
 - tim
-  - The bot responds with a random tim meme
+    - The bot responds with a random tim meme
+- meme [text]
+    - The bot responds with the inputed image with the specifed text on it in typical meme format
+- barrify [url/image]
+    - The bot uses computer vision through the OpenCV library to put the barr emote on peoples faces in the inputed image
 
 
 
