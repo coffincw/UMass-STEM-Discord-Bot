@@ -22,7 +22,7 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '439552642415460353': ('ece', 'electrical and computer engineering', 'ec engineering'),
                   '387619060633829377': ('computer science', 'cs', 'compsci', 'comp-sci'),
                   '442784019369951252': ('environmental science', 'es'),
-                  '442785279493799966': ('math', 'mathematics'),
+                  '442785279493799966': ('mathematics', 'math'),
                   '387670593987805184': ('economics', 'econ'),
                   '405032140040830998': ('informatics', 'info'),
                   '506223375056633856': ('information technology', 'information tech', 'it'),
