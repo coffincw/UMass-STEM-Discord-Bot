@@ -13,7 +13,7 @@ def draw_text(text, image, image_origin):
     line_spacing = -0.1                                                                     # as a percentage of the line height
     text_fill = (0, 0, 0)                                                                   # RGB text color
     background_fill = (255, 255, 255)                                                       # RGB background color
-    characters_per_line = 20                                                                # 0 for no limit
+    characters_per_line = 120                                                               # 0 for no limit
     padding_top = 10
     padding_side = 20
 
@@ -27,28 +27,28 @@ def draw_text(text, image, image_origin):
             i += len(wrapped)
 
     # render each line of text as an image
-    rendered_lines = []
+    line_sizes = []
     max_line_width = None
     total_text_height = 0
     for line in lines:
         if not line:  # skip empty lines
             continue
 
-        # TODO decide if precise rendering (slower) is desired
-        rendered = render_line(font, line, text_fill, background_fill)
-        # rendered = render_line_precise(font, line, text_fill, background_fill)
+        s = font.getsize(line)
 
-        if not max_line_width or rendered.width > max_line_width:
-            max_line_width = rendered.width
-        total_text_height += rendered.height
-        rendered_lines.append(rendered)
+        if not max_line_width or s[0] > max_line_width:
+            max_line_width = s[0]
+        total_text_height += s[1]
+        line_sizes.append(s)
     line_spacing_pixels = int((total_text_height / len(lines)) * line_spacing)
 
-    # calculate the best position (as an offset from the bottom-right corner of the text) to place the image
+    last_line = render_line(font, lines[-1], text_fill, background_fill)
+
+    # find the best position (as an offset from the bottom-right corner of the last line of text) to place the image
     best_hand_pos = None
-    for x in range(rendered_lines[-1].width - 1, -1, -1):
-        for y in range(rendered_lines[-1].height):
-            if rendered_lines[-1].getpixel((x, y)) == text_fill:
+    for x in range(last_line.width - 1, -1, -1):
+        for y in range(last_line.height):
+            if last_line.getpixel((x, y)) == text_fill:
                 best_hand_pos = x, y
                 break
         else:
@@ -56,25 +56,32 @@ def draw_text(text, image, image_origin):
         break
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    width = padding_side + max(rendered_lines[-1].width + person_image.width - image_origin[0], max_line_width + padding_side)
-    # width = padding + max_line_width + person_image.width - image_origin[0]
+    width = padding_side + max(last_line.width + person_image.width - image_origin[0], max_line_width + padding_side)
+    # width = padding_side + max_line_width + person_image.width - image_origin[0]
     height = padding_top + max(person_image.height,
                            total_text_height + ((len(lines)-1) * line_spacing_pixels)  # the actual height of the text
-                           + person_image.height - image_origin[1] - rendered_lines[-1].height + best_hand_pos[1])
+                           + person_image.height - image_origin[1] - last_line.height + best_hand_pos[1])
     white_background = Image.new("RGBA", (width, height) , background_fill)
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    person_x = padding_side - image_origin[0] + rendered_lines[-1].width
-    # person_x = padding + max_line_width - image_origin[0]
+    person_x = padding_side - image_origin[0] + last_line.width
+    # person_x = padding_side + max_line_width - image_origin[0]
     person_y = height - person_image.height
 
-    # paste each line of text onto the image, starting at the given origin of person_image and moving upwards
+    # keep track of offsets for the bottom right corner of the next line of text to draw
     offset_x = padding_side + max_line_width
-    offset_y = person_y + image_origin[1] + rendered_lines[-1].height - best_hand_pos[1]
-    for rendered in reversed(rendered_lines):
-        white_background.paste(rendered, (offset_x - max_line_width, offset_y - rendered.height))
+    offset_y = person_y + image_origin[1] + last_line.height - best_hand_pos[1]
+
+    # paste the last line of text, since we already rendered it
+    white_background.paste(last_line, (offset_x - max_line_width, offset_y - last_line.height))
+    offset_y -= last_line.height + line_spacing_pixels
+
+    # create drawing context and draw the rest of the lines on the image
+    draw = ImageDraw.Draw(white_background)
+    for i in range(len(lines) - 2, -1, -1):
+        draw.text((offset_x - max_line_width, offset_y - line_sizes[i][1]), lines[i], fill=text_fill, font=font)
         # increment offset so that the text isn't drawn on top of the previous line
-        offset_y -= rendered.height + line_spacing_pixels
+        offset_y -= line_sizes[i][1] + line_spacing_pixels
 
     white_background.paste(person_image, (person_x, person_y), person_image)
 
@@ -84,55 +91,6 @@ def render_line(font, line, fill, background):
     render = Image.new('RGB', font.getsize(line), background)
     draw = ImageDraw.Draw(render)
     draw.text((0, 0), line, fill=fill, font=font)
-    return render
-
-# renders a line of text pixel perfectly by calculating the exact bounding box around the text and cropping to fit
-# this makes the function much slower than the version without this calculation
-def render_line_precise(font, line, fill, background):
-    render = Image.new('RGB', font.getsize(line), background)
-    draw = ImageDraw.Draw(render)
-    draw.text((0, 0), line, fill=fill, font=font)
-
-    # calculate the precise size of the text so it can be cropped to the minimum size
-    precision = 1
-    max_y = None
-    for y in range(render.height - 1, -1, -precision):
-        for x in range(0, render.width, precision):
-            if render.getpixel((x, y)) == fill:
-                max_y = y
-                break
-        else:
-            continue
-        break
-    max_x = None
-    for x in range(render.width - 1, -1, -precision):
-        for y in range(0, render.height, precision):
-            if render.getpixel((x, y)) == fill:
-                max_x = x
-                break
-        else:
-            continue
-        break
-    min_y = None
-    for y in range(0, render.height, precision):
-        for x in range(0, render.width, precision):
-            if render.getpixel((x, y)) == fill:
-                min_y = y
-                break
-        else:
-            continue
-        break
-    min_x = None
-    for x in range(0, render.width, precision):
-        for y in range(0, render.height, precision):
-            if render.getpixel((x, y)) == fill:
-                min_x = x
-                break
-        else:
-            continue
-        break
-
-    render = render.crop((min_x - 1, min_y - 1, max_x + 1, max_y + 1))
     return render
 
 def overlay_image(target, overlay_image, overlay_origin):
