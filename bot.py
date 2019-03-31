@@ -111,11 +111,11 @@ async def erase(ctx):
 @client.command(name='barrify', pass_context = True)
 async def barrify(ctx):
     url = get_image_url(ctx)
-    if url == 0:
+    if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        output = paste_on_face(os.path.basename('barr-face.png'), open_image_cv(url))
+        output = paste_on_face(Path('memes/barrington/barr-face.png'), url)
     output.save('barrify.png')
     message = await client.send_file(ctx.message.channel, 'barrify.png')
     track_command(ctx.message.author.id, message)
