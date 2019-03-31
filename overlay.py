@@ -21,7 +21,7 @@ def draw_text(text, image):
 
     (x, y) = (50, height - 300)                                                             # starting position
 
-    color='rgb(0, 0, 0)'                                                                    # black
+    color = 'rgb(0, 0, 0)'                                                                    # black
 
     offset = 0
     lines.reverse()
@@ -43,7 +43,7 @@ def overlay_image(target, overlay_image):
     try:
         overlay = Image.open(overlay_image)
     except:
-        return 0                                                  
+        return 0                                                 
     width, heigth = target.size                                                             # size of inputed image, used for scaling
     white_background = Image.new("RGBA", (width + 500, heigth + 200), (255, 255, 255))      # white background created based on the size of the inputed image
     white_background.paste(target, (0, 0), target)                                          # paste the inputed image in the upper left hand corner
@@ -55,6 +55,7 @@ def url_to_image(url):
     ImageFile.LOAD_TRUNCATED_IMAGES = True                                                  # needed to avoid uneeded errors caused by weird image input
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
+
 
 def get_image_url(ctx):
     image_url = ''
