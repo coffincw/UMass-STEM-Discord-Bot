@@ -12,7 +12,8 @@ import os
 import time
 
 BOT_PREFIX = "$"
-BOT_TOKEN = os.environ.get('BOT_TOKEN2')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+# print(BOT_TOKEN)
 BOT_ROLE = "bots"
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
