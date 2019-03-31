@@ -1,4 +1,4 @@
-import cv2
+import cv2 #requires Aptfile
 import numpy as np
 from urllib.request import Request, urlopen
 from PIL import Image
