@@ -7,7 +7,7 @@ from discord.ext.commands import Bot
 import asyncio
 from overlay import overlay_image, url_to_image, get_image_url, draw_text
 from stem_roles import stem_add_role, stem_remove_role, list_roles
-from face_detection import paste_on_face, open_image_cv
+# from face_detection import paste_on_face, open_image_cv
 import os
 import time
 
@@ -111,18 +111,18 @@ async def erase(ctx):
         await client.delete_message(bot_last_command[ctx.message.author.id])
         bot_last_command[ctx.message.author.id] = None #Clears this back up to avoid errors
 
-@client.command(name='barrify', pass_context = True)
-async def barrify(ctx):
-    url = get_image_url(ctx)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/barrington/barr-face.png'), url)
-    output.save('barrify.png')
-    message = await client.send_file(ctx.message.channel, 'barrify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('barrify.png')
+# @client.command(name='barrify', pass_context = True)
+# async def barrify(ctx):
+#     url = get_image_url(ctx)
+#     if url == 0: # invalid image
+#         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
+#         return
+#     else:
+#         output = paste_on_face(Path('memes/barrington/barr-face.png'), url)
+#     output.save('barrify.png')
+#     message = await client.send_file(ctx.message.channel, 'barrify.png')
+#     track_command(ctx.message.author.id, message)
+#     os.remove('barrify.png')
 
 
 def track_command(author, bot_message):
