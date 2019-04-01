@@ -118,6 +118,5 @@ dmypy.json
 
 #vscode
 settings.json
+.pylintrc
 
-#heroku
-Aptfile
