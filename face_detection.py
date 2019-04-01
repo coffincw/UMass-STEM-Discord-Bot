@@ -28,8 +28,8 @@ def paste_on_face(face_path, image_url):
         selected_face = selected_face.resize([face_width, face_height], Image.ANTIALIAS)
         
         # set x and y position with adjustments for centering
-        x_pos = x-int(h/2)
-        y_pos = y-int(7*h/8)
+        x_pos = x-int(5*(h/8))
+        y_pos = y-int(15*h/16)
 
         # paste face onto the inputed image at the specified coordinates
         image.paste(selected_face, (x_pos, y_pos), selected_face)
