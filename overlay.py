@@ -1,4 +1,5 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
+import numpy
 import requests
 from io import BytesIO
 import textwrap
@@ -124,7 +125,7 @@ def get_image_url(ctx):
     image_url = ''
     try:                                                                                    # if the member used a url with the command
         image_url = ctx.message.attachments[0]['url']
-    except:                                                                                 
+    except:
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if ctx.message.content.endswith(ext):
@@ -132,3 +133,16 @@ def get_image_url(ctx):
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
+
+def intensify_image(image, factor):
+    currImage = Image.open(image)
+    imageArr = numpy.array(currImage)
+    dimensions = imageArr.shape
+    for x in range(dimensions[0]):
+        for y in range(dimensions[1]):
+            pixel = imageArr[x][y]
+            for z in range(2):
+                pixel[x][y][z] = pixel[x][y][z]*factor
+                if pixel[x][y][z] > 255:
+                    pixel[x][y][z] = 255
+    return Image.fromarray(imageArr, 'RGB')
