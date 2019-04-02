@@ -28,8 +28,8 @@ def paste_on_face(face_path, image_url):
         selected_face = selected_face.resize([face_width, face_height], Image.ANTIALIAS)
         
         # set x and y position with adjustments for centering
-        x_pos = x-int(h/2)
-        y_pos = y-int(7*h/8)
+        x_pos = x-int(5*(h/8))
+        y_pos = y-int(15*h/16)
 
         # paste face onto the inputed image at the specified coordinates
         image.paste(selected_face, (x_pos, y_pos), selected_face)
@@ -39,7 +39,7 @@ def paste_on_face(face_path, image_url):
 # returns a list of the face coordinates and widths and heights of the faces in the inputed image
 def face_coordinates(image):
     #sets the cascade file, change this for learning to identify different features
-    casc_path = "haarcascade_frontalface_default.xml"
+    casc_path = "opencv-data/haarcascade_frontalface_default.xml"
 
     # Create haar cascade
     face_cascade = cv2.CascadeClassifier(casc_path)
