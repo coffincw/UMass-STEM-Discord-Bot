@@ -56,16 +56,21 @@ def draw_text(text, image, image_origin):
         break
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    width = padding_side + max(last_line.width + person_image.width - image_origin[0], max_line_width + padding_side)
-    # width = padding_side + max_line_width + person_image.width - image_origin[0]
+    if image_origin == (20, 280): # if bdraw
+        width = padding_side + max(last_line.width + person_image.width - image_origin[0], max_line_width + padding_side)
+    else:
+        width = padding_side + max_line_width + person_image.width - image_origin[0]
     height = padding_top + max(person_image.height,
                            total_text_height + ((len(lines)-1) * line_spacing_pixels)  # the actual height of the text
                            + person_image.height - image_origin[1] - last_line.height + best_hand_pos[1])
     white_background = Image.new("RGBA", (width, height) , background_fill)
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    person_x = padding_side - image_origin[0] + last_line.width
-    # person_x = padding_side + max_line_width - image_origin[0]
+    
+    if image_origin == (20, 280): # if bdraw
+        person_x = padding_side - image_origin[0] + last_line.width
+    else:
+        person_x = padding_side + max_line_width - image_origin[0]
     person_y = height - person_image.height
 
     # keep track of offsets for the bottom right corner of the next line of text to draw
