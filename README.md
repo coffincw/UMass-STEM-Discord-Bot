@@ -1,6 +1,6 @@
 # UMass STEM Discord Bot
 
-Bot designed for the UMass STEM Discord server for memes and other functionality.
+Bot designed for the UMass STEM Discord server for memes and other server functionality.
 
 **Bot Prefix**: Start a command with $ to use the bot
 
