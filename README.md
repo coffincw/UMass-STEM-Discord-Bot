@@ -52,7 +52,10 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - The bot responds with a random tim meme
 - meme [text]
     - The bot responds with the inputed image with the specifed text on it in typical meme format
-
+- spmeme [text]
+    - The bot responds with a surprised pikachu meme with the specified text
+- surprisedpikachu [image]
+    - Similar to barrify the bot responds with the inputed image with surprised pikachu over identified faces
 
 
 
