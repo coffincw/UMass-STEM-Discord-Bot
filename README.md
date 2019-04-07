@@ -19,9 +19,11 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
   
  ### Memes
 - mdraw [image/image link/text]
-    - The bot responds with an image of marius drawing whatever image or text is passed into the argument
+    - The bot responds with an image of marius drawing whatever image or text is passed as the argument
+- tdraw [image/image link/text]
+    - The bot responds with an image of tim drawing whatever image or text is passed as the argument
 - bdraw [image/image link/text]
-    - The bot responds with an image of barrington drawing whatever image or text is passed into the argument
+    - The bot responds with an image of barrington drawing whatever image or text is passed as the argument
 
 **Example of the $bdraw [text] generator**
 
