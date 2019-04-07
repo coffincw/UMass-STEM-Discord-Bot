@@ -5,6 +5,7 @@ import textwrap
 
 marius_origin = (30, 428)
 barr_origin = (20, 280)
+tim_origin = (40, 186)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
@@ -56,7 +57,7 @@ def draw_text(text, image, image_origin):
         break
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    if image_origin == (20, 280): # if bdraw
+    if image_origin != (30, 428): # if not mdraw
         width = padding_side + max(last_line.width + person_image.width - image_origin[0], max_line_width + padding_side)
     else:
         width = padding_side + max_line_width + person_image.width - image_origin[0]
@@ -66,8 +67,7 @@ def draw_text(text, image, image_origin):
     white_background = Image.new("RGBA", (width, height) , background_fill)
 
     # TODO allow overlapping (1) or disable overlapping (2)?
-    
-    if image_origin == (20, 280): # if bdraw
+    if image_origin != (30, 428): # if not mdraw
         person_x = padding_side - image_origin[0] + last_line.width
     else:
         person_x = padding_side + max_line_width - image_origin[0]

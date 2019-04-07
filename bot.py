@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, draw_text, marius_origin, barr_origin
+from overlay import overlay_image, url_to_image, get_image_url, draw_text, marius_origin, barr_origin, tim_origin
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv
 import os
@@ -149,6 +149,23 @@ async def bdraw(ctx):
     message = await client.send_file(ctx.message.channel, 'barrington-drawing.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('barrington-drawing.png')
+
+@client.command(name='tdraw', pass_context = True)
+async def tdraw(ctx):
+    """Command to generate a meme of tim drawing on the image or text
+       
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx)
+    if url == 0: # no url, tim should write the inputed text
+        output = draw_text(ctx.message.content[7:], Path('memes/tim/tdraw.png'), tim_origin)
+    else: # url inputed, tim should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/tim/tdraw.png'), tim_origin)
+    output.save('tim-drawing.png')
+    message = await client.send_file(ctx.message.channel, 'tim-drawing.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('tim-drawing.png')
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
