@@ -9,7 +9,7 @@ tim_origin = (40, 186)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
-    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
+    font = ImageFont.truetype('fonts/DKCoolCrayon.ttf', size=100)                # load in font
     lines = text.split('|')                                                                 # new line every time the user includes a |
     line_spacing = -0.1                                                                     # as a percentage of the line height
     text_fill = (0, 0, 0)                                                                   # RGB text color
