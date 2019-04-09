@@ -125,7 +125,7 @@ def url_to_image(url):
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
 
-def get_image_url(ctx):
+def get_image_url(ctx, index):
     image_url = ''
     try:                                                                                    # if the member used a url with the command
         image_url = ctx.message.attachments[0]['url']
@@ -133,7 +133,7 @@ def get_image_url(ctx):
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if ctx.message.content.endswith(ext):
-                image_url = ctx.message.content[7:]
+                image_url = ctx.message.content[index:]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url

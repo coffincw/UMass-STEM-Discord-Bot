@@ -122,7 +122,7 @@ async def mdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 7)
     if url == 0:
         output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'), marius_origin)
     else:
@@ -140,7 +140,7 @@ async def bdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 7)
     if url == 0: # no url, barr should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'), barr_origin)
     else: # url inputed, barr should draw on the image
@@ -157,7 +157,7 @@ async def tdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 7)
     if url == 0: # no url, tim should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/tim/tdraw.png'), tim_origin)
     else: # url inputed, tim should draw on the image
@@ -186,7 +186,7 @@ async def barrify(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 9)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -209,7 +209,7 @@ async def marify(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 8)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -232,7 +232,7 @@ async def surprisedpikachu_overlay(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 18)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
