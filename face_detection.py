@@ -6,8 +6,12 @@ from overlay import url_to_image
 import requests
 from io import BytesIO
 
+# face scale, x adjustment, y adjustment
+barr_scale = (2.2, 0.625, 0.9375) 
+sp_scale = (1.9, 0.55, 0.75)
+
 # pastes image "face" on image opened from image_path
-def paste_on_face(face_path, image_url):
+def paste_on_face(face_path, image_url, face_scale):
     # open image in opencv format and find the coordinates and dimensions of faces
     image_for_coordinates = open_image_cv(image_url)
     faces = face_coordinates(image_for_coordinates)
@@ -25,15 +29,15 @@ def paste_on_face(face_path, image_url):
         selected_face = face.copy()
 
         #set face width and height
-        face_width = int(w*2.2)
-        face_height = int(h*2.2)
+        face_width = int(w*face_scale[0])
+        face_height = int(h*face_scale[0])
 
         # resizes to the size of the face in the image
         selected_face = selected_face.resize([face_width, face_height], Image.ANTIALIAS)
         
         # set x and y position with adjustments for centering
-        x_pos = x-int(5*(h/8))
-        y_pos = y-int(15*h/16)
+        x_pos = x-int(face_scale[1]*h)
+        y_pos = y-int(face_scale[2]*h)
 
         # paste face onto the inputed image at the specified coordinates
         image.paste(selected_face, (x_pos, y_pos), selected_face)
