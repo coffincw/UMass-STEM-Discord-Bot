@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, draw_text, marius_origin, barr_origin, tim_origin
+from overlay import overlay_image, url_to_image, get_image_url, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale
 import os
@@ -247,6 +247,15 @@ async def surprisedpikachu_overlay(ctx):
     message = await client.send_file(ctx.message.channel, 'surprisedpikachu.png')
     track_command(ctx.message.author.id, message)
     os.remove('surprisedpikachu.png')
+
+@client.command(name='meme', pass_context=True)
+async def meme_generator(ctx):
+    url = get_image_url(ctx)
+    if url == 0: # invalid image
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
+        return
+    else:
+        output = paste_text_top_bottom(ctx.message.content[6:])
 
 def track_command(author, bot_message):
     """tracks the authors most recent command

@@ -9,7 +9,7 @@ tim_origin = (40, 186)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
-    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                          # load in font
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
     lines = text.split('|')                                                                 # new line every time the user includes a |
     line_spacing = -0.1                                                                     # as a percentage of the line height
     text_fill = (0, 0, 0)                                                                   # RGB text color
@@ -118,6 +118,77 @@ def overlay_image(target, overlay_image, overlay_origin):
     # paste the overlay onto the background
     white_background.paste(overlay, (width - overlay.width, height - overlay.height), overlay)
     return white_background
+
+def paste_text_top_bottom(text, image):
+    background_image = Image.open(image)
+    image_width, image_height = background_image.size
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
+    
+    #get top and bottom text of input
+    top = text.split('|')[0]
+    bottom = text.split('|')[1]
+
+    # break up top into lines 100 characters or less
+    top_lines = []
+    index = 0
+    while index < len(top):
+        top_lines.append(top[index:(len(top)-1 if index+100 >= len(top) else index+100)])
+        index += 100
+    
+    #break up bottom into lines 100 characters or less
+    bottom_lines = []
+    index = 0
+    while index < len(bottom):
+        bottom_lines.append(bottom[index:(len(bottom)-1 if index+100 >= len(bottom) else index+100)])
+        index += 100
+    
+    # create draw for drawing text
+    draw = Image.Draw(background_image)
+
+    # paste top lines
+    line_num = 0
+    for line in top_lines:
+        # find coordinates of centered text
+        w, h = draw.textsize(line, font=font)
+
+        # set coordinates for the text
+        x, y = (image_width-w)/2, 5+(line_num*h)
+
+        # thin border
+        draw.text((x-1, y), line, font=font, fill='black')
+        draw.text((x+1, y), line, font=font, fill='black')
+        draw.text((x, y-1), line, font=font, fill='black')
+        draw.text((x, y+1), line, font=font, fill='black')
+
+        #draw the text
+        draw.text((x, y), line, font=font, fill='white')
+
+        line_num +=1
+    
+    return background_image
+
+    # paste bottom lines
+    line_num = 0
+    for line in bottom_lines:
+        # find coordinates of centered text
+        w, h = draw.textsize(line, font=font)
+
+        #set coordinates for the text
+        x, y = (image_width-w)/2, (image_height-5)-(line_num*h)
+
+        # thin border
+        draw.text((x-1, y), line, font=font, fill='black')
+        draw.text((x+1, y), line, font=font, fill='black')
+        draw.text((x, y-1), line, font=font, fill='black')
+        draw.text((x, y+1), line, font=font, fill='black')
+
+        #draw the text
+        draw.text((x, y), line, font=font, fill='white')
+
+        line_num +=1
+
+
+
 
 def url_to_image(url):
     response = requests.get(url)
