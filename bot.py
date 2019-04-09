@@ -194,7 +194,7 @@ async def barrify(ctx):
         output = paste_on_face(Path('memes/barrington/barr-face.png'), url, barr_scale)
     # if there were no faces found then send error
     if output == 0:
-        await client.send_file(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
         return
     
     output.save('barrify.png')
@@ -217,7 +217,7 @@ async def surprisedpikachu_overlay(ctx):
         output = paste_on_face(Path('memes/surprised-pikachu.png'), url, sp_scale)
     # if there were no faces found then send error
     if output == 0:
-        await client.send_file(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
         return
     
     output.save('surprisedpikachu.png')
