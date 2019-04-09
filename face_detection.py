@@ -9,6 +9,7 @@ from io import BytesIO
 # face scale, x adjustment, y adjustment
 barr_scale = (2.2, 0.625, 0.9375) 
 sp_scale = (1.9, 0.55, 0.75)
+mar_scale = (2.0, 0.625, 0.85)
 
 # pastes image "face" on image opened from image_path
 def paste_on_face(face_path, image_url, face_scale):
