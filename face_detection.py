@@ -15,6 +15,10 @@ def paste_on_face(face_path, image_url):
     #open the image and face to paste with the Image library
     image = url_to_image(image_url)
     face = Image.open(face_path)
+
+    #check if there were no faces found in the inputed image
+    if len(faces) == 0:
+        return 0
     
     for (x, y, w, h) in faces:
         # make a copy of the face to resize

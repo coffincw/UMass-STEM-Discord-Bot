@@ -192,6 +192,11 @@ async def barrify(ctx):
         return
     else:
         output = paste_on_face(Path('memes/barrington/barr-face.png'), url)
+    # if there were no faces found then send error
+    if output == 0:
+        await client.send_file(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
+        return
+    
     output.save('barrify.png')
     message = await client.send_file(ctx.message.channel, 'barrify.png')
     track_command(ctx.message.author.id, message)
