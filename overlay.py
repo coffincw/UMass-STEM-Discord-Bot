@@ -3,7 +3,7 @@ import requests
 from io import BytesIO
 import textwrap
 
-marius_origin = (30, 428)
+marius_origin = (28, 428)
 barr_origin = (20, 280)
 tim_origin = (40, 186)
 
