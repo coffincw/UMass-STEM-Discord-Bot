@@ -119,31 +119,60 @@ def overlay_image(target, overlay_image, overlay_origin):
     white_background.paste(overlay, (width - overlay.width, height - overlay.height), overlay)
     return white_background
 
-def paste_text_top_bottom(text, image):
-    background_image = Image.open(image)
-    image_width, image_height = background_image.size
-    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
-    
-    #get top and bottom text of input
-    top = text.split('|')[0]
-    bottom = text.split('|')[1]
+#returns a list of the end of line indices
+def end_of_line_indices(text):
+    spaces = []
+    character_limit = 26
+    prev_space_index = 0
+    current_index = 0
+    for char in text:
+        if char == ' ':
+            if current_index > character_limit:
+                spaces.append(prev_space_index)
+                character_limit += 26
+            prev_space_index = current_index
+        current_index+=1
+    return spaces
 
-    # break up top into lines 100 characters or less
-    top_lines = []
-    index = 0
-    while index < len(top):
-        top_lines.append(top[index:(len(top)-1 if index+100 >= len(top) else index+100)])
-        index += 100
+def paste_text_top_bottom(top, bottom, background_image):
+    image_width, image_height = background_image.size
+    font_size = 50
+    font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
+
+    # portion of image width you want text width to be
+    img_fraction = 0.8
+
+    # scale font to size of image
+
+
+    # find the top space indices
+    top_ends = end_of_line_indices(top)
     
-    #break up bottom into lines 100 characters or less
+    # find the bottom space indices
+    bottom_ends = end_of_line_indices(bottom)
+
+    # break up top into lines 30 characters or less
+    top_lines = []
+    prev_index = 0
+    for index in top_ends:
+        top_lines.append(top[prev_index:index])
+        prev_index = index
+    top_lines.append(top[prev_index:])
+        
+    
+    #break up bottom into lines 30 characters or less
     bottom_lines = []
-    index = 0
-    while index < len(bottom):
-        bottom_lines.append(bottom[index:(len(bottom)-1 if index+100 >= len(bottom) else index+100)])
-        index += 100
+    prev_index = 0
+    for index in bottom_ends:
+        bottom_lines.append(bottom[prev_index:index])
+        prev_index = index
+    bottom_lines.append(bottom[prev_index:])
+
+    # reverse bottom lines
+    bottom_lines.reverse()
     
     # create draw for drawing text
-    draw = Image.Draw(background_image)
+    draw = ImageDraw.Draw(background_image)
 
     # paste top lines
     line_num = 0
@@ -155,17 +184,15 @@ def paste_text_top_bottom(text, image):
         x, y = (image_width-w)/2, 5+(line_num*h)
 
         # thin border
-        draw.text((x-1, y), line, font=font, fill='black')
-        draw.text((x+1, y), line, font=font, fill='black')
-        draw.text((x, y-1), line, font=font, fill='black')
-        draw.text((x, y+1), line, font=font, fill='black')
+        draw.text((x-2, y-2), line, font=font, fill='black')
+        draw.text((x+2, y-2), line, font=font, fill='black')
+        draw.text((x+2, y+2), line, font=font, fill='black')
+        draw.text((x-2, y+2), line, font=font, fill='black')
 
         #draw the text
         draw.text((x, y), line, font=font, fill='white')
 
         line_num +=1
-    
-    return background_image
 
     # paste bottom lines
     line_num = 0
@@ -174,21 +201,20 @@ def paste_text_top_bottom(text, image):
         w, h = draw.textsize(line, font=font)
 
         #set coordinates for the text
-        x, y = (image_width-w)/2, (image_height-5)-(line_num*h)
+        x, y = (image_width-w)/2, (image_height-70)-(line_num*h)
 
         # thin border
-        draw.text((x-1, y), line, font=font, fill='black')
-        draw.text((x+1, y), line, font=font, fill='black')
-        draw.text((x, y-1), line, font=font, fill='black')
-        draw.text((x, y+1), line, font=font, fill='black')
+        draw.text((x-2, y-2), line, font=font, fill='black')
+        draw.text((x+2, y-2), line, font=font, fill='black')
+        draw.text((x+2, y+2), line, font=font, fill='black')
+        draw.text((x-2, y+2), line, font=font, fill='black')
 
         #draw the text
         draw.text((x, y), line, font=font, fill='white')
 
         line_num +=1
-
-
-
+    
+    return background_image
 
 def url_to_image(url):
     response = requests.get(url)
@@ -196,15 +222,30 @@ def url_to_image(url):
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
 
-def get_image_url(ctx):
+def get_image_url(ctx, index):
     image_url = ''
-    try:                                                                                    # if the member used a url with the command
+    try:                                                                                    # if the member attached an image with the command
         image_url = ctx.message.attachments[0]['url']
-    except:                                                                                 
+    except:                                                                                 # if the member used a url with the command
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if ctx.message.content.endswith(ext):
-                image_url = ctx.message.content[7:]
+                image_url = ctx.message.content[index:]
+        if (image_url == ''):                                                               # if member didnt use a url or send a file
+            return 0
+    return image_url
+
+def get_image_url_args(ctx, args):
+    image_url = ''
+    try:                                                                                    # if the member attached an image with the command
+        image_url = ctx.message.attachments[0]['url']
+    except:                                                                                 # if the member used a url with the command
+        if len(args) != 3:
+            return 0                                                                                 
+        extension = ['.jpg', '.png', '.jpeg']
+        for ext in extension:
+            if args.endswith(ext):
+                image_url = args[2]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
