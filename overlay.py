@@ -203,7 +203,7 @@ def paste_text_top_bottom(top, bottom, background_image):
         w, h = draw.textsize(line, font=font)
 
         #set coordinates for the text
-        x, y = (image_width-w)/2, (image_height-int(image_height/9))-(line_num*h)
+        x, y = (image_width-w)/2, (image_height-int(image_width/9))-(line_num*h)
 
         # thin border
         draw.text((x-2, y-2), line, font=font, fill='black')
