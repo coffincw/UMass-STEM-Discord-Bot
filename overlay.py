@@ -140,7 +140,7 @@ def paste_text_top_bottom(top, bottom, background_image):
     font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
 
     # portion of image width you want text width to be
-    img_fraction = 1
+    img_fraction = .85
 
     # scale font to size of image
     while font.getsize('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')[0] < img_fraction*image_width:
