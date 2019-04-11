@@ -122,14 +122,14 @@ def overlay_image(target, overlay_image, overlay_origin):
 #returns a list of the end of line indices
 def end_of_line_indices(text):
     spaces = []
-    character_limit = 26
+    character_limit = 30
     prev_space_index = 0
     current_index = 0
     for char in text:
         if char == ' ':
             if current_index > character_limit:
                 spaces.append(prev_space_index)
-                character_limit += 26
+                character_limit += 30
             prev_space_index = current_index
         current_index+=1
     return spaces
@@ -140,7 +140,7 @@ def paste_text_top_bottom(top, bottom, background_image):
     font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
 
     # portion of image width you want text width to be
-    img_fraction = 1.2
+    img_fraction = 1
 
     # scale font to size of image
     while font.getsize('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')[0] < img_fraction*image_width:
@@ -203,7 +203,7 @@ def paste_text_top_bottom(top, bottom, background_image):
         w, h = draw.textsize(line, font=font)
 
         #set coordinates for the text
-        x, y = (image_width-w)/2, (image_height-int(image_height/100))-(line_num*h)
+        x, y = (image_width-w)/2, (image_height-int(image_height/9))-(line_num*h)
 
         # thin border
         draw.text((x-2, y-2), line, font=font, fill='black')
