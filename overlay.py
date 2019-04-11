@@ -136,14 +136,16 @@ def end_of_line_indices(text):
 
 def paste_text_top_bottom(top, bottom, background_image):
     image_width, image_height = background_image.size
-    font_size = 50
+    font_size = 1
     font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
 
     # portion of image width you want text width to be
-    img_fraction = 0.8
+    img_fraction = 1.2
 
     # scale font to size of image
-
+    while font.getsize('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')[0] < img_fraction*image_width:
+        font_size += 1
+        font = ImageFont.truetype('fonts/impact.ttf', font_size)
 
     # find the top space indices
     top_ends = end_of_line_indices(top)
@@ -201,7 +203,7 @@ def paste_text_top_bottom(top, bottom, background_image):
         w, h = draw.textsize(line, font=font)
 
         #set coordinates for the text
-        x, y = (image_width-w)/2, (image_height-70)-(line_num*h)
+        x, y = (image_width-w)/2, (image_height-int(image_height/100))-(line_num*h)
 
         # thin border
         draw.text((x-2, y-2), line, font=font, fill='black')
