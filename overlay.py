@@ -134,18 +134,18 @@ def end_of_line_indices(text):
         current_index+=1
     return spaces
 
+# returns the longest string in a list of strings
+def longest_string(arr):
+    long_string = 'AAAAAAAAAAAAAAA' # default smallest length
+    for string in arr:
+        if len(string) > len(long_string):
+            long_string = string
+    return long_string
+
 def paste_text_top_bottom(top, bottom, background_image):
     image_width, image_height = background_image.size
     font_size = 1
     font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
-
-    # portion of image width you want text width to be
-    img_fraction = .85
-
-    # scale font to size of image
-    while font.getsize('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')[0] < img_fraction*image_width:
-        font_size += 1
-        font = ImageFont.truetype('fonts/impact.ttf', font_size)
 
     # find the top space indices
     top_ends = end_of_line_indices(top)
@@ -172,6 +172,19 @@ def paste_text_top_bottom(top, bottom, background_image):
 
     # reverse bottom lines
     bottom_lines.reverse()
+
+    # find longest line
+    longest_top = longest_string(top_lines)
+    longest_bottom = longest_string(bottom_lines)
+    longest_line = longest_top if len(longest_top) > len(longest_bottom) else longest_bottom
+
+    # portion of image width you want text width to be
+    img_fraction = .85
+
+    # scale font to size of image
+    while font.getsize(longest_line)[0] < img_fraction*image_width:
+        font_size += 1
+        font = ImageFont.truetype('fonts/impact.ttf', font_size)
     
     # create draw for drawing text
     draw = ImageDraw.Draw(background_image)
@@ -203,7 +216,7 @@ def paste_text_top_bottom(top, bottom, background_image):
         w, h = draw.textsize(line, font=font)
 
         #set coordinates for the text
-        x, y = (image_width-w)/2, (image_height-int(image_width/9))-(line_num*h)
+        x, y = (image_width-w)/2, (image_height-int(image_width/8.2))-(line_num*h)
 
         # thin border
         draw.text((x-2, y-2), line, font=font, fill='black')
