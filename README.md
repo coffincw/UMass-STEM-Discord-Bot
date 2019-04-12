@@ -40,6 +40,8 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Similar to barrify the bot responds with the inputed image with surprised pikachu over identified faces
 - marify [image]
     - Similar to barrify the bot responds with the inputed image with marius's face over the identified faces
+- timify [image]
+    - Similar to barrify the bot responds with the inputed image with tim's face over the indentified faces
 - meme [text]
     - The bot responds with the inputed image with the specifed text on it in typical meme format
 - erase
