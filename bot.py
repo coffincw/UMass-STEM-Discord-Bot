@@ -9,6 +9,7 @@ from overlay import overlay_image, url_to_image, get_image_url, get_image_url_ar
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale
 import os
+import random
 import time
 
 BOT_PREFIX = "$"
@@ -28,6 +29,27 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+@client.event
+async def on_member_join(member):
+    welcome_channel = client.get_channel('387465995176116226') # introductions
+
+    # used to randomly pick one of the available drawing professors
+    professor_chosen = random.randint(0, 3)
+
+    welcome_message = 'Welcome ' + member.display_name + '!|To see all the channels set your major|and housing roles in #role-assignment!'
+    if professor_chosen == 0:
+        output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
+    elif professor_chosen == 1:
+        output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), mar_origin)
+    else:
+        output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
+    name = 'marius-drawing.png'
+    output.save(name)
+    await client.send_message(welcome_channel, member.mention)
+    await client.send_file(welcome_channel, name)
+    os.remove(name)
+
 
 @client.event
 async def on_message_delete(message):
