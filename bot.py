@@ -32,23 +32,23 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    welcome_channel = client.get_channel('387465995176116226') # introductions
+    if message.server.id == '387465995176116224':
+        welcome_channel = client.get_channel('387465995176116226') # introductions
 
-    # used to randomly pick one of the available drawing professors
-    professor_chosen = random.randint(0, 3)
+        # used to randomly pick one of the available drawing professors
+        professor_chosen = random.randint(0, 3)
 
-    welcome_message = 'Welcome ' + member.display_name + '!|To see all the channels set your major|and housing roles in #role-assignment!'
-    if professor_chosen == 0:
-        output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
-    elif professor_chosen == 1:
-        output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), mar_origin)
-    else:
-        output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
-    name = 'marius-drawing.png'
-    output.save(name)
-    await client.send_message(welcome_channel, member.mention)
-    await client.send_file(welcome_channel, name)
-    os.remove(name)
+        welcome_message = 'Welcome ' + member.display_name + '!|To see all the channels set your major|and housing roles in #role-assignment!'
+        if professor_chosen == 0:
+            output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
+        elif professor_chosen == 1:
+            output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), mar_origin)
+        else:
+            output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
+        name = 'marius-drawing.png'
+        output.save(name)
+        await client.send_file(welcome_channel, name, content=member.mention)
+        os.remove(name)
 
 
 @client.event
