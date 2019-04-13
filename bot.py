@@ -32,7 +32,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    if message.server.id == '387465995176116224':
+    if member.server.id == '387465995176116224':
         welcome_channel = client.get_channel('387465995176116226') # introductions
 
         # used to randomly pick one of the available drawing professors
