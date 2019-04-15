@@ -45,7 +45,7 @@ async def on_member_join(member):
             output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), mar_origin)
         else:
             output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
-        name = 'marius-drawing.png'
+        name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await client.send_file(welcome_channel, name, content=member.mention)
         os.remove(name)
