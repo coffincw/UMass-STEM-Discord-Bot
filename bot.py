@@ -40,7 +40,7 @@ async def on_member_join(member):
         # used to randomly pick one of the available drawing professors
         professor_chosen = random.randint(0, 3)
 
-        welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + num_members + '!|To see all the channels set your major|and housing roles in #role-assignment!'
+        welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
             output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
         elif professor_chosen == 1:
@@ -129,7 +129,7 @@ async def help():
 @client.command(name = 'members')
 async def server_members():
     num_members = len(set(client.get_all_members()))
-    await client.say('There are ' + num_members + 'server members')
+    await client.say('There are ' + str(num_members) + ' server members')
 
 @client.command(name='get', pass_context = True)
 async def get_role(requested_role):
