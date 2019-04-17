@@ -1,5 +1,5 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
-import numpy
+import numpy as np
 import requests
 from io import BytesIO
 import textwrap
@@ -136,7 +136,7 @@ def get_image_url(ctx):
 
 def intensify_image(image, factor):
     currImage = Image.open(image)
-    imageArr = numpy.array(currImage)
+    imageArr = np.array(currImage)
     dimensions = imageArr.shape
     for x in range(dimensions[0]):
         for y in range(dimensions[1]):

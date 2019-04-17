@@ -12,7 +12,7 @@ import os
 import time
 
 BOT_PREFIX = "$"
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+BOT_TOKEN = "NTYyOTg4NDQ0MDc1NDI1ODEy.XKSx9A.R2zsvpT8mCHSWByP2SjSYWNw06s" #os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
@@ -132,17 +132,11 @@ async def barrify(ctx):
 @client.command(name='intensify', pass_context = True)
 async def intensify(ctx):
     url = get_image_url(ctx)
-    raw_text = ctx.message.content[11:]
-    factor = 1
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        try:
-            factor = int(raw_text.split(',')[1])
-        except:
-            await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
-        output = intensify_image(url_to_image(url), factor)
+        output = intensify_image(url_to_image(url), 2)
     output.save('intensify.png')
     message = await client.send_file(ctx.message.channel, 'intensify.png')
     track_command(ctx.message.author.id, message)
