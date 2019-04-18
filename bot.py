@@ -35,14 +35,16 @@ async def on_member_join(member):
     if member.server.id == '387465995176116224':
         welcome_channel = client.get_channel('387465995176116226') # introductions
 
+        num_members = len(set(client.get_all_members()))
+
         # used to randomly pick one of the available drawing professors
         professor_chosen = random.randint(0, 3)
 
-        welcome_message = 'Welcome ' + member.display_name + '!|To see all the channels set your major|and housing roles in #role-assignment!'
+        welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
             output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
         elif professor_chosen == 1:
-            output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), mar_origin)
+            output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), marius_origin)
         else:
             output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
         name = 'welcome-' + member.display_name + '.png'
@@ -93,7 +95,8 @@ async def help():
     ROLE_COMMANDS = {
         '*$getlist*': 'Sends a list of all the available roles',
         '*$get [role]*': 'Gives you the specified role',
-        '*$remove [role]*': 'Removes the specified role from you'
+        '*$remove [role]*': 'Removes the specified role from you',
+        '*$members*': 'Prints out the number of people on the server'
     }
     MEME_COMMANDS = {
         '*$mdraw [image/url]*': 'Sends a photo of marius drawing the specified image or text',
@@ -122,6 +125,11 @@ async def help():
             value = MEME_COMMANDS[command]
         )
     await client.say(embed=embed)
+
+@client.command(name = 'members')
+async def server_members():
+    num_members = len(set(client.get_all_members()))
+    await client.say('There are ' + str(num_members) + ' server members')
 
 @client.command(name='get', pass_context = True)
 async def get_role(requested_role):

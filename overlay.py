@@ -58,7 +58,7 @@ def draw_text(text, image, image_origin):
         break
 
     # TODO disable overlapping (1) or allow overlapping (2)?
-    if image_origin == (30, 428): # if mdraw
+    if image_origin == (28, 428): # if mdraw
         width = padding_side + max_line_width + person_image.width - image_origin[0]
     else:
         width = padding_side + max(last_line.width + person_image.width - image_origin[0], max_line_width + padding_side)
@@ -68,7 +68,7 @@ def draw_text(text, image, image_origin):
     white_background = Image.new("RGBA", (width, height) , background_fill)
 
     # TODO disable overlapping (1) or allow overlapping (2)?
-    if image_origin == (30, 428): # if mdraw
+    if image_origin == (28, 428): # if mdraw
         person_x = padding_side + max_line_width - image_origin[0]
     else:
         person_x = padding_side - image_origin[0] + last_line.width
