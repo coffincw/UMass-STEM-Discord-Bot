@@ -1,4 +1,5 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
+import numpy as np
 import requests
 from io import BytesIO
 import textwrap
@@ -265,3 +266,16 @@ def get_image_url_args(ctx, args):
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
+
+def intensify_image(image, factor):
+    currImage = Image.open(image)
+    imageArr = np.array(currImage)
+    dimensions = imageArr.shape
+    for x in range(dimensions[0]):
+        for y in range(dimensions[1]):
+            pixel = imageArr[x][y]
+            for z in range(2):
+                pixel[x][y][z] = pixel[x][y][z]*factor
+                if pixel[x][y][z] > 255:
+                    pixel[x][y][z] = 255
+    return Image.fromarray(imageArr, 'RGB')
