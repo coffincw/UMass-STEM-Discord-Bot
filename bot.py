@@ -13,7 +13,7 @@ import random
 import time
 
 BOT_PREFIX = "$"
-BOT_TOKEN = "NTYyOTg4NDQ0MDc1NDI1ODEy.XKSx9A.R2zsvpT8mCHSWByP2SjSYWNw06s" #os.environ.get('BOT_TOKEN')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
