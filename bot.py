@@ -324,8 +324,7 @@ async def surprisedpikachu_overlay(ctx):
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
-
-    url = get_image_url_args(ctx, args)
+    url = get_image_url_args(ctx, args, 3, 2)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -337,12 +336,20 @@ async def meme_generator(ctx, *args):
     os.remove('meme.png')
 
 @client.command(name='intensify', pass_context = True)
-async def intensify(ctx):
-    url = get_image_url(ctx, 11)
+async def intensify(ctx, *args):
+    try:
+        factor = float(args[0]) 
+    except:
+        factor = 2 # default if no factor specified
+    url = get_image_url_args(ctx, args, 2, 1)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
-    output = intensify_image(url_to_image(url), 2)
+    output = intensify_image(url_to_image(url), factor)
+    if output == 0: # if factor < 0
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid factor", color=discord.Color.red()))
+        return
+    # save and send image
     output.save('intensify.png')
     message = await client.send_file(ctx.message.channel, 'intensify.png')
     track_command(ctx.message.author.id, message)
