@@ -1,6 +1,7 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
 import requests
+from math import fabs
 from io import BytesIO
 import textwrap
 
@@ -289,3 +290,25 @@ def intensify_image(image, factor):
             else:
                 pic[x,y] = (pic[x,y][0], pic[x,y][1], int(pic[x,y][2]*factor))
     return image
+
+def highlight_image(image):
+    pic = image.load()
+    width, height = image.size()
+    for x in range(width):
+        for y in range(height):
+            pixel1 = pic[x,y]
+            pixel2 = pic[x,y]
+            if x == (width-1) and j != (height-1):
+                pixel2 = pic[x, y+1]
+            elif x == (width-1) and j == (height-1) and height != 1:
+                pixel2 = pic[x, y-1]
+            elif x == (width-1) and y == (height-1) and height == 1:
+                pixel2 = pic[x, y]
+            else:
+                pixel2 = pic[x+1, y]
+            avg1 = (pixel1[0] + pixel1[1] + pixel1[2])/3
+            avg2 = (pixel2[0] + pixel2[1] + pixel2[2])/3
+            pixelValue = fabs(avg1-avg2)
+            pic[x,y] = (pixelValue, pixelValue, pixelValue)
+    return image
+
