@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, intensify_image
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale
 import os
@@ -102,6 +102,7 @@ async def help():
         '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text',
         '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text',
         '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text',
+        '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text',
         '*barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
         '*surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
         '*marify [image]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
@@ -227,14 +228,31 @@ async def ldraw(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     url = get_image_url(ctx, 7)
-    if url == 0: # no url, barr should write the inputed text
+    if url == 0: # no url, lan should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/lan/lan-draw.png'), lan_origin)
-    else: # url inputed, barr should draw on the image
+    else: # url inputed, lan should draw on the image
         output = overlay_image(url_to_image(url), Path('memes/lan/lan-draw.png'), lan_origin)
     output.save('lan-drawing.png')
     message = await client.send_file(ctx.message.channel, 'lan-drawing.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('lan-drawing.png')
+
+@client.command(name='shelpoint', pass_context = True)
+async def shelpoint(ctx):
+    """Command to generate a meme of Dan Sheldon drawing on the image or text
+       
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx, 11)
+    if url == 0: # no url, shel should write the inputed text
+        output = draw_text(ctx.message.content[11:], Path('memes/sheldraw.png'), shel_origin)
+    else: # url inputed, shel should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/sheldraw.png'), shel_origin)
+    output.save('sheldon-pointing.png')
+    message = await client.send_file(ctx.message.channel, 'sheldon-pointing.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('sheldon-pointing.png')
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)

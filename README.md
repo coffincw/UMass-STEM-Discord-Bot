@@ -22,6 +22,10 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - The bot responds with an image of marius drawing whatever image or text is passed as the argument
 - tdraw [image/image link/text]
     - The bot responds with an image of tim drawing whatever image or text is passed as the argument
+- ldraw [image/image link/text]
+    - The bot responds with an image of lan drawing whatever image or text is passed as the argument
+- shelpoint [image/image link/text]
+    - The bot responds with an image of Dan Sheldon pointing at whatever image or text is passed as the argument
 - bdraw [image/image link/text]
     - The bot responds with an image of barrington drawing whatever image or text is passed as the argument
 

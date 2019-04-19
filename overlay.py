@@ -8,6 +8,7 @@ marius_origin = (28, 428)
 barr_origin = (20, 280)
 tim_origin = (40, 186)
 lan_origin = (13, 104)
+shel_origin = (2, 116)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
