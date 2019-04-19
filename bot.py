@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale
 import os
@@ -411,9 +411,31 @@ async def highlight_edge(ctx):
         return
     output = highlight_image(url_to_image(url))
     output.save('highlighted.png')
-    message = await client.send_file(ctx.message.channel, highlighted.png)
+    message = await client.send_file(ctx.message.channel, 'highlighted.png')
     track_command(ctx.message.author.id, message)
     os.remove('highlighted.png')
+
+@client.command(name='customEdgeHighlight', pass_context=True)
+async def custom_edge_highlight(ctx, *args):
+    try:
+        red = float(args[0])
+        green = float(args[1])
+        blue = float(args[2])
+    except:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
+        return
+    url = get_image_url_args(ctx, 4, 1)
+    if url == 0:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image", color=discord.Color.red())
+        return
+    output = custom_edge_highlight_image(url_to_image(url), red, green, blue)
+    if output == 0: #if the RGB values are invalid
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid RGB Values, please input numbers between 0-255", color=discord.Color.red()))
+        return
+    output.save('custom_highlight.png')
+    message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
+
+
 
 def track_command(author, bot_message):
     """tracks the authors most recent command

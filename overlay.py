@@ -312,3 +312,16 @@ def highlight_image(image):
             pic[x,y] = (pixelValue, pixelValue, pixelValue)
     return image
 
+def custom_edge_highlight_image(image, red, green, blue):
+    if red > 255 or red < 0 or green > 255 or green < 0 or blue > 255 or blue < 0:
+        return 0
+    edges = highlight_image(image)
+    pic = edges.load()
+    width, height = image.size()
+    edgePixel = (red, green, bue)
+    for x in range(width):
+        for y in range(height):
+            pixel = pic[x,y]
+            if pixel[0] > 30 and pixel[1] > 30 and pixel[2] > 30:
+                pixel = edgePixel
+    return edges
