@@ -74,7 +74,7 @@ def draw_text(text, image, image_origin):
         person_x = padding_side + max_line_width - image_origin[0]
     else:
         person_x = padding_side - image_origin[0] + last_line.width
-        
+
     person_y = height - person_image.height
 
     # keep track of offsets for the bottom right corner of the next line of text to draw
@@ -153,7 +153,7 @@ def paste_text_top_bottom(top, bottom, background_image):
 
     # find the top space indices
     top_ends = end_of_line_indices(top)
-    
+
     # find the bottom space indices
     bottom_ends = end_of_line_indices(bottom)
 
@@ -164,8 +164,8 @@ def paste_text_top_bottom(top, bottom, background_image):
         top_lines.append(top[prev_index:index])
         prev_index = index
     top_lines.append(top[prev_index:])
-        
-    
+
+
     #break up bottom into lines 30 characters or less
     bottom_lines = []
     prev_index = 0
@@ -189,7 +189,7 @@ def paste_text_top_bottom(top, bottom, background_image):
     while font.getsize(longest_line)[0] < img_fraction*image_width:
         font_size += 1
         font = ImageFont.truetype('fonts/impact.ttf', font_size)
-    
+
     # create draw for drawing text
     draw = ImageDraw.Draw(background_image)
 
@@ -232,7 +232,7 @@ def paste_text_top_bottom(top, bottom, background_image):
         draw.text((x, y), line, font=font, fill='white')
 
         line_num +=1
-    
+
     return background_image
 
 def url_to_image(url):
@@ -260,7 +260,7 @@ def get_image_url_args(ctx, args, num_args, image_arg_index):
         image_url = ctx.message.attachments[0]['url']
     except:                                                                                 # if the member used a url with the command
         if len(args) != num_args:
-            return 0                                                                                 
+            return 0
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if args.endswith(ext):
@@ -270,27 +270,6 @@ def get_image_url_args(ctx, args, num_args, image_arg_index):
     return image_url
 
 def intensify_image(image, factor):
-<<<<<<< HEAD
-    if factor < 0:
-        return 0
-    pic = image.load()
-    width, height = image.size                                                              # get width and height
-    for x in range(width):                                                                  # iterate through x axis of pixels
-        for y in range(height):                                                             # iterate through y axis of pixels    
-            if (pic[x,y][0] * factor) >= 255:
-                pic[x,y] = (255, pic[x,y][1], pic[x,y][2])
-            else:
-                pic[x,y] = (int(pic[x,y][0]*factor), pic[x,y][1], pic[x,y][2])
-            if (pic[x,y][1] * factor) >= 255:
-                pic[x,y] = (pic[x,y][0], 255, pic[x,y][2])
-            else: 
-                pic[x,y] = (pic[x,y][0], int(pic[x,y][1]*factor), pic[x,y][2])
-            if (pic[x,y][2] * factor) >= 255:
-                pic[x,y] = (pic[x,y][0], pic[x,y][1], 255)
-            else:
-                pic[x,y] = (pic[x,y][0], pic[x,y][1], int(pic[x,y][2]*factor))
-    return image
-=======
     currImage = Image.open(image)
     pic = currImage.load()
     width, height = currImage.size()
@@ -302,4 +281,3 @@ def intensify_image(image, factor):
             pixel[2] = 255 if (pixel[2] * factor >= 255) else (pixel[2]*factor)
     currImage.save('intensified.png')
     return currImage
->>>>>>> updaatedd
