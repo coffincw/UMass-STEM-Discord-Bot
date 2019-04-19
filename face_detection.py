@@ -7,11 +7,11 @@ import requests
 from io import BytesIO
 
 # face scale, x adjustment, y adjustment
-barr_scale = (2.2, 0.625, 0.9375) 
+barr_scale = (2.2, 0.625, 0.9375)
 sp_scale = (1.9, 0.55, 0.75)
 mar_scale = (2.0, 0.625, 0.85)
 tim_scale = (1.7, 0.3, 0.5)
-
+c_scale = (1.7, 0.3, 0.5)
 
 # pastes image "face" on image opened from image_path
 def paste_on_face(face_path, image_url, face_scale):
@@ -26,7 +26,7 @@ def paste_on_face(face_path, image_url, face_scale):
     #check if there were no faces found in the inputed image
     if len(faces) == 0:
         return 0
-    
+
     for (x, y, w, h) in faces:
         # make a copy of the face to resize
         selected_face = face.copy()
@@ -37,14 +37,14 @@ def paste_on_face(face_path, image_url, face_scale):
 
         # resizes to the size of the face in the image
         selected_face = selected_face.resize([face_width, face_height], Image.ANTIALIAS)
-        
+
         # set x and y position with adjustments for centering
         x_pos = x-int(face_scale[1]*h)
         y_pos = y-int(face_scale[2]*h)
 
         # paste face onto the inputed image at the specified coordinates
         image.paste(selected_face, (x_pos, y_pos), selected_face)
-        
+
     return image
 
 # returns a list of the face coordinates and widths and heights of the faces in the inputed image

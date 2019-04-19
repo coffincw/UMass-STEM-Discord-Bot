@@ -1,4 +1,5 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
+import numpy as np
 import requests
 from io import BytesIO
 import textwrap
@@ -6,6 +7,8 @@ import textwrap
 marius_origin = (28, 428)
 barr_origin = (20, 280)
 tim_origin = (40, 186)
+lan_origin = (13, 104)
+shel_origin = (2, 116)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
@@ -251,17 +254,38 @@ def get_image_url(ctx, index):
             return 0
     return image_url
 
-def get_image_url_args(ctx, args):
+def get_image_url_args(ctx, args, num_args, image_arg_index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
         image_url = ctx.message.attachments[0]['url']
     except:                                                                                 # if the member used a url with the command
-        if len(args) != 3:
+        if len(args) != num_args:
             return 0                                                                                 
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
             if args.endswith(ext):
-                image_url = args[2]
+                image_url = args[image_arg_index]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
+
+def intensify_image(image, factor):
+    if factor < 0:
+        return 0
+    pic = image.load()
+    width, height = image.size                                                              # get width and height
+    for x in range(width):                                                                  # iterate through x axis of pixels
+        for y in range(height):                                                             # iterate through y axis of pixels    
+            if (pic[x,y][0] * factor) >= 255:
+                pic[x,y] = (255, pic[x,y][1], pic[x,y][2])
+            else:
+                pic[x,y] = (int(pic[x,y][0]*factor), pic[x,y][1], pic[x,y][2])
+            if (pic[x,y][1] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], 255, pic[x,y][2])
+            else: 
+                pic[x,y] = (pic[x,y][0], int(pic[x,y][1]*factor), pic[x,y][2])
+            if (pic[x,y][2] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], 255)
+            else:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], int(pic[x,y][2]*factor))
+    return image
