@@ -270,6 +270,7 @@ def get_image_url_args(ctx, args, num_args, image_arg_index):
     return image_url
 
 def intensify_image(image, factor):
+<<<<<<< HEAD
     if factor < 0:
         return 0
     pic = image.load()
@@ -289,3 +290,16 @@ def intensify_image(image, factor):
             else:
                 pic[x,y] = (pic[x,y][0], pic[x,y][1], int(pic[x,y][2]*factor))
     return image
+=======
+    currImage = Image.open(image)
+    pic = currImage.load()
+    width, height = currImage.size()
+    for x in range(width):
+        for y in range(height):
+            pixel = pic[x,y]
+            pixel[0] = 255 if (pixel[0] * factor >= 255) else (pixel[0]*factor)
+            pixel[1] = 255 if (pixel[1] * factor >= 255) else (pixel[1]*factor)
+            pixel[2] = 255 if (pixel[2] * factor >= 255) else (pixel[2]*factor)
+    currImage.save('intensified.png')
+    return currImage
+>>>>>>> updaatedd
