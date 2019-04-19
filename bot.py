@@ -338,7 +338,7 @@ async def meme_generator(ctx, *args):
 
 @client.command(name='intensify', pass_context = True)
 async def intensify(ctx):
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 11)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return

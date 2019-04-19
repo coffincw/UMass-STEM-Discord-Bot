@@ -268,14 +268,20 @@ def get_image_url_args(ctx, args):
     return image_url
 
 def intensify_image(image, factor):
-    currImage = Image.open(image)
-    imageArr = np.array(currImage)
-    dimensions = imageArr.shape
-    for x in range(dimensions[0]):
-        for y in range(dimensions[1]):
-            pixel = imageArr[x][y]
-            for z in range(2):
-                pixel[x][y][z] = pixel[x][y][z]*factor
-                if pixel[x][y][z] > 255:
-                    pixel[x][y][z] = 255
-    return Image.fromarray(imageArr, 'RGB')
+    pic = image.load()
+    width, height = image.size
+    for x in range(width):
+        for y in range(height):
+            if (pic[x,y][0] * factor) >= 255:
+                pic[x,y] = (255, pic[x,y][1], pic[x,y][2])
+            else:
+                pic[x,y] = (pic[x,y][0]*factor, pic[x,y][1], pic[x,y][2])
+            if (pic[x,y][1] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], 255, pic[x,y][2])
+            else: 
+                pic[x,y] = (pic[x,y][0], pic[x,y][1]*factor, pic[x,y][2])
+            if (pic[x,y][2] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], 255)
+            else:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], pic[x,y][2]*factor)
+    return image
