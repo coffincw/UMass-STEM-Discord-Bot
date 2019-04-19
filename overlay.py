@@ -1,6 +1,7 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
 import requests
+from math import fabs
 from io import BytesIO
 import textwrap
 
@@ -270,14 +271,44 @@ def get_image_url_args(ctx, args, num_args, image_arg_index):
     return image_url
 
 def intensify_image(image, factor):
-    currImage = Image.open(image)
-    pic = currImage.load()
-    width, height = currImage.size()
+    if factor < 0:
+        return 0
+    pic = image.load()
+    width, height = image.size                                                              # get width and height
+    for x in range(width):                                                                  # iterate through x axis of pixels
+        for y in range(height):                                                             # iterate through y axis of pixels
+            if (pic[x,y][0] * factor) >= 255:
+                pic[x,y] = (255, pic[x,y][1], pic[x,y][2])
+            else:
+                pic[x,y] = (int(pic[x,y][0]*factor), pic[x,y][1], pic[x,y][2])
+            if (pic[x,y][1] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], 255, pic[x,y][2])
+            else:
+                pic[x,y] = (pic[x,y][0], int(pic[x,y][1]*factor), pic[x,y][2])
+            if (pic[x,y][2] * factor) >= 255:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], 255)
+            else:
+                pic[x,y] = (pic[x,y][0], pic[x,y][1], int(pic[x,y][2]*factor))
+    return image
+
+def highlight_image(image):
+    pic = image.load()
+    width, height = image.size()
     for x in range(width):
         for y in range(height):
-            pixel = pic[x,y]
-            pixel[0] = 255 if (pixel[0] * factor >= 255) else (pixel[0]*factor)
-            pixel[1] = 255 if (pixel[1] * factor >= 255) else (pixel[1]*factor)
-            pixel[2] = 255 if (pixel[2] * factor >= 255) else (pixel[2]*factor)
-    currImage.save('intensified.png')
-    return currImage
+            pixel1 = pic[x,y]
+            pixel2 = pic[x,y]
+            if x == (width-1) and j != (height-1):
+                pixel2 = pic[x, y+1]
+            elif x == (width-1) and j == (height-1) and height != 1:
+                pixel2 = pic[x, y-1]
+            elif x == (width-1) and y == (height-1) and height == 1:
+                pixel2 = pic[x, y]
+            else:
+                pixel2 = pic[x+1, y]
+            avg1 = (pixel1[0] + pixel1[1] + pixel1[2])/3
+            avg2 = (pixel2[0] + pixel2[1] + pixel2[2])/3
+            pixelValue = fabs(avg1-avg2)
+            pic[x,y] = (pixelValue, pixelValue, pixelValue)
+    return image
+
