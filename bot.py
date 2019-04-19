@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, intensify_image
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, intensify_image
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale
 import os
@@ -218,6 +218,23 @@ async def tdraw(ctx):
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('tim-drawing.png')
 
+@client.command(name='ldraw', pass_context = True)
+async def ldraw(ctx):
+    """Command to generate a meme of lan drawing on the image or text
+       
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx, 7)
+    if url == 0: # no url, barr should write the inputed text
+        output = draw_text(ctx.message.content[7:], Path('memes/lan/lan-draw.png'), lan_origin)
+    else: # url inputed, barr should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/lan/lan-draw.png'), lan_origin)
+    output.save('lan-drawing.png')
+    message = await client.send_file(ctx.message.channel, 'lan-drawing.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('lan-drawing.png')
+
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
 async def erase(ctx):
@@ -324,6 +341,12 @@ async def surprisedpikachu_overlay(ctx):
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
+    """Command to generate memes with top and bottom text
+       
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - *args: arguments passed in with the command
+    """
     url = get_image_url_args(ctx, args, 3, 2)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
@@ -337,6 +360,12 @@ async def meme_generator(ctx, *args):
 
 @client.command(name='intensify', pass_context = True)
 async def intensify(ctx, *args):
+    """Command to intensify inputed image by the inputed factor
+       
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - *args: arguments passed in with the command
+    """
     try:
         factor = float(args[0]) 
     except:
