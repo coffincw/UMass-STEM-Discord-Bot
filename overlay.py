@@ -271,9 +271,9 @@ def intensify_image(image, factor):
     if factor < 0:
         return 0
     pic = image.load()
-    width, height = image.size
-    for x in range(width):
-        for y in range(height):
+    width, height = image.size                                                              # get width and height
+    for x in range(width):                                                                  # iterate through x axis of pixels
+        for y in range(height):                                                             # iterate through y axis of pixels    
             if (pic[x,y][0] * factor) >= 255:
                 pic[x,y] = (255, pic[x,y][1], pic[x,y][2])
             else:
