@@ -136,13 +136,13 @@ def get_image_url(ctx):
 
 def intensify_image(image, factor):
     currImage = Image.open(image)
-    imageArr = np.array(currImage)
-    dimensions = imageArr.shape
-    for x in range(dimensions[0]):
-        for y in range(dimensions[1]):
-            pixel = imageArr[x][y]
-            for z in range(2):
-                pixel[x][y][z] = pixel[x][y][z]*factor
-                if pixel[x][y][z] > 255:
-                    pixel[x][y][z] = 255
-    return Image.fromarray(imageArr, 'RGB')
+    pic = currImage.load()
+    width, height = currImage.size()
+    for x in range(width):
+        for y in range(height):
+            pixel = pic[x,y]
+            pixel[0] = 255 if (pixel[0] * factor >= 255) else (pixel[0]*factor)
+            pixel[1] = 255 if (pixel[1] * factor >= 255) else (pixel[1]*factor)
+            pixel[2] = 255 if (pixel[2] * factor >= 255) else (pixel[2]*factor)
+    currImage.save('intensified.png')
+    return currImage
