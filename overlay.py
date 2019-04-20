@@ -309,29 +309,28 @@ def highlight_image(image):
                 pixel2 = pic[x+1, y]
             avg1 = (pixel1[0] + pixel1[1] + pixel1[2])/3
             avg2 = (pixel2[0] + pixel2[1] + pixel2[2])/3
-            pixelValue = int(fabs(avg1-avg2))
+            pixelValue = int(abs(avg1-avg2))
             pic[x,y] = (pixelValue, pixelValue, pixelValue)
     return image
 
 def custom_edge_highlight_image(image, red, green, blue):
     if red > 255 or red < 0 or green > 255 or green < 0 or blue > 255 or blue < 0:
         return 0
-    edges = highlight_image(image)
-    pic = edges.load()
-    width, height = image.size()
-    edgePixel = (red, green, blue)
+    image = highlight_image(image)
+    pic = image.load()
+    width, height = image.size
     for x in range(width):
         for y in range(height):
             pixel = pic[x,y]
             if pixel[0] > 25 and pixel[1] > 25 and pixel[2] > 25:
-                pixel = edgePixel
-    return edges
+                pic[x,y] = (red, green, blue)
+    return image
 
 def mirror_y(image):
     pic = image.load()
-    width, height = image.size()
+    width, height = image.size
     width = width-1
-    mid = floor(width/2)
+    mid = int(width/2)
     for x in range(mid):
         for y in range(height):
             pixel = pic[x,y]
@@ -340,8 +339,8 @@ def mirror_y(image):
 
 def mirror_x(image):
     pic = image.load()
-    width, height = image.size()
-    mid = floor(height/2)
+    width, height = image.size
+    mid = int(height/2)
     height = height-1
     for x in range(width):
         for y in range(mid):
@@ -351,29 +350,33 @@ def mirror_x(image):
 
 def scramble_pixels(image):
     pic = image.load()
-    width, height = image.size()
+    width, height = image.size
     for x in range(width):
         for y in range(height):
             randFactor = random.uniform(0, 1)
             pixel = pic[x,y]
-            red = pixel[0]*randFactor
-            green = pixel[1]*randFactor
-            blue = pixel[2]*randFactor
+            red = int(pixel[0]*randFactor)
+            green = int(pixel[1]*randFactor)
+            blue = int(pixel[2]*randFactor)
             pic[x,y] = (red, green, blue)
     return intensify_image(image, 2)
 
 def pixelate_image(image, factor):
+    factor = int(factor)
     pic = image.load()
-    width, height = image.size()
+    width, height = image.size
     for x in range(0, width, factor):
         for y in range(0, height, factor):
             pixel = pic[x,y]
+            red = pixel[0]
+            green = pixel[1]
+            blue = pixel[2]
             for x2 in range(x, (x+factor), 1):
                 if x2 >= width:
                     break
                 for y2 in range(y, (y+factor), 1):
                     if y2 >= height:
                         break
-                    pic[x2, y2] = pixel
+                    pic[x2, y2] = (red, green, blue)
     return image
 

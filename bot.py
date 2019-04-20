@@ -24,7 +24,7 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     """This function runs when the bot is started"""
-    await client.change_presence(game = Game(name = '#rules | $help'))
+    await client.change_presence(game = discord.Game(name = '#rules | $help'))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -81,7 +81,7 @@ async def on_message_edit(before, after):
             after_content = after.content
             await client.send_message(client.get_channel('557002016782680076'), '_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
 
-@client.command()
+@client.command(name='help')
 async def help():
     """help command
 
@@ -437,7 +437,7 @@ async def mirror(ctx, *args):
     if axis == "x" or axis == "X":
         output = mirror_x(url_to_image(url))
         output.save("mirror_x.png")
-        message = await client.send_file(ctx.mesage.channel, "mirror_x.png")
+        message = await client.send_file(ctx.message.channel, "mirror_x.png")
         track_command(ctx.message.author.id, message)
         os.remove("mirror_x.png")
         return
@@ -463,9 +463,9 @@ async def highlight_edge(ctx):
 @client.command(name='customEdgeHighlight', pass_context=True)
 async def custom_edge_highlight(ctx, *args):
     try:
-        red = float(args[0])
-        green = float(args[1])
-        blue = float(args[2])
+        red = int(args[0])
+        green = int(args[1])
+        blue = int(args[2])
     except:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
         return
@@ -484,7 +484,7 @@ async def custom_edge_highlight(ctx, *args):
 
 @client.command(name='noise', pass_context=True)
 async def noise_filter(ctx):
-    url = get_image_url(ctx)
+    url = get_image_url(ctx, 7)
     if url == 0:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return
