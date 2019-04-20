@@ -424,9 +424,9 @@ async def custom_edge_highlight(ctx, *args):
     except:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
         return
-    url = get_image_url_args(ctx, 4, 1)
+    url = get_image_url_args(ctx, args, 4, 3)
     if url == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image", color=discord.Color.red())
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return
     output = custom_edge_highlight_image(url_to_image(url), red, green, blue)
     if output == 0: #if the RGB values are invalid
@@ -434,8 +434,8 @@ async def custom_edge_highlight(ctx, *args):
         return
     output.save('custom_highlight.png')
     message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
-
-
+    track_command(ctx.message.author.id, message)
+    os.remove('custom_highlight.png')
 
 def track_command(author, bot_message):
     """tracks the authors most recent command

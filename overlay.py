@@ -293,14 +293,14 @@ def intensify_image(image, factor):
 
 def highlight_image(image):
     pic = image.load()
-    width, height = image.size()
+    width, height = image.size
     for x in range(width):
         for y in range(height):
             pixel1 = pic[x,y]
             pixel2 = pic[x,y]
-            if x == (width-1) and j != (height-1):
+            if x == (width-1) and y != (height-1):
                 pixel2 = pic[x, y+1]
-            elif x == (width-1) and j == (height-1) and height != 1:
+            elif x == (width-1) and y == (height-1) and height != 1:
                 pixel2 = pic[x, y-1]
             elif x == (width-1) and y == (height-1) and height == 1:
                 pixel2 = pic[x, y]
@@ -308,7 +308,7 @@ def highlight_image(image):
                 pixel2 = pic[x+1, y]
             avg1 = (pixel1[0] + pixel1[1] + pixel1[2])/3
             avg2 = (pixel2[0] + pixel2[1] + pixel2[2])/3
-            pixelValue = fabs(avg1-avg2)
+            pixelValue = int(fabs(avg1-avg2))
             pic[x,y] = (pixelValue, pixelValue, pixelValue)
     return image
 
@@ -317,8 +317,8 @@ def custom_edge_highlight_image(image, red, green, blue):
         return 0
     edges = highlight_image(image)
     pic = edges.load()
-    width, height = image.size()
-    edgePixel = (red, green, bue)
+    width, height = image.size
+    edgePixel = (red, green, blue)
     for x in range(width):
         for y in range(height):
             pixel = pic[x,y]
