@@ -2,6 +2,7 @@ from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
 import requests
 import math
+import random
 from io import BytesIO
 import textwrap
 
@@ -347,5 +348,18 @@ def mirror_x(image):
             pixel = pic[x,y]
             pic[x, height-y] = pixel
     return image
+
+def scramble_pixels(image):
+    pic = image.load()
+    width, height = image.size()
+    for x in range(width):
+        for y in range(height):
+            randFactor = random.uniform(0, 1)
+            pixel = pic[x,y]
+            red = pixel[0]*randFactor
+            green = pixel[1]*randFactor
+            blue = pixel[2]*randFactor
+            pic[x,y] = (red, green, blue)
+    return intensify_image(image, 2)
 
 
