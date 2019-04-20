@@ -1,7 +1,7 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
 import requests
-from math import fabs
+import math
 from io import BytesIO
 import textwrap
 
@@ -318,10 +318,34 @@ def custom_edge_highlight_image(image, red, green, blue):
     edges = highlight_image(image)
     pic = edges.load()
     width, height = image.size()
-    edgePixel = (red, green, bue)
+    edgePixel = (red, green, blue)
     for x in range(width):
         for y in range(height):
             pixel = pic[x,y]
-            if pixel[0] > 30 and pixel[1] > 30 and pixel[2] > 30:
+            if pixel[0] > 25 and pixel[1] > 25 and pixel[2] > 25:
                 pixel = edgePixel
     return edges
+
+def mirror_y(image):
+    pic = image.load()
+    width, height = image.size()
+    width = width-1
+    mid = floor(width/2)
+    for x in range(mid):
+        for y in range(height):
+            pixel = pic[x,y]
+            pic[width-x, y] = pixel
+    return image
+
+def mirror_x(image):
+    pic = image.load()
+    width, height = image.size()
+    mid = floor(height/2)
+    height = height-1
+    for x in range(width):
+        for y in range(mid):
+            pixel = pic[x,y]
+            pic[x, height-y] = pixel
+    return image
+
+
