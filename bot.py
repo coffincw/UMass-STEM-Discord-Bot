@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
@@ -448,8 +448,6 @@ async def mirror(ctx, *args):
         track_command(ctx.message.author.id, message)
         os.remove("mirror_y.png")
 
-
-
 @client.command(name='highlightEdge', pass_context = True)
 async def highlight_edge(ctx):
     url = get_image_url(ctx, 15)
@@ -495,6 +493,23 @@ async def noise_filter(ctx):
     message = await client.send_file(ctx.message.channel, 'noise.png')
     track_command(ctx.message.author.id, message)
     os.remove('noise.png')
+
+@client.command(name='pixelate', pass_context=True)
+async def pixelate(ctx, *args):
+    url = get_image_url_args(ctx, args, 2, 1)
+    try:
+        factor = float(args[0])
+    except:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
+        return
+    if url == 0:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
+        return
+    output = pixelate_image(url_to_image(url), factor)
+    output.save('pixelate.png')
+    message = await client.send_file(ctx.message.channel, 'pixelate.png')
+    track_command(ctx.message.author.id, message)
+    os.remove('pixelate.png')
 
 def track_command(author, bot_message):
     """tracks the authors most recent command

@@ -362,4 +362,18 @@ def scramble_pixels(image):
             pic[x,y] = (red, green, blue)
     return intensify_image(image, 2)
 
+def pixelate_image(image, factor):
+    pic = image.load()
+    width, height = image.size()
+    for x in range(0, width, factor):
+        for y in range(0, height, factor):
+            pixel = pic[x,y]
+            for x2 in range(x, (x+factor), 1):
+                if x2 >= width:
+                    break
+                for y2 in range(y, (y+factor), 1):
+                    if y2 >= height:
+                        break
+                    pic[x2, y2] = pixel
+    return image
 
