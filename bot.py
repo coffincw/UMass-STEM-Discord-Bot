@@ -38,15 +38,19 @@ async def on_member_join(member):
         num_members = len(set(client.get_all_members()))
 
         # used to randomly pick one of the available drawing professors
-        professor_chosen = random.randint(0, 3)
+        professor_chosen = random.randint(0, 5)
 
         welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
             output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
         elif professor_chosen == 1:
-            output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), marius_origin)
-        else:
+            output = draw_text(welcome_message, Path('memes/marius/draw.png'), marius_origin)
+        elif professor_chosen == 2:
             output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
+        elif professor_chosen == 3:
+            output = draw_text(welcome_message, Path('memes/lan/lan-draw.png'), lan_origin)
+        else:
+            output = draw_text(welcome_message, Path('memes/sheldraw.png'), shel_origin)
         name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await client.send_file(welcome_channel, name, content=member.mention)
