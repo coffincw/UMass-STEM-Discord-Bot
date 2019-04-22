@@ -5,6 +5,8 @@ import math
 import random
 from io import BytesIO
 import textwrap
+import moviepy.editor as mp
+
 
 marius_origin = (28, 428)
 barr_origin = (20, 280)
@@ -404,4 +406,10 @@ def saturate_image(image, factor):
                     blue = 255
             pic[x,y] = (red, green, blue)
     return image
+
+def make_okay_clip(image):
+    imageArr = np.array(image)
+    clip = mp.ImageClip(imageArr)
+    clip = clip.set_duration(1.5, change_end=True)
+    return clip
 
