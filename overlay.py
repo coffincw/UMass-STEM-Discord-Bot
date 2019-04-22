@@ -380,3 +380,28 @@ def pixelate_image(image, factor):
                     pic[x2, y2] = (red, green, blue)
     return image
 
+def saturate_image(image, factor):
+    pic = image.load()
+    width, height = image.size
+    for x in range(width):
+        for y in range(height):
+            pixel = pic[x,y]
+            red = pixel[0]
+            green = pixel[1]
+            blue = pixel[2]
+            maxVal = max((red, green, blue)) #dumb pixels have a 4th alpha value of 255 so that's always considered max if you don't do this, which breaks the code
+            if red == maxVal:
+                red = int(red * factor)
+                if red > 255:
+                    red = 255
+            elif green == maxVal:
+                green = int(green*factor)
+                if green > 255:
+                    green = 255
+            elif blue == maxVal:
+                blue = int(blue*factor)
+                if blue > 255:
+                    blue = 255
+            pic[x,y] = (red, green, blue)
+    return image
+
