@@ -5,6 +5,8 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
+import imageio
+imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip
 from stem_roles import stem_add_role, stem_remove_role, list_roles
