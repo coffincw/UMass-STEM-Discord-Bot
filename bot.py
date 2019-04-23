@@ -443,8 +443,11 @@ async def mirror(ctx, *args):
         - ctx: context that the command occured use this to access the message and other attributes
         - *args: arguments passed in to the command (in this case either the X axis or Y axis)
     """
-    url = get_image_url_args(ctx, args, 2, 2)
-    axis = args[0]
+    try:
+        url = get_image_url_args(ctx, args, 2, 2)
+        axis = args[0]
+    except:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid input", color=discord.Color.red()))
     if axis != "x" and axis != "y" and axis != "X" and axis != "Y":
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid axis, please use x or y", color=discord.Color.red()))
         return
