@@ -7,7 +7,7 @@ HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
                     '444332735838814210': ('southwest', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
                     '444332948322517003': ('northeast', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
                     '444588763427897344': ('north apts', 'north apartments', 'north apartment'), 
-                    '444333125670010890': ('honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
+                    '444333125670010890': ('honors college', 'honors', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
                     '405025553448566795': ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
                     '524016335299280908': ('prospective student', 'hs', 'high school', 'accepted', 'accepted student')
 }
