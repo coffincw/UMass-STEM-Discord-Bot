@@ -262,9 +262,9 @@ async def landrew(ctx):
     """
     url = get_image_url(ctx, 9)
     if url == 0: # no url, lan should write the inputed text
-        output = draw_text(ctx.message.content[9:], Path('memes/lan/landrew.png'), lan_origin)
+        output = draw_text(ctx.message.content[9:], Path('memes/lan/landrew.png'), landrew_origin)
     else: # url inputed, lan should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/lan/landrew.png'), lan_origin)
+        output = overlay_image(url_to_image(url), Path('memes/lan/landrew.png'), landrew_origin)
     output.save('landrew-drawing.png')
     message = await client.send_file(ctx.message.channel, 'landrew-drawing.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
