@@ -299,14 +299,14 @@ async def erase(ctx):
         await client.delete_message(bot_last_command[ctx.message.author.id])
         bot_last_command[ctx.message.author.id] = None #Clears this back up to avoid errors
 
-@client.command(name='barrify', pass_context = True)
-async def barrify(ctx):
+@client.command(name='barrify', pass_context = True, aliases = ['barify'])
+async def barrify(ctx, *args):
     """Command to paste barr's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 9)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -322,14 +322,14 @@ async def barrify(ctx):
     track_command(ctx.message.author.id, message)
     os.remove('barrify.png')
 
-@client.command(name='marify', pass_context = True)
-async def marify(ctx):
+@client.command(name='marify', pass_context = True, aliases=['marrify'])
+async def marify(ctx, *args):
     """Command to paste marius' face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -346,13 +346,13 @@ async def marify(ctx):
     os.remove('marify.png')
 
 @client.command(name='calebify', pass_context = True)
-async def calebify(ctx):
+async def calebify(ctx, *args):
     """Command to paste caleb's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -369,13 +369,13 @@ async def calebify(ctx):
     os.remove('calebify.png')
 
 @client.command(name='timify', pass_context = True)
-async def timify(ctx):
+async def timify(ctx, *args):
     """Command to paste marius' face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -489,14 +489,14 @@ async def mirror(ctx, *args):
         track_command(ctx.message.author.id, message)
         os.remove("mirror_y.png")
 
-@client.command(name='highlightEdge', pass_context = True)
-async def highlight_edge(ctx):
+@client.command(name='highlightEdge', pass_context = True, aliases=['highlight', 'edge'])
+async def highlight_edge(ctx, *args):
     """Command to apply an edge highlighting algorithm to a given image
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 15)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image"), color=discord.Color.red())
         return
@@ -506,7 +506,7 @@ async def highlight_edge(ctx):
     track_command(ctx.message.author.id, message)
     os.remove('highlighted.png')
 
-@client.command(name='customEdgeHighlight', pass_context=True)
+@client.command(name='customEdgeHighlight', pass_context=True, aliases=['customhighlight', 'customedge'])
 async def custom_edge_highlight(ctx, *args):
     """Command to highlight an image's edges and turn them into a given color
 
@@ -551,7 +551,7 @@ async def noise_filter(ctx):
     track_command(ctx.message.author.id, message)
     os.remove('noise.png')
 
-@client.command(name='pixelate', pass_context=True)
+@client.command(name='pixelate', pass_context=True, aliases=['pixel'])
 async def pixelate(ctx, *args):
     """Command to pixelate a given image by a given factor
 

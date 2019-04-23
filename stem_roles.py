@@ -124,7 +124,7 @@ async def list_roles(ctx, client):
 
 async def stem_add_role(requested_role, member, client):
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
-    role_lower = requested_role.message.content[5:].lower()
+    role_lower = requested_role.message.content[5:].lower().strip().replace("[", "").replace("]", "")
     for role_names in available_roles.values():
         for alias in role_names:
             if role_lower == alias: # valid role
@@ -163,7 +163,7 @@ async def check_major_housing_role(member, client):
 
 async def stem_remove_role(requested_role, member, client):
     removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
-    role_lower = requested_role.message.content[8:].lower()
+    role_lower = requested_role.message.content[8:].lower().strip().replace("[", "").replace("]", "")
     for role in member.roles:
         if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
             for housing_major_role in removable_roles.values():
