@@ -260,9 +260,9 @@ async def landrew(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 7)
+    url = get_image_url(ctx, 9)
     if url == 0: # no url, lan should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/lan/landrew.png'), lan_origin)
+        output = draw_text(ctx.message.content[9:], Path('memes/lan/landrew.png'), lan_origin)
     else: # url inputed, lan should draw on the image
         output = overlay_image(url_to_image(url), Path('memes/lan/landrew.png'), lan_origin)
     output.save('landrew-drawing.png')
