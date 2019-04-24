@@ -84,10 +84,18 @@ CLASS_ROLE_IDS = {'539872888124211200': ('cs 121', 'cs121', '121'),
                   '543883063923310602': ('micro 160', 'microbio 160', 'micro160', 'microbio160')
 }
 
-def merge_dict(w, x, y): # merges dictionaries w, x, y together
+GRAD_YEAR_ROLE_IDS = {'570652917133213700': ('2019',),
+                      '570653037031456789': ('2020',),
+                      '570653035752325132': ('2021',),
+                      '570653157965692930': ('2022',),
+                      '570653206137536512': ('2023',)
+}
+
+def merge_dict(v, w, x, y): # merges dictionaries w, x, y together
     z = x.copy()
     z.update(y)
     z.update(w)
+    z.update(v)
     return z
 
 async def list_roles(ctx, client):
@@ -101,6 +109,10 @@ async def list_roles(ctx, client):
     for role in MAJOR_ROLE_IDS.values():
         major_role_list += role[0].capitalize() + '\n'
     getlist.add_field(name = 'Major Roles', value=major_role_list, inline=False)
+    grad_role_list = ''
+    for role in GRAD_YEAR_ROLE_IDS.values():
+        grad_role_list += role[0].capitalize() + '\n'
+    getlist.add_field(name = 'Graduation Year Roles', value=grad_role_list, inline=False)
     class_role_list = ''
     for role in CLASS_ROLE_IDS.values():
         if class_role_list == '':
@@ -123,7 +135,7 @@ async def list_roles(ctx, client):
     await client.send_message(ctx.message.channel, embed=getlist) 
 
 async def stem_add_role(requested_role, member, client):
-    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
+    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower().strip().replace("[", "").replace("]", "")
     for role_names in available_roles.values():
         for alias in role_names:
@@ -162,7 +174,7 @@ async def check_major_housing_role(member, client):
             await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
 
 async def stem_remove_role(requested_role, member, client):
-    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
+    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[8:].lower().strip().replace("[", "").replace("]", "")
     for role in member.roles:
         if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
