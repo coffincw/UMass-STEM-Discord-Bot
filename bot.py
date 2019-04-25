@@ -52,7 +52,6 @@ async def on_member_join(member):
         await client.send_file(welcome_channel, name, content=member.mention)
         os.remove(name)
 
-
 @client.event
 async def on_message_delete(message):
     """This function runs whenever a message is deleted
@@ -104,6 +103,7 @@ async def help():
         '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text',
         '*$landrew [image/url/text]*': 'Sends a photo of a different occasion of lan drawing the specified image or text',
         '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text',
+        '*$handdraw [image/url/text]*': 'Sends a photo of a floating hand drawing the specified image or text',
         '*$barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
         '*$surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
         '*$marify [image]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
@@ -121,7 +121,7 @@ async def help():
         )
     embed.add_field(
         name = '-------------------------------------------------------------------',
-        value = '------------------------------MEMES--------------------------'
+        value = '------------------------------MEMES-------------------------------'
     )
     for command in MEME_COMMANDS:
         embed.add_field(
@@ -272,6 +272,23 @@ async def shelpoint(ctx):
     message = await client.send_file(ctx.message.channel, 'sheldon-pointing.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('sheldon-pointing.png')
+
+@client.command(name='handdraw', pass_context = True)
+async def handdraw(ctx):
+    """Command to generate a meme of a hand drawing on the image or text
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx, 11)
+    if url == 0: # no url, hand should write the inputed text
+        output = draw_text(ctx.message.content[11:], Path('memes/hand.png'), shel_origin)
+    else: # url inputed, hand should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/hand.png'), shel_origin)
+    output.save('handdraw.png')
+    message = await client.send_file(ctx.message.channel, 'handdraw.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('handdraw.png')
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
