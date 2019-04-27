@@ -9,6 +9,7 @@ barr_origin = (20, 280)
 tim_origin = (40, 186)
 lan_origin = (13, 104)
 shel_origin = (2, 116)
+hand_origin = (2, 105)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)

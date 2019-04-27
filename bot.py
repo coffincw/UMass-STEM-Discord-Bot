@@ -5,7 +5,7 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, hand_origin, intensify_image
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
@@ -280,11 +280,11 @@ async def handdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 11)
+    url = get_image_url(ctx, 10)
     if url == 0: # no url, hand should write the inputed text
-        output = draw_text(ctx.message.content[11:], Path('memes/hand.png'), shel_origin)
+        output = draw_text(ctx.message.content[10:], Path('memes/hand.png'), hand_origin)
     else: # url inputed, hand should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/hand.png'), shel_origin)
+        output = overlay_image(url_to_image(url), Path('memes/hand.png'), hand_origin)
     output.save('handdraw.png')
     message = await client.send_file(ctx.message.channel, 'handdraw.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
