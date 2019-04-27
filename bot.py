@@ -191,16 +191,7 @@ async def mdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 7)
-    if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'), marius_origin)
-    else:
-        output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'), marius_origin)
-    name = 'marius-drawing.png'
-    output.save(name)
-    message = await client.send_file(ctx.message.channel, name)
-    track_command(ctx.message.author.id, message)
-    os.remove(name)
+    await draw_universal(ctx, 'memes/marius/draw.png', 7, marius_origin, 'marius-drawing.png')
 
 @client.command(name='bdraw', pass_context = True)
 async def bdraw(ctx):
@@ -209,15 +200,7 @@ async def bdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, barr should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'), barr_origin)
-    else: # url inputed, barr should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'), barr_origin)
-    output.save('barrington-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'barrington-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('barrington-drawing.png')
+    await draw_universal(ctx, 'memes/barrington/bdraw.png', 7, barr_origin, 'barrington-drawing.png')
 
 @client.command(name='tdraw', pass_context = True)
 async def tdraw(ctx):
@@ -226,15 +209,7 @@ async def tdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, tim should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/tim/tdraw.png'), tim_origin)
-    else: # url inputed, tim should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/tim/tdraw.png'), tim_origin)
-    output.save('tim-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'tim-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('tim-drawing.png')
+    await draw_universal(ctx, 'memes/tim/tdraw.png', 7, tim_origin, 'tim-drawing.png')
 
 @client.command(name='ldraw', pass_context = True)
 async def ldraw(ctx):
@@ -243,15 +218,7 @@ async def ldraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, lan should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/lan/lan-draw.png'), lan_origin)
-    else: # url inputed, lan should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/lan/lan-draw.png'), lan_origin)
-    output.save('lan-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'lan-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('lan-drawing.png')
+    await draw_universal(ctx, 'memes/lan/lan-draw.png', 7, lan_origin, 'lan-drawing.png')
 
 @client.command(name='landrew', pass_context = True)
 async def landrew(ctx):
@@ -260,15 +227,7 @@ async def landrew(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 9)
-    if url == 0: # no url, lan should write the inputed text
-        output = draw_text(ctx.message.content[9:], Path('memes/lan/landrew.png'), landrew_origin)
-    else: # url inputed, lan should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/lan/landrew.png'), landrew_origin)
-    output.save('landrew-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'landrew-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('landrew-drawing.png')
+    await draw_universal(ctx, 'memes/lan/landrew.png', 9, landrew_origin, 'landrew-drawing.png')
 
 @client.command(name='shelpoint', pass_context = True)
 async def shelpoint(ctx):
@@ -277,15 +236,7 @@ async def shelpoint(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 11)
-    if url == 0: # no url, shel should write the inputed text
-        output = draw_text(ctx.message.content[11:], Path('memes/sheldraw.png'), shel_origin)
-    else: # url inputed, shel should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/sheldraw.png'), shel_origin)
-    output.save('sheldon-pointing.png')
-    message = await client.send_file(ctx.message.channel, 'sheldon-pointing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('sheldon-pointing.png')
+    await draw_universal(ctx, 'memes/sheldraw.png', 11, shel_origin, 'sheldon-pointing.png')
 
 @client.command(name='handdraw', pass_context = True)
 async def handdraw(ctx):
@@ -294,15 +245,27 @@ async def handdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 10)
+    await draw_universal(ctx, 'memes/hand.png', 10, hand_origin, 'handdraw.png')
+
+async def draw_universal(ctx, path, command_end_index, origin, name):
+    """Universal function which is called by draw command with the following arguments
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - path: path to the drawing image (ie memes/lan/landrew.png)
+        - command_end_index: index the end of the command (ie. for bdraw its 7 for '$' 'b' 'd' 'r' 'a' 'w' ' ')
+        - origin: pixel origin imported from overlay.py 
+        - name: output file name
+    """
+    url = get_image_url(ctx, command_end_index)
     if url == 0: # no url, hand should write the inputed text
-        output = draw_text(ctx.message.content[10:], Path('memes/hand.png'), hand_origin)
+        output = draw_text(ctx.message.content[command_end_index:], Path(path), origin)
     else: # url inputed, hand should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/hand.png'), hand_origin)
-    output.save('handdraw.png')
-    message = await client.send_file(ctx.message.channel, 'handdraw.png')
+        output = overlay_image(url_to_image(url), Path(path), origin)
+    output.save(name)
+    message = await client.send_file(ctx.message.channel, name)
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('handdraw.png')
+    os.remove(name)
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
