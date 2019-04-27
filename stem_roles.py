@@ -3,11 +3,11 @@ import discord
 HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
                     '444332276483096586': ('sylvan', 'syl', 'brown', 'cashin', 'mcnamara'),
                     '444332646307201034': ('ohill', 'orchard hill', 'o hill', 'grayson', 'field', 'dickinson', 'webster'),
-                    '444332880894754818': ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'), 
-                    '444332735838814210': ('southwest', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
-                    '444332948322517003': ('northeast', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
-                    '444588763427897344': ('north apts', 'north apartments', 'north apartment'), 
-                    '444333125670010890': ('honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
+                    '444332880894754818': ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'),
+                    '444332735838814210': ('southwest', 'south west', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
+                    '444332948322517003': ('northeast', 'north east', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
+                    '444588763427897344': ('north apts', 'north apartments', 'north apartment'),
+                    '444333125670010890': ('commonwealth honors college', 'chc', 'honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
                     '405025553448566795': ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
                     '524016335299280908': ('prospective student', 'hs', 'high school', 'accepted', 'accepted student')
 }
@@ -20,7 +20,7 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '506211361945288735': ('civil engineering', 'civil-engineering'),
                   '501524792436981791': ('industrial and mechanical engineering', 'ime', 'industrial engineering', 'me', 'ie', 'mechanical engineering', 'industrial mechanical engineering'),
                   '439552642415460353': ('ece', 'electrical and computer engineering', 'ec engineering'),
-                  '387619060633829377': ('computer science', 'cs', 'compsci', 'comp-sci'),
+                  '387619060633829377': ('computer science', 'cs', 'compsci', 'comp-sci', 'comp sci'),
                   '442784019369951252': ('environmental science', 'es'),
                   '442785279493799966': ('mathematics', 'math'),
                   '387670593987805184': ('economics', 'econ'),
@@ -28,8 +28,8 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '506223375056633856': ('information technology', 'information tech', 'it'),
                   '405035782269829121': ('political science', 'polisci', 'poli-sci'),
                   '442784136457879567': ('biology', 'bio'),
-                  '442784769273626626': ('plant science',), 
-                  '442822241135230978': ('geology', 'geo'), 
+                  '442784769273626626': ('plant science',),
+                  '442822241135230978': ('geology', 'geo'),
                   '506253630714806272': ('food science',),
                   '443558312794128407': ('history',),
                   '447463828398145537': ('physics',),
@@ -50,7 +50,7 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '543109471136645161': ('public health', 'pub health', 'pub hlth'),
                   '524777786972307477': ('education', 'educ'),
                   '539870761754820628': ('english',),
-                  '387619488880787457': ('cics exploratory', 'cs exploratory', 'cs explo', 'exploratory computer science', 'computer science exploratory', 'exporatory cs', 'exploratory'), 
+                  '387619488880787457': ('cics exploratory', 'cs exploratory', 'cs explo', 'exploratory computer science', 'computer science exploratory', 'exporatory cs', 'exploratory'),
                   '506211413564325919': ('engineering undecided', 'engineering-undecided', 'undecided engineering', 'engineering'),
                   '501908170654875648': ('undecided',)
 }
@@ -106,7 +106,7 @@ async def list_roles(ctx, client):
         if class_role_list == '':
             class_role_list += '**Computer Science**\n'
         if role[0].startswith('cs'):
-            class_role_list += role[0][0].capitalize() 
+            class_role_list += role[0][0].capitalize()
             class_role_list += role[0][1:].capitalize() + ', '
             continue
         if role[0].endswith('131'):
@@ -120,18 +120,18 @@ async def list_roles(ctx, client):
         class_role_list += role[0].capitalize()
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
-    await client.send_message(ctx.message.channel, embed=getlist) 
+    await client.send_message(ctx.message.channel, embed=getlist)
 
 async def stem_add_role(requested_role, member, client):
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
-    role_lower = requested_role.message.content[5:].lower()
+    role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
     for role_names in available_roles.values():
         for alias in role_names:
             if role_lower == alias: # valid role
                 # check if member already has the requested role
                 for member_role in member.roles:
                     if member_role.name.lower() == role_names[0]:
-                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold())) 
+                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold()))
                         return
                 # if the member doesnt already have the requested role
                 for role in requested_role.message.server.roles:
@@ -139,7 +139,7 @@ async def stem_add_role(requested_role, member, client):
                         role_to_add = role
                 await client.add_roles(member, role_to_add)
                 await check_major_housing_role(member, client)
-                await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green())) 
+                await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
                 return
     await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
 
@@ -154,16 +154,16 @@ async def check_major_housing_role(member, client):
     for role in member.server.roles:
         if role.name.lower() == 'missing housing or major role':
             mhom = role
-    if mhom in member.roles: # check if the member has the missing housing or major role             
+    if mhom in member.roles: # check if the member has the missing housing or major role
         if member_has_hr and member_has_m:
             await client.remove_roles(member, mhom) #removes missing housing or major role
     else: # if not then add it to them if they need it
-        if not member_has_hr or not member_has_m:  
+        if not member_has_hr or not member_has_m:
             await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
 
 async def stem_remove_role(requested_role, member, client):
     removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
-    role_lower = requested_role.message.content[8:].lower()
+    role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '')
     for role in member.roles:
         if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
             for housing_major_role in removable_roles.values():
@@ -176,5 +176,3 @@ async def stem_remove_role(requested_role, member, client):
             await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role", color=discord.Color.red()))
             return
     await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name", color=discord.Color.red()))
-
-            

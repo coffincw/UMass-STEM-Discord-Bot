@@ -8,7 +8,7 @@ import asyncio
 import imageio
 imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, hand_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
@@ -59,7 +59,6 @@ async def on_member_join(member):
         await client.send_file(welcome_channel, name, content=member.mention)
         os.remove(name)
 
-
 @client.event
 async def on_message_delete(message):
     """This function runs whenever a message is deleted
@@ -109,12 +108,14 @@ async def help():
         '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text',
         '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text',
         '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text',
+        '*$landrew [image/url/text]*': 'Sends a photo of a different occasion of lan drawing the specified image or text',
         '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text',
-        '*barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
-        '*surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
-        '*marify [image]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
-        '*timify [image]*': 'The bot uses computer vision through the OpenCV library to put tim on identified faces in the inputed image',
-        '*calebify [image]*': 'The bot uses computer vision through the OpenCV library to put caleb on identified faces in the inputed image',
+        '*$handdraw [image/url/text]*': 'Sends a photo of a floating hand drawing the specified image or text',
+        '*$barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
+        '*$surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
+        '*$marify [image]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
+        '*$timify [image]*': 'The bot uses computer vision through the OpenCV library to put tim on identified faces in the inputed image',
+        '*$calebify [image]*': 'The bot uses computer vision through the OpenCV library to put caleb on identified faces in the inputed image',
         '*$meme ["top" "bottom" image]*': 'The bot outputs the inputed image with the specified text in the old meme format',
         '*$intensify [factor image]*': 'The bot outputs the inputed image intensified to the specified factor',
         '*$highlightEdge [image]*':'The bot outputs the inputed image with an edge highlighting algorithm applied to it',
@@ -134,7 +135,7 @@ async def help():
         )
     embed.add_field(
         name = '-------------------------------------------------------------------',
-        value = '------------------------------MEMES--------------------------'
+        value = '------------------------------MEMES-------------------------------'
     )
     for command in MEME_COMMANDS:
         embed.add_field(
@@ -252,6 +253,23 @@ async def ldraw(ctx):
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('lan-drawing.png')
 
+@client.command(name='landrew', pass_context = True)
+async def landrew(ctx):
+    """Command to generate a meme of lan drawing on the image or text
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx, 7)
+    if url == 0: # no url, lan should write the inputed text
+        output = draw_text(ctx.message.content[7:], Path('memes/lan/landrew.png'), lan_origin)
+    else: # url inputed, lan should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/lan/landrew.png'), lan_origin)
+    output.save('landrew-drawing.png')
+    message = await client.send_file(ctx.message.channel, 'landrew-drawing.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('landrew-drawing.png')
+
 @client.command(name='shelpoint', pass_context = True)
 async def shelpoint(ctx):
     """Command to generate a meme of Dan Sheldon drawing on the image or text
@@ -268,6 +286,23 @@ async def shelpoint(ctx):
     message = await client.send_file(ctx.message.channel, 'sheldon-pointing.png')
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove('sheldon-pointing.png')
+
+@client.command(name='handdraw', pass_context = True)
+async def handdraw(ctx):
+    """Command to generate a meme of a hand drawing on the image or text
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    url = get_image_url(ctx, 10)
+    if url == 0: # no url, hand should write the inputed text
+        output = draw_text(ctx.message.content[10:], Path('memes/hand.png'), hand_origin)
+    else: # url inputed, hand should draw on the image
+        output = overlay_image(url_to_image(url), Path('memes/hand.png'), hand_origin)
+    output.save('handdraw.png')
+    message = await client.send_file(ctx.message.channel, 'handdraw.png')
+    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
+    os.remove('handdraw.png')
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
