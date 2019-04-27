@@ -3,11 +3,11 @@ import discord
 HOUSING_ROLE_IDS = {'501529720932925441': ('alumni', 'alum', 'alumn'),
                     '444332276483096586': ('sylvan', 'syl', 'brown', 'cashin', 'mcnamara'),
                     '444332646307201034': ('ohill', 'orchard hill', 'o hill', 'grayson', 'field', 'dickinson', 'webster'),
-                    '444332880894754818': ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'),
-                    '444332735838814210': ('southwest', 'south west', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
-                    '444332948322517003': ('northeast', 'north east', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
-                    '444588763427897344': ('north apts', 'north apartments', 'north apartment'),
-                    '444333125670010890': ('commonwealth honors college', 'chc', 'honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
+                    '444332880894754818': ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'), 
+                    '444332735838814210': ('southwest', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
+                    '444332948322517003': ('northeast', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
+                    '444588763427897344': ('north apts', 'north apartments', 'north apartment'), 
+                    '444333125670010890': ('honors college', 'honors', 'chc', 'commonwealth honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
                     '405025553448566795': ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
                     '524016335299280908': ('prospective student', 'hs', 'high school', 'accepted', 'accepted student')
 }
@@ -84,10 +84,18 @@ CLASS_ROLE_IDS = {'539872888124211200': ('cs 121', 'cs121', '121'),
                   '543883063923310602': ('micro 160', 'microbio 160', 'micro160', 'microbio160')
 }
 
-def merge_dict(w, x, y): # merges dictionaries w, x, y together
+GRAD_YEAR_ROLE_IDS = {'570652917133213700': ('2019',),
+                      '570653037031456789': ('2020',),
+                      '570653035752325132': ('2021',),
+                      '570653157965692930': ('2022',),
+                      '570653206137536512': ('2023',)
+}
+
+def merge_dict(v, w, x, y): # merges dictionaries w, x, y together
     z = x.copy()
     z.update(y)
     z.update(w)
+    z.update(v)
     return z
 
 async def list_roles(ctx, client):
@@ -101,6 +109,10 @@ async def list_roles(ctx, client):
     for role in MAJOR_ROLE_IDS.values():
         major_role_list += role[0].capitalize() + '\n'
     getlist.add_field(name = 'Major Roles', value=major_role_list, inline=False)
+    grad_role_list = ''
+    for role in GRAD_YEAR_ROLE_IDS.values():
+        grad_role_list += role[0].capitalize() + '\n'
+    getlist.add_field(name = 'Graduation Year Roles', value=grad_role_list, inline=False)
     class_role_list = ''
     for role in CLASS_ROLE_IDS.values():
         if class_role_list == '':
