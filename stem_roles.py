@@ -135,7 +135,7 @@ async def list_roles(ctx, client):
     await client.send_message(ctx.message.channel, embed=getlist)
 
 async def stem_add_role(requested_role, member, client):
-    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
+    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
     for role_names in available_roles.values():
         for alias in role_names:
@@ -174,7 +174,7 @@ async def check_major_housing_role(member, client):
             await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
 
 async def stem_remove_role(requested_role, member, client):
-    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS)
+    removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '')
     for role in member.roles:
         if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
