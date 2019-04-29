@@ -41,7 +41,7 @@ async def on_member_join(member):
         num_members = len(set(client.get_all_members()))
 
         # used to randomly pick one of the available drawing professors
-        professor_chosen = random.randint(0, 5)
+        professor_chosen = random.randint(0, 6)
 
         welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
@@ -52,6 +52,8 @@ async def on_member_join(member):
             output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
         elif professor_chosen == 3:
             output = draw_text(welcome_message, Path('memes/lan/lan-draw.png'), lan_origin)
+        elif professor_chosen == 4:
+            output = draw_text(welcome_message, Path('memes/lan/landrew.png'), landrew_origin)
         else:
             output = draw_text(welcome_message, Path('memes/sheldraw.png'), shel_origin)
         name = 'welcome-' + member.display_name + '.png'
