@@ -1,10 +1,5 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
-import requests
-import math
-import random
-from io import BytesIO
-import textwrap
 import moviepy.editor as mp
 
 def intensify_image(image, factor):
