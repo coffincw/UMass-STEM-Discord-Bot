@@ -292,21 +292,7 @@ async def barrify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url_args(ctx, args, 1, 0)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/barrington/barr-face.png'), url, barr_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('barrify.png')
-    message = await client.send_file(ctx.message.channel, 'barrify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('barrify.png')
+    await ify(ctx, barr_scale, 'memes/barrington/barr-face.png', 'barrify.png', args)
 
 @client.command(name='marify', pass_context = True, aliases=['marrify'])
 async def marify(ctx, *args):
@@ -315,21 +301,7 @@ async def marify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url_args(ctx, args, 1, 0)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/marius/marius-face.png'), url, mar_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('marify.png')
-    message = await client.send_file(ctx.message.channel, 'marify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('marify.png')
+    await ify(ctx, mar_scale, 'memes/marius/marius-face.png', 'marify.png', args)
 
 @client.command(name='calebify', pass_context = True)
 async def calebify(ctx, *args):
@@ -338,70 +310,51 @@ async def calebify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url_args(ctx, args, 1, 0)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/caleb/caleb-face.png'), url, mar_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('calebify.png')
-    message = await client.send_file(ctx.message.channel, 'calebify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('calebify.png')
+    await ify(ctx, c_scale, 'memes/caleb/caleb-face.png', 'calebify.png', args)
 
 @client.command(name='timify', pass_context = True)
 async def timify(ctx, *args):
-    """Command to paste marius' face on top of faces in an inputed image using facial recognition
+    """Command to paste tim's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url_args(ctx, args, 1, 0)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/tim/tim-face.png'), url, tim_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('timify.png')
-    message = await client.send_file(ctx.message.channel, 'timify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('timify.png')
+    await ify(ctx, tim_scale, 'memes/tim/tim-face.png', 'timify.png', args)
 
 @client.command(name='surprisedpikachu', pass_context=True)
-async def surprisedpikachu_overlay(ctx):
+async def surprisedpikachu_overlay(ctx, *args):
     """Command to paste suprised pikachu on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 18)
+    await ify(ctx, sp_scale, 'memes/surprised-pikachu.png', 'surprisedpikachu.png', args)
+
+async def ify(ctx, scale, path, file_name, *args):
+    """Command to paste a face on top of faces in an inputed image using facial recognition
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - args: arguments of the message
+        - scale: specified scale for the faces
+        - path: face image path
+        - file_name: output file name
+    """
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        output = paste_on_face(Path('memes/surprised-pikachu.png'), url, sp_scale)
+        output = paste_on_face(Path(path), url, scale)
     # if there were no faces found then send error
     if output == 0:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
         return
 
-    output.save('surprisedpikachu.png')
-    try:
-        message = await client.send_file(ctx.message.channel, 'surprisedpikachu.png')
-    except:
-        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+    output.save(file_name)
+    message = await client.send_file(ctx.message.channel, file_name)
     track_command(ctx.message.author.id, message)
-    os.remove('surprisedpikachu.png')
+    os.remove(file_name)
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
