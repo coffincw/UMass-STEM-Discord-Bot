@@ -266,7 +266,10 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
     else: # url inputed, hand should draw on the image
         output = overlay_image(url_to_image(url), Path(path), origin)
     output.save(name)
-    message = await client.send_file(ctx.message.channel, name)
+    try:
+        message = await client.send_file(ctx.message.channel, name)
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
     os.remove(name)
 
@@ -393,7 +396,10 @@ async def surprisedpikachu_overlay(ctx):
         return
 
     output.save('surprisedpikachu.png')
-    message = await client.send_file(ctx.message.channel, 'surprisedpikachu.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'surprisedpikachu.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('surprisedpikachu.png')
 
@@ -412,7 +418,10 @@ async def meme_generator(ctx, *args):
     else:
         output = paste_text_top_bottom(args[0], args[1], url_to_image(url))
     output.save('meme.png')
-    message = await client.send_file(ctx.message.channel, 'meme.png')
+    try: 
+        message = await client.send_file(ctx.message.channel, 'meme.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('meme.png')
 
@@ -438,7 +447,10 @@ async def intensify(ctx, *args):
         return
     # save and send image
     output.save('intensify.png')
-    message = await client.send_file(ctx.message.channel, 'intensify.png')
+    try: 
+        message = await client.send_file(ctx.message.channel, 'intensify.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('intensify.png')
 
@@ -461,14 +473,20 @@ async def mirror(ctx, *args):
     if axis == "x" or axis == "X":
         output = mirror_x(url_to_image(url))
         output.save("mirror_x.png")
-        message = await client.send_file(ctx.message.channel, "mirror_x.png")
+        try:
+            message = await client.send_file(ctx.message.channel, "mirror_x.png")
+        except:
+            message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
         track_command(ctx.message.author.id, message)
         os.remove("mirror_x.png")
         return
     if axis == "y" or axis == "Y":
         output = mirror_y(url_to_image(url))
         output.save("mirror_y.png")
-        message = await client.send_file(ctx.message.channel, "mirror_y.png")
+        try:
+            message = await client.send_file(ctx.message.channel, "mirror_y.png")
+        except:
+            message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
         track_command(ctx.message.author.id, message)
         os.remove("mirror_y.png")
 
@@ -485,7 +503,10 @@ async def highlight_edge(ctx, *args):
         return
     output = highlight_image(url_to_image(url))
     output.save('highlighted.png')
-    message = await client.send_file(ctx.message.channel, 'highlighted.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'highlighted.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('highlighted.png')
 
@@ -513,7 +534,10 @@ async def custom_edge_highlight(ctx, *args):
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid RGB Values, please input numbers between 0-255", color=discord.Color.red()))
         return
     output.save('custom_highlight.png')
-    message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('custom_highlight.png')
 
@@ -530,7 +554,10 @@ async def noise_filter(ctx):
         return
     output = scramble_pixels(url_to_image(url))
     output.save('noise.png')
-    message = await client.send_file(ctx.message.channel, 'noise.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'noise.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('noise.png')
 
@@ -553,7 +580,10 @@ async def pixelate(ctx, *args):
         return
     output = pixelate_image(url_to_image(url), factor)
     output.save('pixelate.png')
-    message = await client.send_file(ctx.message.channel, 'pixelate.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'pixelate.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('pixelate.png')
 
@@ -576,7 +606,10 @@ async def saturate(ctx, *args):
         return
     output = saturate_image(url_to_image(url), factor)
     output.save('saturate.png')
-    message = await client.send_file(ctx.message.channel, 'saturate.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'saturate.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('saturate.png')
 
@@ -593,7 +626,10 @@ async def make_okay(ctx):
         return
     clip = make_okay_clip(url_to_image(url))
     clip.write_videofile("okay.mp4", audio="sfx/okayturnedupto8.mp3", fps=24)
-    message = await client.send_file(ctx.message.channel, "okay.mp4")
+    try:
+        message = await client.send_file(ctx.message.channel, "okay.mp4")
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove("okay.mp4")
 

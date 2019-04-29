@@ -1,5 +1,6 @@
 from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
+import random
 import moviepy.editor as mp
 
 def intensify_image(image, factor):
