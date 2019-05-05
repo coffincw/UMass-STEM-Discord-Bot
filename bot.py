@@ -6,7 +6,7 @@ from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 import imageio
-#imageio.plugins.ffmpeg.download()
+imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 from overlay import overlay_image, get_gif_url, gif_url_to_image_list, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, landrew_origin, hand_origin
 from filters import intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, make_draw_gif
@@ -17,7 +17,7 @@ import random
 import time
 
 BOT_PREFIX = "$"
-BOT_TOKEN = "NTYyOTg4NDQ0MDc1NDI1ODEy.XLqY2w.gKcZllUqa0dfyeawKEuTyKJO8PM" #os.environ.get('BOT_TOKEN')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
