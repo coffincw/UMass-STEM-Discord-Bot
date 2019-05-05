@@ -259,10 +259,17 @@ def gif_url_to_image_list(url, cmd):
     for frame in ImageSequence.Iterator(gif):
         width, height = frame.size
         if width <= 500 and height <=500:
-            new_width = 400 if cmd > 2 else 500
-            ratio_percent = (new_width/float(width))
-            new_height = int((float(height)*float(ratio_percent)))
-            frame = frame.resize((new_width, new_height))
+            refactor_width = 500
+            ratio_percent = (refactor_width/float(width))
+            refactor_height = int((float(height)*float(ratio_percent)))
+            frame = frame.resize((refactor_width, refactor_height))
+            #resizing if the image has a tendency to be too big even for small gifs, used for high res templates
+            if cmd > 2:
+                width, height = frame.size
+                refactor_width = 600
+                ratio_percent = (refactor_width/float(width))
+                refactor_height = (int(float(height)*float(ratio_percent)))
+                frame = frame.resize((refactor_width, refactor_height))
         frameList.append(frame.convert("RGBA"))
     return frameList
 

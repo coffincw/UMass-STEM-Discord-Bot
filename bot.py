@@ -6,7 +6,7 @@ from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 import imageio
-imageio.plugins.ffmpeg.download()
+#imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 from overlay import overlay_image, get_gif_url, gif_url_to_image_list, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, landrew_origin, hand_origin
 from filters import intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, make_draw_gif
@@ -337,7 +337,7 @@ async def landrew(ctx):
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
             return
         #get list of imageClips
-        gifClip = make_draw_gif(imgList, 3)
+        gifClip = make_draw_gif(imgList, 6)
         gifClip.write_gif("landraws.gif", 24, program='imageio')
         try:
             #check whether size is appropriate
@@ -398,13 +398,13 @@ async def handdraw(ctx):
     url = get_gif_url(ctx, 10)
     if url != 0:
         #get list of frames
-        imgList = gif_url_to_image_list(url, 1)
+        imgList = gif_url_to_image_list(url, 3)
         if imgList == 0:
             #if invalid list return
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
             return
             #get list of imageClips
-        gifClip = make_draw_gif(imgList, 0)
+        gifClip = make_draw_gif(imgList, 5)
         gifClip.write_gif("handdraw.gif", 24, program='imageio')
         try:
             #check if message is <8 mb
