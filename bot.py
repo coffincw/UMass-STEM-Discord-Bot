@@ -403,7 +403,7 @@ async def handdraw(ctx):
             #if invalid list return
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
             return
-            #get list of image clips
+            #get list of imageClips
         gifClip = make_draw_gif(imgList, 0)
         gifClip.write_gif("handdraw.gif", 24, program='imageio')
         try:
