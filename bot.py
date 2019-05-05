@@ -5,8 +5,11 @@ import discord
 from discord import Game
 from discord.ext.commands import Bot
 import asyncio
+import imageio
+imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, get_gif_url, gif_url_to_image_list, make_draw_gif
+from overlay import overlay_image, get_gif_url, gif_url_to_image_list, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, landrew_origin, hand_origin
+from filters import intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, make_draw_gif
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
@@ -39,20 +42,25 @@ async def on_member_join(member):
         num_members = len(set(client.get_all_members()))
 
         # used to randomly pick one of the available drawing professors
-        professor_chosen = random.randint(0, 3)
+        professor_chosen = random.randint(0, 6)
 
         welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
             output = draw_text(welcome_message, Path('memes/barrington/bdraw.png'), barr_origin)
         elif professor_chosen == 1:
-            output = draw_text(welcome_message, Path('memes/marius/mdraw.png'), marius_origin)
-        else:
+            output = draw_text(welcome_message, Path('memes/marius/draw.png'), marius_origin)
+        elif professor_chosen == 2:
             output = draw_text(welcome_message, Path('memes/tim/tdraw.png'), tim_origin)
+        elif professor_chosen == 3:
+            output = draw_text(welcome_message, Path('memes/lan/lan-draw.png'), lan_origin)
+        elif professor_chosen == 4:
+            output = draw_text(welcome_message, Path('memes/lan/landrew.png'), landrew_origin)
+        else:
+            output = draw_text(welcome_message, Path('memes/sheldraw.png'), shel_origin)
         name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await client.send_file(welcome_channel, name, content=member.mention)
         os.remove(name)
-
 
 @client.event
 async def on_message_delete(message):
@@ -103,6 +111,7 @@ async def help():
         '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
         '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
         '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$landrew [image/url/text]*': 'Sends a photo of a different occasion of lan drawing the specified image or text, keep in mind that discord\'s gif size restrictions are a bit harsh',
         '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
         '*barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
         '*surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
@@ -128,7 +137,7 @@ async def help():
         )
     embed.add_field(
         name = '-------------------------------------------------------------------',
-        value = '------------------------------MEMES--------------------------'
+        value = '------------------------------MEMES-------------------------------'
     )
     for command in MEME_COMMANDS:
         embed.add_field(
@@ -203,22 +212,13 @@ async def mdraw(ctx):
             #random color because why not
             randRGB = lambda: random.randint(0, 255)
             randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("mdraw.gif")
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
             return
         track_command(ctx.message.author.id, message)
         os.remove("mdraw.gif")
         return
-
-    url = get_image_url(ctx, 7)
-    if url == 0:
-        output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'), marius_origin)
-    else:
-        output = overlay_image(url_to_image(url), Path('memes/marius/draw.png'), marius_origin)
-    name = 'marius-drawing.png'
-    output.save(name)
-    message = await client.send_file(ctx.message.channel, name)
-    track_command(ctx.message.author.id, message)
-    os.remove(name)
+    await draw_universal(ctx, 'memes/marius/draw.png', 7, marius_origin, 'marius-drawing.png')
 
 @client.command(name='bdraw', pass_context = True)
 async def bdraw(ctx):
@@ -246,21 +246,13 @@ async def bdraw(ctx):
             #random color cause why not
             randRGB = lambda: random.randint(0, 255)
             randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("bdraw.gif")
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
             return
         track_command(ctx.message.author.id, message)
         os.remove("bdraw.gif")
         return
-
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, barr should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'), barr_origin)
-    else: # url inputed, barr should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/barrington/bdraw.png'), barr_origin)
-    output.save('barrington-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'barrington-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('barrington-drawing.png')
+    await draw_universal(ctx, 'memes/barrington/bdraw.png', 7, barr_origin, 'barrington-drawing.png')
 
 @client.command(name='tdraw', pass_context = True)
 async def tdraw(ctx):
@@ -287,21 +279,13 @@ async def tdraw(ctx):
             #random color cause ¯\_(ツ)_/¯
             randRGB = lambda: random.randint(0, 255)
             randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("tdraw.gif")
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
             return
         track_command(ctx.message.author.id, message)
         os.remove("tdraw.gif")
         return
-
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, tim should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/tim/tdraw.png'), tim_origin)
-    else: # url inputed, tim should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/tim/tdraw.png'), tim_origin)
-    output.save('tim-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'tim-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('tim-drawing.png')
+    await draw_universal(ctx, 'memes/tim/tdraw.png', 7, tim_origin, 'tim-drawing.png')
 
 @client.command(name='ldraw', pass_context = True)
 async def ldraw(ctx):
@@ -329,21 +313,46 @@ async def ldraw(ctx):
             #random colors are fun, plus this doesn't need consistency
             randRGB = lambda: random.randint(0, 255)
             randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("ldraw.gif")
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
             return
         track_command(ctx.message.author.id, message)
         os.remove("ldraw.gif")
         return
+    await draw_universal(ctx, 'memes/lan/lan-draw.png', 7, lan_origin, 'lan-drawing.png')
 
-    url = get_image_url(ctx, 7)
-    if url == 0: # no url, lan should write the inputed text
-        output = draw_text(ctx.message.content[7:], Path('memes/lan/lan-draw.png'), lan_origin)
-    else: # url inputed, lan should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/lan/lan-draw.png'), lan_origin)
-    output.save('lan-drawing.png')
-    message = await client.send_file(ctx.message.channel, 'lan-drawing.png')
-    track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('lan-drawing.png')
+@client.command(name='landrew', pass_context = True)
+async def landrew(ctx):
+    """Command to generate a meme of lan drawing on the image or text
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    #in case of gif
+    url = get_gif_url(ctx, 9)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 3)
+        if imgList == 0:
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+        #get list of imageClips
+        gifClip = make_draw_gif(imgList, 3)
+        gifClip.write_gif("landraws.gif", 24, program='imageio')
+        try:
+            #check whether size is appropriate
+            message = await client.send_file(ctx.message.channel, "landraws.gif")
+        except:
+            #¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("landraws.gif")
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("landraws.gif")
+        return
+    await draw_universal(ctx, 'memes/lan/landrew.png', 9, landrew_origin, 'landrew-drawing.png')
 
 @client.command(name='shelpoint', pass_context = True)
 async def shelpoint(ctx):
@@ -370,21 +379,70 @@ async def shelpoint(ctx):
             #¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯
             randRGB = lambda: random.randint(0, 255)
             randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("shelpoint.gif")
             await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
             return
         track_command(ctx.message.author.id, message)
         os.remove("shelpoint.gif")
         return
+    await draw_universal(ctx, 'memes/sheldraw.png', 11, shel_origin, 'sheldon-pointing.png')
 
-    url = get_image_url(ctx, 11)
-    if url == 0: # no url, shel should write the inputed text
-        output = draw_text(ctx.message.content[11:], Path('memes/sheldraw.png'), shel_origin)
-    else: # url inputed, shel should draw on the image
-        output = overlay_image(url_to_image(url), Path('memes/sheldraw.png'), shel_origin)
-    output.save('sheldon-pointing.png')
-    message = await client.send_file(ctx.message.channel, 'sheldon-pointing.png')
+@client.command(name='handdraw', pass_context = True)
+async def handdraw(ctx):
+    """Command to generate a meme of a hand drawing on the image or text
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+     #in case of gif
+    url = get_gif_url(ctx, 10)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 1)
+        if imgList == 0:
+            #if invalid list return
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+            #get list of image clips
+        gifClip = make_draw_gif(imgList, 0)
+        gifClip.write_gif("handdraw.gif", 24, program='imageio')
+        try:
+            #check if message is <8 mb
+            message = await client.send_file(ctx.message.channel, "bdraw.gif")
+        except:
+            #random color cause why not
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            os.remove("handdraw.gif")
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("handdraw.gif")
+        return
+    await draw_universal(ctx, 'memes/hand.png', 10, hand_origin, 'handdraw.png')
+
+async def draw_universal(ctx, path, command_end_index, origin, name):
+    """Universal function which is called by draw command with the following arguments
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - path: path to the drawing image (ie memes/lan/landrew.png)
+        - command_end_index: index the end of the command (ie. for bdraw its 7 for '$' 'b' 'd' 'r' 'a' 'w' ' ')
+        - origin: pixel origin imported from overlay.py
+        - name: output file name
+    """
+    url = get_image_url(ctx, command_end_index)
+    if url == 0: # no url, hand should write the inputed text
+        output = draw_text(ctx.message.content[command_end_index:], Path(path), origin)
+    else: # url inputed, hand should draw on the image
+        output = overlay_image(url_to_image(url), Path(path), origin)
+    output.save(name)
+    try:
+        message = await client.send_file(ctx.message.channel, name)
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message) # tracks the most recent command of a user
-    os.remove('sheldon-pointing.png')
+    os.remove(name)
 
 #Deletes image based messages, such as bdraw, that the user requesting just sent.
 @client.command(name='erase', pass_context = True)
@@ -398,120 +456,76 @@ async def erase(ctx):
         await client.delete_message(bot_last_command[ctx.message.author.id])
         bot_last_command[ctx.message.author.id] = None #Clears this back up to avoid errors
 
-@client.command(name='barrify', pass_context = True)
-async def barrify(ctx):
+@client.command(name='barrify', pass_context = True, aliases = ['barify'])
+async def barrify(ctx, *args):
     """Command to paste barr's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 9)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/barrington/barr-face.png'), url, barr_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
+    await ify(ctx, barr_scale, 'memes/barrington/barr-face.png', 'barrify.png', args)
 
-    output.save('barrify.png')
-    message = await client.send_file(ctx.message.channel, 'barrify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('barrify.png')
-
-@client.command(name='marify', pass_context = True)
-async def marify(ctx):
+@client.command(name='marify', pass_context = True, aliases=['marrify'])
+async def marify(ctx, *args):
     """Command to paste marius' face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/marius/marius-face.png'), url, mar_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('marify.png')
-    message = await client.send_file(ctx.message.channel, 'marify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('marify.png')
+    await ify(ctx, mar_scale, 'memes/marius/marius-face.png', 'marify.png', args)
 
 @client.command(name='calebify', pass_context = True)
-async def calebify(ctx):
+async def calebify(ctx, *args):
     """Command to paste caleb's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/caleb/caleb-face.png'), url, mar_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('calebify.png')
-    message = await client.send_file(ctx.message.channel, 'calebify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('calebify.png')
+    await ify(ctx, c_scale, 'memes/caleb/caleb-face.png', 'calebify.png', args)
 
 @client.command(name='timify', pass_context = True)
-async def timify(ctx):
-    """Command to paste marius' face on top of faces in an inputed image using facial recognition
+async def timify(ctx, *args):
+    """Command to paste tim's face on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 8)
-    if url == 0: # invalid image
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
-        return
-    else:
-        output = paste_on_face(Path('memes/tim/tim-face.png'), url, tim_scale)
-    # if there were no faces found then send error
-    if output == 0:
-        await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
-        return
-
-    output.save('timify.png')
-    message = await client.send_file(ctx.message.channel, 'timify.png')
-    track_command(ctx.message.author.id, message)
-    os.remove('timify.png')
+    await ify(ctx, tim_scale, 'memes/tim/tim-face.png', 'timify.png', args)
 
 @client.command(name='surprisedpikachu', pass_context=True)
-async def surprisedpikachu_overlay(ctx):
+async def surprisedpikachu_overlay(ctx, *args):
     """Command to paste suprised pikachu on top of faces in an inputed image using facial recognition
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 18)
+    await ify(ctx, sp_scale, 'memes/surprised-pikachu.png', 'surprisedpikachu.png', args)
+
+async def ify(ctx, scale, path, file_name, *args):
+    """Command to paste a face on top of faces in an inputed image using facial recognition
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - args: arguments of the message
+        - scale: specified scale for the faces
+        - path: face image path
+        - file_name: output file name
+    """
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0: # invalid image
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        output = paste_on_face(Path('memes/surprised-pikachu.png'), url, sp_scale)
+        output = paste_on_face(Path(path), url, scale)
     # if there were no faces found then send error
     if output == 0:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
         return
 
-    output.save('surprisedpikachu.png')
-    message = await client.send_file(ctx.message.channel, 'surprisedpikachu.png')
+    output.save(file_name)
+    message = await client.send_file(ctx.message.channel, file_name)
     track_command(ctx.message.author.id, message)
-    os.remove('surprisedpikachu.png')
+    os.remove(file_name)
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
@@ -528,7 +542,10 @@ async def meme_generator(ctx, *args):
     else:
         output = paste_text_top_bottom(args[0], args[1], url_to_image(url))
     output.save('meme.png')
-    message = await client.send_file(ctx.message.channel, 'meme.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'meme.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('meme.png')
 
@@ -554,7 +571,10 @@ async def intensify(ctx, *args):
         return
     # save and send image
     output.save('intensify.png')
-    message = await client.send_file(ctx.message.channel, 'intensify.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'intensify.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('intensify.png')
 
@@ -566,43 +586,55 @@ async def mirror(ctx, *args):
         - ctx: context that the command occured use this to access the message and other attributes
         - *args: arguments passed in to the command (in this case either the X axis or Y axis)
     """
-    url = get_image_url_args(ctx, args, 2, 2)
-    axis = args[0]
+    try:
+        url = get_image_url_args(ctx, args, 2, 2)
+        axis = args[0]
+    except:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid input", color=discord.Color.red()))
     if axis != "x" and axis != "y" and axis != "X" and axis != "Y":
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid axis, please use x or y", color=discord.Color.red()))
         return
     if axis == "x" or axis == "X":
         output = mirror_x(url_to_image(url))
         output.save("mirror_x.png")
-        message = await client.send_file(ctx.message.channel, "mirror_x.png")
+        try:
+            message = await client.send_file(ctx.message.channel, "mirror_x.png")
+        except:
+            message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
         track_command(ctx.message.author.id, message)
         os.remove("mirror_x.png")
         return
     if axis == "y" or axis == "Y":
         output = mirror_y(url_to_image(url))
         output.save("mirror_y.png")
-        message = await client.send_file(ctx.message.channel, "mirror_y.png")
+        try:
+            message = await client.send_file(ctx.message.channel, "mirror_y.png")
+        except:
+            message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
         track_command(ctx.message.author.id, message)
         os.remove("mirror_y.png")
 
-@client.command(name='highlightEdge', pass_context = True)
-async def highlight_edge(ctx):
+@client.command(name='highlightEdge', pass_context = True, aliases=['highlight', 'edge'])
+async def highlight_edge(ctx, *args):
     """Command to apply an edge highlighting algorithm to a given image
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    url = get_image_url(ctx, 15)
+    url = get_image_url_args(ctx, args, 1, 0)
     if url == 0:
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid Image"), color=discord.Color.red())
         return
     output = highlight_image(url_to_image(url))
     output.save('highlighted.png')
-    message = await client.send_file(ctx.message.channel, 'highlighted.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'highlighted.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('highlighted.png')
 
-@client.command(name='customEdgeHighlight', pass_context=True)
+@client.command(name='customEdgeHighlight', pass_context=True, aliases=['customhighlight', 'customedge'])
 async def custom_edge_highlight(ctx, *args):
     """Command to highlight an image's edges and turn them into a given color
 
@@ -626,7 +658,10 @@ async def custom_edge_highlight(ctx, *args):
         await client.send_message(ctx.message.channel, embed=discord.Embed(description="Invalid RGB Values, please input numbers between 0-255", color=discord.Color.red()))
         return
     output.save('custom_highlight.png')
-    message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'custom_highlight.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('custom_highlight.png')
 
@@ -643,11 +678,14 @@ async def noise_filter(ctx):
         return
     output = scramble_pixels(url_to_image(url))
     output.save('noise.png')
-    message = await client.send_file(ctx.message.channel, 'noise.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'noise.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('noise.png')
 
-@client.command(name='pixelate', pass_context=True)
+@client.command(name='pixelate', pass_context=True, aliases=['pixel'])
 async def pixelate(ctx, *args):
     """Command to pixelate a given image by a given factor
 
@@ -666,7 +704,10 @@ async def pixelate(ctx, *args):
         return
     output = pixelate_image(url_to_image(url), factor)
     output.save('pixelate.png')
-    message = await client.send_file(ctx.message.channel, 'pixelate.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'pixelate.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('pixelate.png')
 
@@ -689,7 +730,10 @@ async def saturate(ctx, *args):
         return
     output = saturate_image(url_to_image(url), factor)
     output.save('saturate.png')
-    message = await client.send_file(ctx.message.channel, 'saturate.png')
+    try:
+        message = await client.send_file(ctx.message.channel, 'saturate.png')
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove('saturate.png')
 
@@ -706,7 +750,10 @@ async def make_okay(ctx):
         return
     clip = make_okay_clip(url_to_image(url))
     clip.write_videofile("okay.mp4", audio="sfx/okayturnedupto8.mp3", fps=24)
-    message = await client.send_file(ctx.message.channel, "okay.mp4")
+    try:
+        message = await client.send_file(ctx.message.channel, "okay.mp4")
+    except:
+        message = await client.send_message(ctx.message.channel, embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     track_command(ctx.message.author.id, message)
     os.remove("okay.mp4")
 
