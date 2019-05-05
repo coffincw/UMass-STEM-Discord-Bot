@@ -6,7 +6,7 @@ from discord import Game
 from discord.ext.commands import Bot
 import asyncio
 import moviepy.editor as mp
-from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip
+from overlay import overlay_image, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, get_gif_url, gif_url_to_image_list, make_draw_gif
 from stem_roles import stem_add_role, stem_remove_role, list_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
@@ -14,7 +14,7 @@ import random
 import time
 
 BOT_PREFIX = "$"
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+BOT_TOKEN = "NTYyOTg4NDQ0MDc1NDI1ODEy.XLqY2w.gKcZllUqa0dfyeawKEuTyKJO8PM" #os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
@@ -99,11 +99,11 @@ async def help():
         '*$members*': 'Prints out the number of people on the server'
     }
     MEME_COMMANDS = {
-        '*$mdraw [image/url/text]*': 'Sends a photo of marius drawing the specified image or text',
-        '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text',
-        '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text',
-        '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text',
-        '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text',
+        '*$mdraw [image/url/text]*': 'Sends a photo of marius drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
         '*barrify [image]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
         '*surprisedpikachu [image]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
         '*marify [image]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
@@ -179,11 +179,36 @@ async def get_list(ctx):
 
 @client.command(name='mdraw', pass_context = True)
 async def mdraw(ctx):
-    """Command to generate a meme of marius drawing on the image or text
+    """Command to generate a meme of marius drawing on the image or text or gif
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
+    #in case of gif
+    url = get_gif_url(ctx, 7)
+    if url != 0:
+        #get list of modified frames (has the prof drawing the image)
+        imgList = gif_url_to_image_list(url, 0)
+        if imgList == 0:
+            #if invalid list, return
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+        #get a list of imageClips for each frame
+        gifClip = make_draw_gif(imgList, 1)
+        gifClip.write_gif("mdraw.gif", 24, program='imageio')
+        try:
+            #try sending, if gif is above 8mb then an error will be thrown
+            message = await client.send_file(ctx.message.channel, "mdraw.gif")
+        except:
+            #random color because why not
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("mdraw.gif")
+        return
+
     url = get_image_url(ctx, 7)
     if url == 0:
         output = draw_text(ctx.message.content[7:], Path('memes/marius/draw.png'), marius_origin)
@@ -197,11 +222,36 @@ async def mdraw(ctx):
 
 @client.command(name='bdraw', pass_context = True)
 async def bdraw(ctx):
-    """Command to generate a meme of barr drawing on the image or text
+    """Command to generate a meme of barr drawing on the image or text or gif
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
+    #in case of gif
+    url = get_gif_url(ctx, 7)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 1)
+        if imgList == 0:
+            #if invalid list return
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+            #get list of image clips
+        gifClip = make_draw_gif(imgList, 0)
+        gifClip.write_gif("bdraw.gif", 24, program='imageio')
+        try:
+            #check if message is <8 mb
+            message = await client.send_file(ctx.message.channel, "bdraw.gif")
+        except:
+            #random color cause why not
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("bdraw.gif")
+        return
+
     url = get_image_url(ctx, 7)
     if url == 0: # no url, barr should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/barrington/bdraw.png'), barr_origin)
@@ -214,11 +264,35 @@ async def bdraw(ctx):
 
 @client.command(name='tdraw', pass_context = True)
 async def tdraw(ctx):
-    """Command to generate a meme of tim drawing on the image or text
+    """Command to generate a meme of tim drawing on the image or text or gif
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
+    #in case of gif
+    url = get_gif_url(ctx, 7)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 3)
+        if imgList == 0:
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+        #get list of imageClips
+        gifClip = make_draw_gif(imgList, 2)
+        gifClip.write_gif("tdraw.gif", 24, program='imageio')
+        try:
+            #check for appropriate size
+            message = await client.send_file(ctx.message.channel, "tdraw.gif")
+        except:
+            #random color cause ¯\_(ツ)_/¯
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("tdraw.gif")
+        return
+
     url = get_image_url(ctx, 7)
     if url == 0: # no url, tim should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/tim/tdraw.png'), tim_origin)
@@ -231,11 +305,36 @@ async def tdraw(ctx):
 
 @client.command(name='ldraw', pass_context = True)
 async def ldraw(ctx):
-    """Command to generate a meme of lan drawing on the image or text
+    """Command to generate a meme of lan drawing on the image or text or gif
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
+    #in case of gif
+    url = get_gif_url(ctx, 7)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 3)
+        if imgList == 0:
+            #check for valid list
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+        #get list of image clips
+        gifClip = make_draw_gif(imgList, 4)
+        gifClip.write_gif("ldraw.gif", 24, program='imageio')
+        try:
+            #check for appropriate size
+            message = await client.send_file(ctx.message.channel, "ldraw.gif")
+        except:
+            #random colors are fun, plus this doesn't need consistency
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("ldraw.gif")
+        return
+
     url = get_image_url(ctx, 7)
     if url == 0: # no url, lan should write the inputed text
         output = draw_text(ctx.message.content[7:], Path('memes/lan/lan-draw.png'), lan_origin)
@@ -248,11 +347,35 @@ async def ldraw(ctx):
 
 @client.command(name='shelpoint', pass_context = True)
 async def shelpoint(ctx):
-    """Command to generate a meme of Dan Sheldon drawing on the image or text
+    """Command to generate a meme of Dan Sheldon drawing on the image or text or gif
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
+    #in case of gif
+    url = get_gif_url(ctx, 11)
+    if url != 0:
+        #get list of frames
+        imgList = gif_url_to_image_list(url, 3)
+        if imgList == 0:
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="invalid image", color=discord.Color.red()))
+            return
+        #get list of imageClips
+        gifClip = make_draw_gif(imgList, 3)
+        gifClip.write_gif("shelpoint.gif", 24, program='imageio')
+        try:
+            #check whether size is appropriate
+            message = await client.send_file(ctx.message.channel, "shelpoint.gif")
+        except:
+            #¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯¯\_(ツ)_/¯
+            randRGB = lambda: random.randint(0, 255)
+            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
+            await client.send_message(ctx.message.channel, embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
+            return
+        track_command(ctx.message.author.id, message)
+        os.remove("shelpoint.gif")
+        return
+
     url = get_image_url(ctx, 11)
     if url == 0: # no url, shel should write the inputed text
         output = draw_text(ctx.message.content[11:], Path('memes/sheldraw.png'), shel_origin)
@@ -586,6 +709,7 @@ async def make_okay(ctx):
     message = await client.send_file(ctx.message.channel, "okay.mp4")
     track_command(ctx.message.author.id, message)
     os.remove("okay.mp4")
+
 
 
 def track_command(author, bot_message):

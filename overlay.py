@@ -1,4 +1,4 @@
-from PIL import Image, ImageFile, ImageDraw, ImageFont
+from PIL import Image, ImageFile, ImageDraw, ImageFont, GifImagePlugin, ImageSequence
 import numpy as np
 import requests
 import math
@@ -6,6 +6,7 @@ import random
 from io import BytesIO
 import textwrap
 import moviepy.editor as mp
+from pathlib import Path
 
 
 marius_origin = (28, 428)
@@ -245,6 +246,24 @@ def url_to_image(url):
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
 
+def gif_url_to_image_list(url, cmd):
+    response = requests.get(url)
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    frameList = []
+    try:
+        gif = Image.open(BytesIO(response.content))
+    except:
+        return 0
+    for frame in ImageSequence.Iterator(gif):
+        width, height = frame.size
+        if width <= 500 and height <=500:
+            new_width = 400 if cmd > 2 else 500
+            ratio_percent = (new_width/float(width))
+            new_height = int((float(height)*float(ratio_percent)))
+            frame = frame.resize((new_width, new_height))
+        frameList.append(frame.convert("RGBA"))
+    return frameList
+
 def get_image_url(ctx, index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
@@ -257,6 +276,18 @@ def get_image_url(ctx, index):
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
+
+def get_gif_url(ctx, index):
+    gif_url = ''
+    try:
+        gif_url = ctx.message.attachments[0]['url']
+    except:
+        if ctx.message.content.endswith('.gif'):
+            gif_url = ctx.message.content[index:]
+        if(gif_url == ''):
+            return 0
+    return gif_url
+
 
 def get_image_url_args(ctx, args, num_args, image_arg_index):
     image_url = ''
@@ -391,7 +422,7 @@ def saturate_image(image, factor):
             red = pixel[0]
             green = pixel[1]
             blue = pixel[2]
-            maxVal = max((red, green, blue)) #dumb pixels have a 4th alpha value of 255 so that's always considered max if you don't do this, which breaks the code
+            maxVal = max((red, green, blue))#dumb pixels have a 4th alpha value of 255 so that's always considered max if you don't do this, which breaks the code
             if red == maxVal:
                 red = int(red * factor)
                 if red > 255:
@@ -412,4 +443,28 @@ def make_okay_clip(image):
     clip = mp.ImageClip(imageArr)
     clip = clip.set_duration(1.5, change_end=True)
     return clip
+
+def make_draw_gif(frameList, num):
+    imageClipLists = []
+    frameLength = 1.0/24.0
+    for frame in frameList:
+        if num == 0:
+            frame = overlay_image(frame, Path("memes/barrington/bdraw.png"), barr_origin)
+        elif num == 1:
+            frame = overlay_image(frame, Path("memes/marius/draw.png"), marius_origin)
+        elif num == 2:
+            frame = overlay_image(frame, Path("memes/tim/tdraw.png"), tim_origin)
+        elif num == 3:
+            frame = overlay_image(frame, Path("memes/sheldraw.png"), shel_origin)
+        elif num == 4:
+            frame = overlay_image(frame, Path("memes/lan/lan-draw.png"), lan_origin)
+        arr = np.array(frame)
+        clip = mp.ImageClip(arr)
+        clip = clip.set_duration(frameLength)
+        imageClipLists.append(clip)
+    #print(imageClipLists)
+    concatClip = mp.concatenate_videoclips(imageClipLists, method="compose")
+    return concatClip
+
+
 
