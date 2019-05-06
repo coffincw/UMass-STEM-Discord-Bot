@@ -2,6 +2,8 @@ from PIL import Image, ImageFile, ImageDraw, ImageFont
 import numpy as np
 import random
 import moviepy.editor as mp
+from pathlib import Path
+from overlay import shel_origin, lan_origin, landrew_origin, hand_origin, barr_origin, marius_origin, tim_origin, overlay_image
 
 def intensify_image(image, factor):
     if factor < 0:
@@ -142,3 +144,29 @@ def make_okay_clip(image):
     clip = mp.ImageClip(imageArr)
     clip = clip.set_duration(1.5, change_end=True)
     return clip
+
+def make_draw_gif(frameList, num):
+    imageClipLists = []
+    frameLength = 1.0/24.0
+    for frame in frameList:
+        if num == 0:
+            frame = overlay_image(frame, Path("memes/barrington/bdraw.png"), barr_origin)
+        elif num == 1:
+            frame = overlay_image(frame, Path("memes/marius/draw.png"), marius_origin)
+        elif num == 2:
+            frame = overlay_image(frame, Path("memes/tim/tdraw.png"), tim_origin)
+        elif num == 3:
+            frame = overlay_image(frame, Path("memes/sheldraw.png"), shel_origin)
+        elif num == 4:
+            frame = overlay_image(frame, Path("memes/lan/lan-draw.png"), lan_origin)
+        elif num == 5:
+            frame = overlay_image(frame, Path("memes/hand.png"), hand_origin)
+        elif num == 6:
+            frame = overlay_image(frame, Path("memes/lan/landrew.png"), landrew_origin)
+        arr = np.array(frame)
+        clip = mp.ImageClip(arr)
+        clip = clip.set_duration(frameLength)
+        imageClipLists.append(clip)
+    #print(imageClipLists)
+    concatClip = mp.concatenate_videoclips(imageClipLists, method="compose")
+    return concatClip
