@@ -63,7 +63,7 @@ CLASS_ROLE_IDS = {'539872888124211200': ('cs 121', 'cs121', '121'),
                   '505504337590484992': ('cs 230', 'cs230', '230'),
                   '506226744001560596': ('cs 240', 'cs240', '240'),
                   '505504252110831629': ('cs 250', 'cs250', '250'),
-                  '550746699468111872': ('cs 305', 'cics 305', 'cics305', 'cs305', '305'),
+                  '550746699468111872': ('cics 305', 'cs 305', 'cics305', 'cs305', '305'),
                   '532274256063627296': ('cs 311', 'cs311', '311'),
                   '543883289296109578': ('cs 320', 'cs320', '320'),
                   '580561820763553805': ('cics 290m', 'cs 290m', 'cics290m', 'cs 290m', '290m'),
@@ -131,7 +131,7 @@ async def list_roles(ctx, client):
     for role in CLASS_ROLE_IDS.values():
         if class_role_list == '':
             class_role_list += '**Computer Science**\n'
-        if role[0].startswith('cs'):
+        if role[0].startswith('cs') or role[0].startswith('cics'):
             class_role_list += role[0][0].capitalize()
             class_role_list += role[0][1:].capitalize() + ', '
             continue
