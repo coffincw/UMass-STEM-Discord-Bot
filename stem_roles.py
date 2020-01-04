@@ -150,6 +150,37 @@ async def list_roles(ctx, client):
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
     await client.send_message(ctx.message.channel, embed=getlist)
 
+async def list_my_roles(ctx, client, member):
+    mylist = discord.Embed(color=0xb5a2c8)
+    mylist.set_author(name = '' + member.name + '\'s roles', icon_url = member.avatar_url)
+    housing_roles = ''
+    major_roles = ''
+    graduation_year = ''
+    class_specific = ''
+    for role in member.roles:
+        if role.id in HOUSING_ROLE_IDS:
+            housing_roles += role.name.capitalize() + '\n'
+        if role.id in MAJOR_ROLE_IDS:
+            major_roles += role.name.capitalize() + '\n'
+        if role.id in CLASS_ROLE_IDS:
+            class_specific += role.name + '\n'
+        if role.id in GRAD_YEAR_ROLE_IDS:
+            graduation_year = role.name + '\n'
+
+    if housing_roles == '':
+        mylist.add_field(name = 'Housing Roles', value='Missing housing role, set your residential area role in #role-assignment', inline=False)
+    else:
+        mylist.add_field(name = 'Housing Roles', value=housing_roles, inline=False)
+    if major_roles == '':
+        mylist.add_field(name = 'Housing Roles', value='Missing major role, set at least one major/minor role in #role-assignment', inline=False)
+    else:
+        mylist.add_field(name = 'Major Roles', value=major_roles, inline=False)
+    if class_specific != '':
+        mylist.add_field(name = 'Class Roles', value=class_specific, inline=False)
+    if graduation_year != '':
+        mylist.add_field(name = 'Graduation Year', value=graduation_year, inline=False)
+    await client.send_message(ctx.message.channel, embed=mylist)    
+
 async def stem_add_role(requested_role, member, client):
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')

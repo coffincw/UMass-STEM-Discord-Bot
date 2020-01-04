@@ -10,7 +10,7 @@ imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 from overlay import overlay_image, get_gif_url, gif_url_to_image_list, url_to_image, get_image_url, get_image_url_args, draw_text, paste_text_top_bottom, marius_origin, barr_origin, tim_origin, lan_origin, shel_origin, landrew_origin, hand_origin
 from filters import intensify_image, highlight_image, custom_edge_highlight_image, mirror_x, mirror_y, scramble_pixels, pixelate_image, saturate_image, make_okay_clip, make_draw_gif
-from stem_roles import stem_add_role, stem_remove_role, list_roles
+from stem_roles import stem_add_role, stem_remove_role, list_roles, list_my_roles
 from face_detection import paste_on_face, open_image_cv, barr_scale, sp_scale, mar_scale, tim_scale, c_scale
 import os
 import random
@@ -185,6 +185,16 @@ async def get_list(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     await list_roles(ctx, client) # found in stem_roles.py
+
+@client.command(name='myroles', pass_context = True)
+async def my_roles(ctx):
+    """Command to generate a list of the users current roles
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    member = ctx.message.author
+    await list_my_roles(ctx, client, member) # found in stem_roles.py
 
 @client.command(name='mdraw', pass_context = True)
 async def mdraw(ctx):
