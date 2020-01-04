@@ -190,7 +190,6 @@ async def stem_add_role(requested_role, member, client):
     for role in member.roles:
         for grad_years in GRAD_YEAR_ROLE_IDS.values():
             if role.name.lower() in grad_years:
-                print('user has grad role\n')
                 is_grad_role = True
 
     for role_names in available_roles.values():
