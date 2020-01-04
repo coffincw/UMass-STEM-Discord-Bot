@@ -81,7 +81,7 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 1. Fork repo
 2. Write additional implementations
 3. Create a bot on the [Discord Developer Portal](https://discordapp.com/developers/applications/)
-4. Replace line 16 in *bot.py* `BOT_TOKEN = os.environ.get('BOT_TOKEN')` with `BOT_TOKEN = 'Put your bot token here'`
+4. Replace line 20 in *bot.py* `BOT_TOKEN = os.environ.get('BOT_TOKEN')` with `BOT_TOKEN = 'Put your bot token here'`
 5. Invite your bot to a private test server
 6. Test added bot commands
 7. Once working make a pull request
