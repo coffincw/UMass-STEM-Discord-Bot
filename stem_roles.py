@@ -184,18 +184,36 @@ async def list_my_roles(ctx, client, member):
 async def stem_add_role(requested_role, member, client):
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
+    is_grad_role = False
+
+    #check if user already has a graduation role
+    for role in member.roles:
+        for grad_years in GRAD_YEAR_ROLE_IDS.values():
+            if role.name.lower() in grad_years:
+                print('user has grad role\n')
+                is_grad_role = True
+
     for role_names in available_roles.values():
         for alias in role_names:
             if role_lower == alias: # valid role
+
                 # check if member already has the requested role
                 for member_role in member.roles:
                     if member_role.name.lower() == role_names[0]:
                         await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold()))
                         return
+
                 # if the member doesnt already have the requested role
                 for role in requested_role.message.server.roles:
                     if role.name.lower() == role_names[0]:
                         role_to_add = role
+                        
+                # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
+                for grad_year_roles in GRAD_YEAR_ROLE_IDS.values():
+                    if role_to_add.name.lower() in grad_year_roles and is_grad_role:
+                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have a graduation year role!\nUse the $remove [role] command to remove it in order to add a different one!", color=discord.Color.gold()))
+                        return
+
                 await client.add_roles(member, role_to_add)
                 await check_major_housing_role(member, client)
                 await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
