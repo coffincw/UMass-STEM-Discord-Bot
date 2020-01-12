@@ -160,7 +160,10 @@ async def get_role(requested_role):
     """
     member = requested_role.message.author
     if requested_role.message.server.id == '387465995176116224':
-        await stem_add_role(requested_role, member, client)
+        if requested_role.message.channel.id == '537732009108439048':
+            await stem_add_role(requested_role, member, client)
+        else:
+            await client.send_message(requested_role.message.channel, embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment", color=discord.Color.dark_red()))
     else:
         await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 
