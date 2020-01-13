@@ -31,7 +31,7 @@ async def list_roles(ctx, client):
             class_role_list += role[0][0].capitalize()
             class_role_list += role[0][1:].capitalize() + ', '
             continue
-        if role[0].endswith('131'):
+        if role[0].endswith('127'):
             class_role_list = class_role_list[:len(class_role_list)-2]
             class_role_list += '\n**Mathematics**\n'
         if role[0].startswith('math') or role[0].startswith('stats'):
