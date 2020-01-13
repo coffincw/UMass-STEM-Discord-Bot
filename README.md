@@ -16,6 +16,8 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
   - The bot removes the specified role from the user (if they have it)
 - getlist
   - Prints out an organized list of roles available with the get command
+- myroles
+  - Prints out the calling users roles organized by category
   
 ### Memes
 - mdraw [image/image link/text]
