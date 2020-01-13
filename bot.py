@@ -199,7 +199,14 @@ async def my_roles(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    member = ctx.message.author
+    mentions = ctx.message.mentions
+    if len(mentions) < 1:
+        member = ctx.message.author
+    elif len(mentions) == 1:
+        member = mentions[0]
+    else:
+        await client.send_message(ctx.message.channel, embed=discord.Embed(description="Too many users specified, please mention less than two users", color=discord.Color.red()))
+        return
     await list_my_roles(ctx, client, member) # found in stem_roles.py
 
 @client.command(name='mdraw', pass_context = True)
