@@ -36,6 +36,7 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '536247576496701440': ('bdic', 'bachelors degree with individual concentration'),
                   '405932216808505355': ('communication', 'communications', 'comm', 'com'),
                   '490210619270889486': ('nutrition',),
+                  '666116397914521635': ('nursing',),
                   '501525484257935360': ('biochemistry', 'biochem'),
                   '501608246579167233': ('microbiology', 'microbio'),
                   '502556060171894785': ('animal science', 'animal'),
