@@ -50,16 +50,23 @@ async def list_my_roles(ctx, client, member):
     housing_roles = ''
     major_roles = ''
     graduation_year = ''
-    class_specific = ''
+    class_specific_roles = []
+    
     for role in member.roles:
         if role.id in HOUSING_ROLE_IDS:
             housing_roles += role.name.capitalize() + '\n'
         if role.id in MAJOR_ROLE_IDS:
             major_roles += role.name.capitalize() + '\n'
         if role.id in CLASS_ROLE_IDS:
-            class_specific += role.name + '\n'
+            class_specific_roles.append(role.name)
         if role.id in GRAD_YEAR_ROLE_IDS:
             graduation_year = role.name + '\n'
+
+    # add class roles in alphabetic order
+    class_specific = ''
+    class_specific_roles = sorted(class_specific_roles)
+    for role in class_specific_roles:
+        class_specific += role + '\n'
 
     if housing_roles == '':
         mylist.add_field(name = 'Housing Roles', value='Missing housing role, set your residential area role in #role-assignment', inline=False)
