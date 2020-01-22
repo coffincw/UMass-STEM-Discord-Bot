@@ -41,6 +41,8 @@ MAJOR_ROLE_IDS = {'442786317273792523': ('electrical engineering', 'ee', 'electr
                   '502624207390244864': ('animation',),
                   '507634130842812441': ('business', 'isenberg'),
                   '509005908072726533': ('accounting', 'account'),
+                  '669413167469953044': ('finance',),
+                  '669413334092611587': ('sports management', 'sports'),
                   '517414427390378041': ('linguistics', 'ling'),
                   '551464859301314572': ('comparative literature', 'comp lit', 'comp-lit'),
                   '522165967481208833': ('chinese',),
@@ -108,5 +110,6 @@ GRAD_YEAR_ROLE_IDS = {'570652917133213700': ('2019',),
                       '570653035752325132': ('2021',),
                       '570653157965692930': ('2022',),
                       '570653206137536512': ('2023',),
+                      '669414012185870337': ('2024',),
                       '572977093244092416': ('grad student', 'graduate student', 'grad')
 }
