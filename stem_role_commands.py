@@ -73,7 +73,7 @@ async def list_my_roles(ctx, client, member):
     else:
         mylist.add_field(name = 'Housing Roles', value=housing_roles, inline=False)
     if major_roles == '':
-        mylist.add_field(name = 'Housing Roles', value='Missing major role, set at least one major/minor role in #role-assignment', inline=False)
+        mylist.add_field(name = 'Major Roles', value='Missing major role, set at least one major/minor role in #role-assignment', inline=False)
     else:
         mylist.add_field(name = 'Major Roles', value=major_roles, inline=False)
     if class_specific != '':
