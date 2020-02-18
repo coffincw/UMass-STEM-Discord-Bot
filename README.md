@@ -69,24 +69,27 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 - remove missing housing and major role
     - bot removes the missing housing and major role if someone has set both a housing and major role
 
-### Commands to add
-- marius
-    - The bot responds with a random marius meme
-- barr
-    - The bot responds with a random barrington meme
-- tim
-    - The bot responds with a random tim meme
-- spmeme [text]
-    - The bot responds with a surprised pikachu meme with the specified text
-
 ## How to add to the bot
 1. Fork repo
+2. Install required dependencies
 2. Write additional implementations
 3. Create a bot on the [Discord Developer Portal](https://discordapp.com/developers/applications/)
 4. Replace line 20 in *bot.py* `BOT_TOKEN = os.environ.get('BOT_TOKEN')` with `BOT_TOKEN = 'Put your bot token here'`
 5. Invite your bot to a private test server
 6. Test added bot commands
 7. Once working make a pull request
+
+## Dependencies
+Please make sure to install these in the specified order.  Specifically, installing moviepy and imageio out of order will result in errors.
+1. [discord.py](https://discordpy.readthedocs.io/en/latest/)
+    - How to install: `pip install discord`
+2. [moviepy](http://zulko.github.io/moviepy/)
+    - How to install: `pip install moviepy`
+3. [imageio](https://imageio.github.io/)
+    - How to install: `pip install imageio==2.4.1`
+4. [opencv](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html)
+    - How to install: `pip install opencv-python`
+
 
 
 
