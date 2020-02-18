@@ -42,7 +42,7 @@ async def list_roles(ctx, client):
         class_role_list += role[0].capitalize()
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
-    await client.send_message(ctx.message.channel, embed=getlist)
+    await ctx.channel.send(embed=getlist)
 
 async def list_my_roles(ctx, client, member):
     mylist = discord.Embed(color=0xb5a2c8)
@@ -80,9 +80,10 @@ async def list_my_roles(ctx, client, member):
         mylist.add_field(name = 'Class Roles', value=class_specific, inline=False)
     if graduation_year != '':
         mylist.add_field(name = 'Graduation Year', value=graduation_year, inline=False)
-    await client.send_message(ctx.message.channel, embed=mylist)    
+    await ctx.channel.send(embed=mylist)    
 
 async def stem_add_role(requested_role, member, client):
+    channel = requested_role.channel
     available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
     is_grad_role = False
@@ -100,25 +101,25 @@ async def stem_add_role(requested_role, member, client):
                 # check if member already has the requested role
                 for member_role in member.roles:
                     if member_role.name.lower() == role_names[0]:
-                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold()))
+                        await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold()))
                         return
 
                 # if the member doesnt already have the requested role
-                for role in requested_role.message.server.roles:
+                for role in requested_role.message.guild.roles:
                     if role.name.lower() == role_names[0]:
                         role_to_add = role
                         
                 # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
                 for grad_year_roles in GRAD_YEAR_ROLE_IDS.values():
                     if role_to_add.name.lower() in grad_year_roles and is_grad_role:
-                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have a graduation year role!\nUse the $remove [role] command to remove it in order to add a different one!", color=discord.Color.gold()))
+                        await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have a graduation year role!\nUse the $remove [role] command to remove it in order to add a different one!", color=discord.Color.gold()))
                         return
 
-                await client.add_roles(member, role_to_add)
+                await member.add_roles(role_to_add)
                 await check_major_housing_role(member, client)
-                await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
+                await channel.send(embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
                 return
-    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
+    await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
 
 async def check_major_housing_role(member, client):
     member_has_hr = False
@@ -128,17 +129,18 @@ async def check_major_housing_role(member, client):
             member_has_hr = True
         if role.id in MAJOR_ROLE_IDS:
             member_has_m = True
-    for role in member.server.roles:
+    for role in member.guild.roles:
         if role.name.lower() == 'missing housing or major role':
             mhom = role
     if mhom in member.roles: # check if the member has the missing housing or major role
         if member_has_hr and member_has_m:
-            await client.remove_roles(member, mhom) #removes missing housing or major role
+            await member.remove_roles(mhom) #removes missing housing or major role
     else: # if not then add it to them if they need it
         if not member_has_hr or not member_has_m:
-            await client.add_roles(member, mhom) #adds missing housing or major role if they dont have the roles
+            await member.add_roles(mhom) #adds missing housing or major role if they dont have the roles
 
 async def stem_remove_role(requested_role, member, client):
+    channel = requested_role.channel
     removable_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
     role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '')
     for role in member.roles:
@@ -146,10 +148,10 @@ async def stem_remove_role(requested_role, member, client):
             for housing_major_role in removable_roles.values():
                 for alias in housing_major_role:
                     if role_lower == alias:
-                        await client.remove_roles(member, role)
+                        await member.remove_roles(role)
                         await check_major_housing_role(member, client)
-                        await client.send_message(requested_role.message.channel, embed=discord.Embed(description="Removed " + role.name + " from " + member.name, color=discord.Color.green()))
+                        await channel.send(embed=discord.Embed(description="Removed " + role.name + " from " + member.name, color=discord.Color.green()))
                         return
-            await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role", color=discord.Color.red()))
+            await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role", color=discord.Color.red()))
             return
-    await client.send_message(requested_role.message.channel, embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name", color=discord.Color.red()))
+    await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name", color=discord.Color.red()))
