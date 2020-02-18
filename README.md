@@ -48,8 +48,6 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Similar to barrify the bot responds with the inputed image with marius's face over the identified faces
 - timify [image]
     - Similar to barrify the bot responds with the inputed image with tim's face over the indentified faces
-- calebify [image]
-    - Similar to barrify the bot responds with the inputed image with caleb's face over the indentified faces
 - meme ["top" "bottom" image]
     - The bot responds with the inputed image with the specifed text on it in typical meme format
 - intensify [factor image]
