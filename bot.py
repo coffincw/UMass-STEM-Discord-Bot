@@ -61,13 +61,18 @@ async def on_member_join(member):
         name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await welcome_channel.send(member.mention, file=discord.File(name))
-        
         os.remove(name)
-
-@client.command(name = 'test')
-async def test(ctx):
-    member = ctx.author
-    # await member.create(member, embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
+        embed = discord.Embed(
+            color = discord.Color.blue()
+        )
+        embed.set_author(name='Welcome to the UMass Amherst STEM Discord Server', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
+        embed.add_field(
+                name = 'How to see all the channels',
+                value = 'Set at least one housing role and at least one major role\nTo set roles go to **#role-assignment** and use the `$get` command\n\nFor example, if you live off campus and you\'re a chemistry major you would run these two commands:\n\n`$get Off-Campus`\n`$get Chemistry`\n\n*If you would like to see all the possible housing and major roles run the `$getlist` command*\n\n*If you have graduated already you may use the `Almuni` role in place of a housing role, if you are considering or planning on attending UMass and don\'t yet have a residential area you should assign yourself the `Prospective Student` role*',
+                inline = False
+            )
+        await member.send(embed=embed)
+    
 
 @client.event
 async def on_message_delete(message):
@@ -78,11 +83,13 @@ async def on_message_delete(message):
     """
     author = message.author
     channel = client.get_channel(557002016782680076)
-    if message.guild.id == 387465995176116224:
-        if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
-            content = message.content
-            await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
-
+    try:
+        if message.guild.id == 387465995176116224:
+            if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
+                content = message.content
+                await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
+    except:
+        pass
 @client.event
 async def on_message_edit(before, after):
     """This function runs whenever a message is edited
@@ -93,12 +100,14 @@ async def on_message_edit(before, after):
     """
     author = before.author
     channel = client.get_channel(557002016782680076)
-    if before.guild.id == 387465995176116224: # UMass STEM Discord server ID
-        if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
-            before_content = before.content
-            after_content = after.content
-            await channel.send('_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
-
+    try:
+        if before.guild.id == 387465995176116224: # UMass STEM Discord server ID
+            if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
+                before_content = before.content
+                after_content = after.content
+                await channel.send('_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
+    except:
+        pass
 @client.command(name='help')
 async def help(ctx):
     """help command

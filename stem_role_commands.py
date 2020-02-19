@@ -46,7 +46,7 @@ async def list_roles(ctx, client):
 
 async def list_my_roles(ctx, client, member):
     mylist = discord.Embed(color=0xb5a2c8)
-    mylist.set_author(name = '' + member.name + '\'s roles', icon_url = 'https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
+    mylist.set_author(name = '' + member.name + '\'s roles', icon_url = member.avatar_url)
     housing_roles = ''
     major_roles = ''
     graduation_year = ''
