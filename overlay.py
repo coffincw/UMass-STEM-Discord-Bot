@@ -276,7 +276,7 @@ def gif_url_to_image_list(url, cmd):
 def get_image_url(ctx, index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0]['url']
+        image_url = ctx.message.attachments[0].url
     except:                                                                                 # if the member used a url with the command
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
@@ -301,13 +301,14 @@ def get_gif_url(ctx, index):
 def get_image_url_args(ctx, args, num_args, image_arg_index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0]['url']
+        image_url = ctx.message.attachments[0][0].url
     except:                                                                                 # if the member used a url with the command
         if len(args) != num_args:
             return 0
         extension = ['.jpg', '.png', '.jpeg']
+        
         for ext in extension:
-            if args.endswith(ext):
+            if args[image_arg_index].endswith(ext):
                 image_url = args[image_arg_index]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
