@@ -1,4 +1,5 @@
 import random
+import shelve
 from io import BytesIO
 from pathlib import Path
 import discord
@@ -73,6 +74,25 @@ async def on_member_join(member):
             )
         await member.send(embed=embed)
     
+@client.event
+async def on_message(message):
+    author = message.author
+    try:
+        if message.guild.id == 387465995176116224:
+            data = shelve.open('server-data/stem-discord-data')
+            if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
+                if str(author) in data:
+                    data[str(author)] += 1
+                else:
+                    data[str(author)] = 1
+            data['Total Messages'] += 1
+            data.close()
+    except:
+        pass
+    await client.process_commands(message)
+
+    
+
 
 @client.event
 async def on_message_delete(message):
@@ -171,6 +191,52 @@ async def help(ctx):
             inline = False
         )
     await ctx.send(embed=embed)
+
+@client.command(name = 'leaderboard')
+async def display_leaderboard(ctx):
+    data = shelve.open('server-data/stem-discord-data')
+    data_dict = dict(data)
+    number = 0
+    top_10 = ''
+    # sort dictionary and only take top ten
+    for user in sorted(data, key=data.get, reverse=True):
+        if number == 0:
+            number+= 1
+            continue
+        elif number < 11:
+            top_10 += '**' + str(number) + '**. ' + user + ' - ' + str(data[user]) + '\n'
+        else:
+            break
+        number += 1
+    top_10 += '*Total Messages*: ' + str(data['Total Messages'])
+    data.close()
+    await ctx.send(embed=discord.Embed(title='Server Message Leaderboard', description=top_10, color=discord.Color.purple()))
+
+@client.command(name = 'refresh_leaderboard')
+async def refresh_count_messages(ctx):
+    if ctx.author.id == 98138045173227520: # only caleb can use this command
+        async with ctx.channel.typing():
+            os.remove('server-data/stem-discord-data.dir')
+            os.remove('server-data/stem-discord-data.bak')
+            os.remove('server-data/stem-discord-data.dat')
+            data = shelve.open('server-data/stem-discord-data')
+            data['Total Messages'] = 0
+            # build dictionary of user: # of messages
+            for channel in ctx.guild.text_channels:
+                print(channel.name)
+                async for message in channel.history(limit=100000):
+                    try:
+                        if (BOT_ROLE not in [role.name.lower() for role in message.author.roles]):
+                            if str(message.author) in data:
+                                data[str(message.author)] += 1
+                            else:
+                                data[str(message.author)] = 1
+                    except:
+                        pass
+                    data['Total Messages'] += 1
+            data.close()
+            
+            await ctx.send(embed=discord.Embed(description='Leaderboard refresh complete', color=discord.Color.green()))
 
 @client.command(name = 'members')
 async def server_members(ctx):
