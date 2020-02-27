@@ -28,6 +28,10 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the available *Role* and *General* commands
 - memehelp
     - Displays the available *Meme* and *Image Filter* commands
+
+## Stocks
+- stocks [ticker]
+    - Displays a screenshot of the specified ticker's information from yahoo finance
   
 ### Memes
 - mdraw [image/image link/text]

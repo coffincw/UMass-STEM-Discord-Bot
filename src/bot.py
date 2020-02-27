@@ -11,6 +11,7 @@ imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 import overlay
 import filters
+import stocks
 import stem_role_commands
 import face_detection
 import custom_meme
@@ -89,9 +90,6 @@ async def on_message(message):
         pass
     await client.process_commands(message)
 
-    
-
-
 @client.event
 async def on_message_delete(message):
     """This function runs whenever a message is deleted
@@ -127,6 +125,8 @@ async def on_message_edit(before, after):
     except:
         pass
 
+# vvv GENERAL COMMANDS vvv
+
 @client.command(name='help')
 async def help(ctx):
     """help command
@@ -146,6 +146,9 @@ async def help(ctx):
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages'
+    }
+    STOCK_COMMANDS = {
+        '*$stock [ticker]*': 'Displays a screenshot of the specified ticker\'s information from yahoo finance'
     }
     
     embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
@@ -171,6 +174,17 @@ async def help(ctx):
         embed.add_field(
             name = command,
             value = GENERAL_COMMANDS[command],
+            inline = False
+        )
+    embed.add_field(
+        name = '-------------------------------------------------------------------',
+        value = '-----------------------------STOCKS-----------------------------',
+        inline = False
+    )
+    for command in STOCK_COMMANDS:
+        embed.add_field(
+            name = command,
+            value = STOCK_COMMANDS[command],
             inline = False
         )
     embed.set_footer(text='To see the meme and image filter commands use the $memehelp command')
@@ -282,6 +296,8 @@ async def server_members(ctx):
     num_members = len(set(client.get_all_members()))
     await ctx.send('There are ' + str(num_members) + ' server members')
 
+# vvv ROLE COMMANDS vvv
+
 @client.command(name='get')
 async def get_role(requested_role):
     """Command to get the requested role
@@ -343,6 +359,13 @@ async def my_roles(ctx):
         return
     await stem_role_commands.list_my_roles(ctx, client, member) # found in stem_role_commands.py
 
+## vvv STOCK COMMANDS vvv
+
+@client.command(name='stock')
+async def stock_info(ctx):
+    await stocks.stock_info(ctx)
+
+# vvv MEME COMMANDS vvv
 @client.command(name='mdraw')
 async def mdraw(ctx):
     """Command to generate a meme of marius drawing on the image or text or gif
@@ -475,6 +498,8 @@ async def meme_generator(ctx, *args):
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     custom_meme.track_command(ctx.author.id, message)
     os.remove('meme.png')
+
+# vvv IMAGE FILTER COMMANDS vvv
 
 @client.command(name='intensify')
 async def intensify(ctx, *args):
@@ -692,9 +717,6 @@ async def make_okay(ctx):
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     custom_meme.track_command(ctx.author.id, message)
     os.remove("okay.mp4")
-
-
-
 
 
 client.run(BOT_TOKEN)
