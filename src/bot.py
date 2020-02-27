@@ -727,5 +727,4 @@ async def make_okay(ctx):
     custom_meme.track_command(ctx.author.id, message)
     os.remove("okay.mp4")
 
-driver.close()
 client.run(BOT_TOKEN)
