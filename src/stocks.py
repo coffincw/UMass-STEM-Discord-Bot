@@ -16,7 +16,6 @@ async def stock_info(ctx, driver):
         driver.set_window_size(1920, 1080)
         time.sleep(2)
         driver.save_screenshot(stock_ticker + '.png')
-        driver.close()
 
         # crop screenshot
         stock_image = Image.open(stock_ticker + '.png')
