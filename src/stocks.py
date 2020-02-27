@@ -4,6 +4,7 @@ import time
 from selenium import webdriver
 from PIL import Image
 
+# will not work while locally hosted due to chrome driver.  
 async def stock_info(ctx):
     stock_ticker = ctx.message.content[7:].lower().strip()
 
@@ -19,7 +20,6 @@ async def stock_info(ctx):
         driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get(url)
         driver.set_window_size(1920, 1080)
-        time.sleep(2)
         driver.save_screenshot(stock_ticker + '.png')
         driver.close()
 
