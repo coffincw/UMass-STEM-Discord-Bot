@@ -5,21 +5,16 @@ from selenium import webdriver
 from PIL import Image
 
 # will not work while locally hosted due to chrome driver.  
-async def stock_info(ctx):
+async def stock_info(ctx, driver):
     stock_ticker = ctx.message.content[7:].lower().strip()
 
     url = 'https://finance.yahoo.com/quote/' + stock_ticker
     async with ctx.channel.typing():
         # get screenshot
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.binary_locations = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--start-maximized')
-        driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        
         driver.get(url)
         driver.set_window_size(1920, 1080)
+        time.sleep(2)
         driver.save_screenshot(stock_ticker + '.png')
         driver.close()
 

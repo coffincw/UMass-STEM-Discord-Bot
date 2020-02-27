@@ -9,6 +9,7 @@ import asyncio
 import imageio
 imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
+from selenium import webdriver
 import overlay
 import filters
 import stocks
@@ -21,6 +22,14 @@ import time
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_locations = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--start-maximized')
+driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
 client = Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
@@ -363,7 +372,7 @@ async def my_roles(ctx):
 
 @client.command(name='stock')
 async def stock_info(ctx):
-    await stocks.stock_info(ctx)
+    await stocks.stock_info(ctx, driver)
 
 # vvv MEME COMMANDS vvv
 @client.command(name='mdraw')
@@ -718,5 +727,5 @@ async def make_okay(ctx):
     custom_meme.track_command(ctx.author.id, message)
     os.remove("okay.mp4")
 
-
+driver.close()
 client.run(BOT_TOKEN)
