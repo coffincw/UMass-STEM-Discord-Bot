@@ -2,8 +2,6 @@ import discord
 import os
 import time
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 from PIL import Image
 
 async def stock_info(ctx):
@@ -12,10 +10,13 @@ async def stock_info(ctx):
     url = 'https://finance.yahoo.com/quote/' + stock_ticker
     async with ctx.channel.typing():
         # get screenshot
-        chrome_options = Options()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_locations = os.environ.get("GOOGLE_CHROME_BIN")
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--start-maximized')
-        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options )
+        driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get(url)
         driver.set_window_size(1920, 1080)
         time.sleep(2)
