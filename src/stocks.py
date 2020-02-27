@@ -20,9 +20,9 @@ async def stock_info(ctx, driver):
         # crop screenshot
         stock_image = Image.open(stock_ticker + '.png')
         left = 330
-        top = 260
+        top = 300
         right = 1226
-        bottom = 725
+        bottom = 775
         cropped_image = stock_image.crop((left, top, right, bottom))
         cropped_image.save(stock_ticker + '-cropped.png')
         await ctx.channel.send(file=discord.File(stock_ticker + '-cropped.png'))
