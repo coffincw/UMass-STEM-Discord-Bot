@@ -6,14 +6,16 @@ from PIL import Image
 
 # will not work while locally hosted due to chrome driver.  
 async def stock_info(ctx, driver, ticker, graph_type, period):
+    
     if await check_if_valid_input(ctx, graph_type, period) == -1:
         return
     url = 'https://finviz.com/quote.ashx?t=' + ticker + '&ty=' + graph_type + '&ta=0&p=' + period + '&b=1' 
     async with ctx.channel.typing():
         # get screenshot
-        
+        print('time1: ' + str(time.ctime(time.time())))
         driver.get(url)
         driver.set_window_size(1920, 1080)
+        print('time2: ' + str(time.ctime(time.time())))
 
         # if chart doesn't exist then its an invalid ticker
         try:
@@ -21,12 +23,13 @@ async def stock_info(ctx, driver, ticker, graph_type, period):
         except:
             await ctx.channel.send(embed=discord.Embed(description='Invalid ticker!', color=discord.Color.red()))
             return
+        print('time3: ' + str(time.ctime(time.time())))
 
         location = chart_element.location
         size = chart_element.size
         
         driver.save_screenshot(ticker + '.png')
-
+        print('time4: ' + str(time.ctime(time.time())))
         # crop screenshot
         stock_image = Image.open(ticker + '.png')
         x = location['x']
@@ -35,6 +38,7 @@ async def stock_info(ctx, driver, ticker, graph_type, period):
         height = y + size['height']
         cropped_image = stock_image.crop((int(x), int(y), int(width), int(height)))
         cropped_image.save(ticker + '-cropped.png')
+        print('time5: ' + str(time.ctime(time.time())))
         await ctx.channel.send(file=discord.File(ticker + '-cropped.png'))
 
         os.remove(ticker + '.png')
