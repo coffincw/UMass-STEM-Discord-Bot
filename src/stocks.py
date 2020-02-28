@@ -34,9 +34,11 @@ async def stock_price_today(ctx, ticker):
         percent_change *= -1 # get rid of '-' sign
         color = discord.Color.red()
         sign = '-'
+    ccp = decimal_format.format(current_price).rstrip('0').rstrip('.') # cleaner current price format decimals and remove trailing 0s and .'s
+    cpc = decimal_format.format(price_change).rstrip('0').rstrip('.') # cleaner price change format decimals and remove trailing 0s and .'s
     embedded_message = discord.Embed(
         # format with appropriate ','
-        description=ticker.upper() + " Price: $" + decimal_format.format(current_price) + " USD\nPrice Change: " + sign + "$" + decimal_format.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
+        description=ticker.upper() + " Price: $" + ccp + " USD\nPrice Change: " + sign + "$" + cpc + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
         color=color
         )
     embedded_message.set_footer(text='As of ' + str(time.ctime(time.time())))
