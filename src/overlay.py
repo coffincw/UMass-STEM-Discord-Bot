@@ -19,7 +19,7 @@ hand_origin = (2, 105)
 
 def draw_text(text, image, image_origin):
     person_image = Image.open(image)
-    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
+    font = ImageFont.truetype('../fonts/PermanentMarker-Regular.ttf', size=100)                # load in font
     lines = text.split('|')                                                                 # new line every time the user includes a |
     line_spacing = -0.1                                                                     # as a percentage of the line height
     text_fill = (0, 0, 0)                                                                   # RGB text color
@@ -156,7 +156,7 @@ def longest_string(arr):
 def paste_text_top_bottom(top, bottom, background_image):
     image_width, image_height = background_image.size
     font_size = 1
-    font = ImageFont.truetype('fonts/impact.ttf', size=font_size)                # load in font
+    font = ImageFont.truetype('../fonts/impact.ttf', size=font_size)                # load in font
 
     # find the top space indices
     top_ends = end_of_line_indices(top)
@@ -195,7 +195,7 @@ def paste_text_top_bottom(top, bottom, background_image):
     # scale font to size of image
     while font.getsize(longest_line)[0] < img_fraction*image_width:
         font_size += 1
-        font = ImageFont.truetype('fonts/impact.ttf', font_size)
+        font = ImageFont.truetype('../fonts/impact.ttf', font_size)
 
     # create draw for drawing text
     draw = ImageDraw.Draw(background_image)

@@ -31,7 +31,7 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 
 ## Stocks
 - stocks [ticker]
-    - Displays a screenshot of the specified ticker's information from yahoo finance
+    - Displays the stock's data in a graph
   
 ### Memes
 - mdraw [image/image link/text]

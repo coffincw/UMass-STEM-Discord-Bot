@@ -49,7 +49,7 @@ def paste_on_face(face_path, image_url, face_scale):
 # returns a list of the face coordinates and widths and heights of the faces in the inputed image
 def face_coordinates(image):
     #sets the cascade file, change this for learning to identify different features
-    casc_path = "opencv-data/haarcascade_frontalface_default.xml"
+    casc_path = "../opencv-data/haarcascade_frontalface_default.xml"
 
     # Create haar cascade
     face_cascade = cv2.CascadeClassifier(casc_path)
