@@ -12,6 +12,7 @@ async def stock_price_today(ctx, ticker):
     response = requests.get('https://finnhub.io/api/v1/quote?symbol=' + ticker.upper() + '&token='+ FINNHUB_API_TOKEN).json()
     current_price = response["c"]
     price_change = current_price - response["pc"]
+    decimal_format = '{:,.2f}'
     
     try: # try stock
         percent_change = ((current_price / response["pc"])-1) * 100
@@ -24,17 +25,18 @@ async def stock_price_today(ctx, ticker):
             except:
                 await ctx.send(embed=discord.Embed(description='Invalid Ticker!', color=discord.Color.dark_red()))
                 return
+        decimal_format = '{:,.5f}'
         
     color = discord.Color.green() # default is price increase
     sign = '+'
-    if price_change < 1: # price decrease
+    if price_change < 0: # price decrease
         price_change *= -1 # get rid of '-' sign
         percent_change *= -1 # get rid of '-' sign
         color = discord.Color.red()
         sign = '-'
     embedded_message = discord.Embed(
         # format with appropriate ','
-        description=ticker.upper() + " Price: $" + '{:,.2f}'.format(current_price) + " USD\nPrice Change: " + sign + "$" + '{:,.2f}'.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
+        description=ticker.upper() + " Price: $" + decimal_format.format(current_price) + " USD\nPrice Change: " + sign + "$" + decimal_format.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
         color=color
         )
     embedded_message.set_footer(text='As of ' + str(time.ctime(time.time())))
