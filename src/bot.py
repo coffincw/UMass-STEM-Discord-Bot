@@ -104,7 +104,7 @@ async def on_message_delete(message):
     author = message.author
     channel = client.get_channel(557002016782680076)
     try:
-        if message.guild.id == 387465995176116224:
+        if message.guild.id == 387465995176116224 and author.id != 98138045173227520: # UMass STEM Discord server ID and not caleb
             if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
                 content = message.content
                 await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
@@ -121,7 +121,7 @@ async def on_message_edit(before, after):
     author = before.author
     channel = client.get_channel(557002016782680076)
     try:
-        if before.guild.id == 387465995176116224: # UMass STEM Discord server ID
+        if before.guild.id == 387465995176116224 and author.id != 98138045173227520: # UMass STEM Discord server ID and not caleb
             if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
                 before_content = before.content
                 after_content = after.content
