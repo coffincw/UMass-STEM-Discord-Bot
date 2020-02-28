@@ -30,8 +30,10 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the available *Meme* and *Image Filter* commands
 
 ## Stocks
-- stocks [ticker]
+- stockchart [ticker charttype timeframe]
     - Displays the stock's data in a graph
+- stock [ticker]
+    - Display stock price, price change, percent change
   
 ### Memes
 - mdraw [image/image link/text]

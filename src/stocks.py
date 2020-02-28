@@ -3,9 +3,36 @@ import os
 import time
 from selenium import webdriver
 from PIL import Image
+import requests
 
-# will not work while locally hosted due to chrome driver.  
-async def stock_info(ctx, driver, ticker, graph_type, period):
+FINNHUB_API_TOKEN = os.environ.get('FINNHUB_API_TOKEN')
+
+async def stock_price_today(ctx, ticker):
+    # for indexes 'stocks' needs to be 'index'
+    response = requests.get('https://finnhub.io/api/v1/quote?symbol=' + ticker.upper() + '&token='+ FINNHUB_API_TOKEN).json()
+    price_change = response["c"] - response["pc"]
+    try:
+        percent_change = ((response["c"] / response["pc"])-1) * 100
+    except: # invalid ticker entered --> response["pc"] = 0  leading to / 0
+        await ctx.send(embed=discord.Embed(description='Invalid Ticker!', color=discord.Color.dark_red()))
+        return
+    color = discord.Color.green() # default is price increase
+    sign = '+'
+    if price_change < 1: # price decrease
+        price_change *= -1 # get rid of '-' sign
+        percent_change *= -1 # get rid of '-' sign
+        color = discord.Color.red()
+        sign = '-'
+    embedded_message = discord.Embed(
+        # format with appropriate ','
+        description=ticker.upper() + " Price: $" + '{:,.2f}'.format(response["c"]) + " USD\nPrice Change: " + sign + "$" + '{:,.2f}'.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
+        color=color
+        )
+    embedded_message.set_footer(text='As of ' + str(time.ctime(time.time())))
+    await ctx.send(embed=embedded_message)
+
+  
+async def stock_chart(ctx, driver, ticker, graph_type, period):
     
     if await check_if_valid_input(ctx, graph_type, period) == -1:
         return

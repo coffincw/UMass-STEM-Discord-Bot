@@ -152,7 +152,8 @@ async def help(ctx):
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages'
     }
     STOCK_COMMANDS = {
-        '*$stock [ticker type timeframe]*': 'Displays the stock\'s data in a graph'
+        '*$stockchart [ticker type timeframe]*': 'Displays the stock\'s data in a graph',
+        '*$stock [ticker]*': 'Display stock price, price change, percent change'
     }
     
     embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
@@ -365,13 +366,18 @@ async def my_roles(ctx):
 
 ## vvv STOCK COMMANDS vvv
 
-@client.command(name='stock')
-async def stock_info(ctx, *args):
+@client.command(name='stockchart')
+async def stock_chart(ctx, *args):
     if len(args) < 3:
         await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stock ticker l|c d|w|m", color=discord.Color.red()))
         return
 
-    await stocks.stock_info(ctx, driver, args[0], args[1], args[2])
+    await stocks.stock_chart(ctx, driver, args[0], args[1], args[2])
+
+@client.command(name='stock')
+async def stock_price(ctx, ticker):
+    await stocks.stock_price_today(ctx, ticker)
+
 
 # vvv MEME COMMANDS vvv
 @client.command(name='mdraw')
