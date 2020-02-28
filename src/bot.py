@@ -26,7 +26,7 @@ BOT_ENVIRONMENT = os.environ.get('BOT_ENVIRONMENT')
 
 driver = browser.create_browser(BOT_ENVIRONMENT)
 
-client = Bot(command_prefix=BOT_PREFIX)
+client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 client.remove_command('help')
 
 @client.event
