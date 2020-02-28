@@ -10,12 +10,21 @@ FINNHUB_API_TOKEN = os.environ.get('FINNHUB_API_TOKEN')
 async def stock_price_today(ctx, ticker):
     # for indexes 'stocks' needs to be 'index'
     response = requests.get('https://finnhub.io/api/v1/quote?symbol=' + ticker.upper() + '&token='+ FINNHUB_API_TOKEN).json()
-    price_change = response["c"] - response["pc"]
-    try:
-        percent_change = ((response["c"] / response["pc"])-1) * 100
+    current_price = response["c"]
+    price_change = current_price - response["pc"]
+    
+    try: # try stock
+        percent_change = ((current_price / response["pc"])-1) * 100
     except: # invalid ticker entered --> response["pc"] = 0  leading to / 0
-        await ctx.send(embed=discord.Embed(description='Invalid Ticker!', color=discord.Color.dark_red()))
-        return
+        try: # try crypto binance
+            current_price, price_change, percent_change = get_crypto_data(ticker, 'BINANCE')
+        except:
+            try: # try crypto coinbase
+                current_price, price_change, percent_change = get_crypto_data(ticker, 'COINBASE')
+            except:
+                await ctx.send(embed=discord.Embed(description='Invalid Ticker!', color=discord.Color.dark_red()))
+                return
+        
     color = discord.Color.green() # default is price increase
     sign = '+'
     if price_change < 1: # price decrease
@@ -25,13 +34,21 @@ async def stock_price_today(ctx, ticker):
         sign = '-'
     embedded_message = discord.Embed(
         # format with appropriate ','
-        description=ticker.upper() + " Price: $" + '{:,.2f}'.format(response["c"]) + " USD\nPrice Change: " + sign + "$" + '{:,.2f}'.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
+        description=ticker.upper() + " Price: $" + '{:,.2f}'.format(current_price) + " USD\nPrice Change: " + sign + "$" + '{:,.2f}'.format(price_change) + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
         color=color
         )
     embedded_message.set_footer(text='As of ' + str(time.ctime(time.time())))
     await ctx.send(embed=embedded_message)
 
-  
+# returns crypto data given the specified ticker and exchange
+def get_crypto_data(ticker, exchange):
+    response = requests.get('https://finnhub.io/api/v1/crypto/candle?symbol=' + exchange + ':' + ticker + '&resolution=D&count=1&token=' + FINNHUB_API_TOKEN).json()
+    current_price = response["c"][-1]
+    price_change = current_price - response["o"][-1]
+    percent_change = ((current_price / response["o"][-1])-1) * 100
+    return response["c"][-1], current_price - response["o"][-1], ((current_price / response["o"][-1])-1) * 100
+
+
 async def stock_chart(ctx, driver, ticker, graph_type, period):
     
     if await check_if_valid_input(ctx, graph_type, period) == -1:
@@ -70,7 +87,7 @@ async def stock_chart(ctx, driver, ticker, graph_type, period):
 
         os.remove(ticker + '.png')
         os.remove(ticker + '-cropped.png')
-
+    
 #checks if the input is valid
 async def check_if_valid_input(ctx, graph_type, period):
     if graph_type not in ['l', 'c']:
