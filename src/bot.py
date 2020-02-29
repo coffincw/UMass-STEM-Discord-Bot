@@ -253,10 +253,39 @@ async def meme_help(ctx):
 
 @client.command(name = 'leaderboard')
 async def display_leaderboard(ctx):
-    data = shelve.open(path_addition + 'server-data/stem-discord-data')
-    data_dict = dict(data)
-    number = 0
+    channel_mentions = ctx.message.channel_mentions
+    if len(channel_mentions) < 1:
+        data = shelve.open(path_addition + 'server-data/stem-discord-data')
+        top_10 = get_top_10(data)        
+        data.close()
+        location = 'Server'
+    elif len(channel_mentions) == 1:
+        channel = channel_mentions[0]
+        channel_activity_dict = dict()
+        channel_activity_dict['Total Messages'] = 0
+        async with ctx.channel.typing():
+            async for message in channel.history(limit=100000):
+                    try:
+                        if (BOT_ROLE not in [role.name.lower() for role in message.author.roles]):
+                            if str(message.author) in channel_activity_dict:
+                                channel_activity_dict[str(message.author)] += 1
+                            else:
+                                channel_activity_dict[str(message.author)] = 1
+                    except:
+                        pass
+                    channel_activity_dict['Total Messages'] += 1
+            top_10 = get_top_10(channel_activity_dict)
+            location = '#' + channel.name
+
+    else:
+        await ctx.send(embed=discord.Embed(description='Leaderboard only supports one channel at this time.', color=discord.Color.red()))
+        return
+
+    await ctx.send(embed=discord.Embed(title=location + ' Message Leaderboard', description=top_10, color=discord.Color.purple()))
+
+def get_top_10(data):
     top_10 = ''
+    number = 0
     # sort dictionary and only take top ten
     for user in sorted(data, key=data.get, reverse=True):
         if number == 0:
@@ -268,8 +297,7 @@ async def display_leaderboard(ctx):
             break
         number += 1
     top_10 += '*Total Messages*: ' + str(data['Total Messages'])
-    data.close()
-    await ctx.send(embed=discord.Embed(title='Server Message Leaderboard', description=top_10, color=discord.Color.purple()))
+    return top_10
 
 @client.command(name = 'refresh_leaderboard')
 async def refresh_count_messages(ctx):
