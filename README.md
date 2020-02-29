@@ -104,15 +104,9 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 7. Once working make a pull request
 
 ## Dependencies
-Please make sure to install these in the specified order.  Specifically, installing moviepy and imageio out of order will result in errors.
-1. [discord.py](https://discordpy.readthedocs.io/en/latest/)
-    - How to install: `pip install discord`
-2. [moviepy](http://zulko.github.io/moviepy/)
-    - How to install: `pip install moviepy`
-3. [imageio](https://imageio.github.io/)
-    - How to install: `pip install imageio==2.4.1`
-4. [opencv](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html)
-    - How to install: `pip install opencv-python`
+To install the dependencies, in the root folder, run:
+`pip install -r requirements.txt`
+
 
 
 
