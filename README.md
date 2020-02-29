@@ -16,14 +16,14 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
   - The bot removes the specified role from the user (if they have it)
 - getlist
   - Prints out an organized list of roles available with the get command
-- myroles
-  - Prints out the calling users roles organized by category
+- myroles [optional: @user]
+  - Prints out the calling user's (or mentioned user's) roles organized by category
 
 ### General
 - members
     - Outputs the current number of members in the server
-- leaderboard
-    - Displays the top 10 most active users on the server measured by quantity of messages
+- leaderboard [optional: #channel]
+    - Displays the top 10 most active users on the server (or mentioned channel) measured by quantity of messages
 - help
     - Displays the available *Role* and *General* commands
 - memehelp
