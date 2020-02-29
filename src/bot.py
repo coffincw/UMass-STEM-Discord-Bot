@@ -52,17 +52,17 @@ async def on_member_join(member):
 
         welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/barrington/bdraw.png'), overlay.barr_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/barrington/bdraw.png'), overlay.barr_origin, path_addition)
         elif professor_chosen == 1:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/marius/draw.png'), overlay.marius_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/marius/draw.png'), overlay.marius_origin, path_addition)
         elif professor_chosen == 2:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/tim/tdraw.png'), overlay.tim_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/tim/tdraw.png'), overlay.tim_origin, path_addition)
         elif professor_chosen == 3:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/lan-draw.png'), overlay.lan_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/lan-draw.png'), overlay.lan_origin, path_addition)
         elif professor_chosen == 4:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/landrew.png'), overlay.landrew_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/landrew.png'), overlay.landrew_origin, path_addition)
         else:
-            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/sheldraw.png'), overlay.shel_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/sheldraw.png'), overlay.shel_origin, path_addition)
         name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await welcome_channel.send(member.mention, file=discord.File(name))
