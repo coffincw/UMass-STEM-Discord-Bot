@@ -145,24 +145,24 @@ def make_okay_clip(image):
     clip = clip.set_duration(1.5, change_end=True)
     return clip
 
-def make_draw_gif(frameList, num):
+def make_draw_gif(frameList, num, path_addition):
     imageClipLists = []
     frameLength = 1.0/24.0
     for frame in frameList:
         if num == 0:
-            frame = overlay_image(frame, Path("memes/barrington/bdraw.png"), barr_origin)
+            frame = overlay_image(frame, Path(path_addition + "memes/barrington/bdraw.png"), barr_origin)
         elif num == 1:
-            frame = overlay_image(frame, Path("memes/marius/draw.png"), marius_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/marius/draw.png"), marius_origin)
         elif num == 2:
-            frame = overlay_image(frame, Path("memes/tim/tdraw.png"), tim_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/tim/tdraw.png"), tim_origin)
         elif num == 3:
-            frame = overlay_image(frame, Path("memes/sheldraw.png"), shel_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/sheldraw.png"), shel_origin)
         elif num == 4:
-            frame = overlay_image(frame, Path("memes/lan/lan-draw.png"), lan_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/lan/lan-draw.png"), lan_origin)
         elif num == 5:
-            frame = overlay_image(frame, Path("memes/hand.png"), hand_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/hand.png"), hand_origin)
         elif num == 6:
-            frame = overlay_image(frame, Path("memes/lan/landrew.png"), landrew_origin)
+            frame = overlay_image(frame, Path(path_addition +"memes/lan/landrew.png"), landrew_origin)
         arr = np.array(frame)
         clip = mp.ImageClip(arr)
         clip = clip.set_duration(frameLength)

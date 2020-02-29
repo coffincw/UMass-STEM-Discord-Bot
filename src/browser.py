@@ -1,4 +1,5 @@
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 import os
 
 
@@ -12,4 +13,4 @@ def create_browser(environment):
         chrome_options.add_argument('--start-maximized')
         return webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     else: # environment == 'local'
-        return webdriver.Chrome(executable_path=r'C:\Users\Caleb\.wdm\drivers\chromedriver\80.0.3987.106\win32\chromedriver.exe')
+        return webdriver.Chrome(ChromeDriverManager().install())

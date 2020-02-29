@@ -24,6 +24,7 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 BOT_ENVIRONMENT = os.environ.get('BOT_ENVIRONMENT')
 
+path_addition = '' if BOT_ENVIRONMENT == 'web' else '../'
 driver = browser.create_browser(BOT_ENVIRONMENT)
 
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
@@ -51,17 +52,17 @@ async def on_member_join(member):
 
         welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
         if professor_chosen == 0:
-            output = overlay.draw_text(welcome_message, Path('memes/barrington/bdraw.png'), overlay.barr_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/barrington/bdraw.png'), overlay.barr_origin)
         elif professor_chosen == 1:
-            output = overlay.draw_text(welcome_message, Path('memes/marius/draw.png'), overlay.marius_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/marius/draw.png'), overlay.marius_origin)
         elif professor_chosen == 2:
-            output = overlay.draw_text(welcome_message, Path('memes/tim/tdraw.png'), overlay.tim_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/tim/tdraw.png'), overlay.tim_origin)
         elif professor_chosen == 3:
-            output = overlay.draw_text(welcome_message, Path('memes/lan/lan-draw.png'), overlay.lan_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/lan-draw.png'), overlay.lan_origin)
         elif professor_chosen == 4:
-            output = overlay.draw_text(welcome_message, Path('memes/lan/landrew.png'), overlay.landrew_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/lan/landrew.png'), overlay.landrew_origin)
         else:
-            output = overlay.draw_text(welcome_message, Path('memes/sheldraw.png'), overlay.shel_origin)
+            output = overlay.draw_text(welcome_message, Path(path_addition + 'memes/sheldraw.png'), overlay.shel_origin)
         name = 'welcome-' + member.display_name + '.png'
         output.save(name)
         await welcome_channel.send(member.mention, file=discord.File(name))
@@ -82,7 +83,7 @@ async def on_message(message):
     author = message.author
     try:
         if message.guild.id == 387465995176116224:
-            data = shelve.open('server-data/stem-discord-data')
+            data = shelve.open(path_addition + 'server-data/stem-discord-data')
             if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
                 if str(author) in data:
                     data[str(author)] += 1
@@ -252,7 +253,7 @@ async def meme_help(ctx):
 
 @client.command(name = 'leaderboard')
 async def display_leaderboard(ctx):
-    data = shelve.open('server-data/stem-discord-data')
+    data = shelve.open(path_addition + 'server-data/stem-discord-data')
     data_dict = dict(data)
     number = 0
     top_10 = ''
@@ -274,10 +275,10 @@ async def display_leaderboard(ctx):
 async def refresh_count_messages(ctx):
     if ctx.author.id == 98138045173227520: # only caleb can use this command
         async with ctx.channel.typing():
-            os.remove('server-data/stem-discord-data.dir')
-            os.remove('server-data/stem-discord-data.bak')
-            os.remove('server-data/stem-discord-data.dat')
-            data = shelve.open('server-data/stem-discord-data')
+            os.remove(path_addition + 'server-data/stem-discord-data.dir')
+            os.remove(path_addition + 'server-data/stem-discord-data.bak')
+            os.remove(path_addition + 'server-data/stem-discord-data.dat')
+            data = shelve.open(path_addition + 'server-data/stem-discord-data')
             data['Total Messages'] = 0
             # build dictionary of user: # of messages
             for channel in ctx.guild.text_channels:
@@ -387,7 +388,7 @@ async def mdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/marius/draw.png', 7, overlay.marius_origin, 'marius-drawing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/marius/draw.png', 7, overlay.marius_origin, 'marius-drawing', path_addition)
 
 @client.command(name='bdraw')
 async def bdraw(ctx):
@@ -396,7 +397,7 @@ async def bdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/barrington/bdraw.png', 7, overlay.barr_origin, 'barrington-drawing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/barrington/bdraw.png', 7, overlay.barr_origin, 'barrington-drawing', path_addition)
 
 @client.command(name='tdraw')
 async def tdraw(ctx):
@@ -405,7 +406,7 @@ async def tdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/tim/tdraw.png', 7, overlay.tim_origin, 'tim-drawing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/tim/tdraw.png', 7, overlay.tim_origin, 'tim-drawing', path_addition)
 
 @client.command(name='ldraw')
 async def ldraw(ctx):
@@ -414,7 +415,7 @@ async def ldraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/lan/lan-draw.png', 7, overlay.lan_origin, 'lan-drawing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/lan/lan-draw.png', 7, overlay.lan_origin, 'lan-drawing', path_addition)
 
 @client.command(name='landrew')
 async def landrew(ctx):
@@ -423,7 +424,7 @@ async def landrew(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/lan/landrew.png', 9, overlay.landrew_origin, 'landrew-drawing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/lan/landrew.png', 9, overlay.landrew_origin, 'landrew-drawing', path_addition)
 
 @client.command(name='shelpoint')
 async def shelpoint(ctx):
@@ -432,7 +433,7 @@ async def shelpoint(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/sheldraw.png', 11, overlay.shel_origin, 'sheldon-pointing')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/sheldraw.png', 11, overlay.shel_origin, 'sheldon-pointing', path_addition)
 
 @client.command(name='handdraw')
 async def handdraw(ctx):
@@ -441,7 +442,7 @@ async def handdraw(ctx):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.draw_universal(ctx, 'memes/hand.png', 10, overlay.hand_origin, 'handdraw')
+    await custom_meme.draw_universal(ctx, path_addition + 'memes/hand.png', 10, overlay.hand_origin, 'handdraw', path_addition)
 
 @client.command(name='erase')
 async def erase(ctx):
@@ -461,7 +462,7 @@ async def barrify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.ify(ctx, face_detection.barr_scale, 'memes/barrington/barr-face.png', 'barrify.png', args)
+    await custom_meme.ify(ctx, face_detection.barr_scale, path_addition + 'memes/barrington/barr-face.png', 'barrify.png', args, path_addition)
 
 @client.command(name='marify', aliases=['marrify'])
 async def marify(ctx, *args):
@@ -470,7 +471,7 @@ async def marify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.ify(ctx, face_detection.mar_scale, 'memes/marius/marius-face.png', 'marify.png', args)
+    await custom_meme.ify(ctx, face_detection.mar_scale, path_addition + 'memes/marius/marius-face.png', 'marify.png', args, path_addition)
 
 @client.command(name='timify')
 async def timify(ctx, *args):
@@ -479,7 +480,7 @@ async def timify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.ify(ctx, face_detection.tim_scale, 'memes/tim/tim-face.png', 'timify.png', args)
+    await custom_meme.ify(ctx, face_detection.tim_scale, path_addition + 'memes/tim/tim-face.png', 'timify.png', args, path_addition)
 
 @client.command(name='surprisedpikachu', pass_context=True)
 async def surprisedpikachu_overlay(ctx, *args):
@@ -488,7 +489,7 @@ async def surprisedpikachu_overlay(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.ify(ctx, face_detection.sp_scale, 'memes/surprised-pikachu.png', 'surprisedpikachu.png', args)
+    await custom_meme.ify(ctx, face_detection.sp_scale, path_addition + 'memes/surprised-pikachu.png', 'surprisedpikachu.png', args, path_addition)
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
@@ -504,7 +505,7 @@ async def meme_generator(ctx, *args):
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        output = overlay.paste_text_top_bottom(args[0], args[1], overlay.url_to_image(url))
+        output = overlay.paste_text_top_bottom(args[0], args[1], overlay.url_to_image(url), path_addition)
     output.save('meme.png')
     try:
         message = await channel.send(file=discord.File('meme.png'))
@@ -724,7 +725,7 @@ async def make_okay(ctx):
         await channel.send(embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return
     clip = filters.make_okay_clip(overlay.url_to_image(url))
-    clip.write_videofile("okay.mp4", audio="sfx/okayturnedupto8.mp3", fps=24)
+    clip.write_videofile("okay.mp4", audio= path_addition + "sfx/okayturnedupto8.mp3", fps=24)
     try:
         message = await channel.send(file=discord.File("okay.mp4"))
     except:

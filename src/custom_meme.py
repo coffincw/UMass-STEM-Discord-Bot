@@ -8,7 +8,7 @@ from face_detection import paste_on_face
 
 bot_last_command = {} #Key = User ID, Value = Bot's most recent message tied to the command
 
-async def draw_universal(ctx, path, command_end_index, origin, name):
+async def draw_universal(ctx, path, command_end_index, origin, name, path_addition):
     """Universal function which is called by draw command with the following arguments
 
        Args:
@@ -29,7 +29,7 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
             await channel.send(embed=discord.Embed(description="invalid image", color=discord.Color.red()))
             return
             #get list of image clips
-        gifClip = make_draw_gif(imgList, 0)
+        gifClip = make_draw_gif(imgList, 0, path_addition)
         gifClip.write_gif(name + '.gif', 24, program='imageio')
         try:
             #check if message is <8 mb
@@ -46,7 +46,7 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
         return
     url = over.get_image_url(ctx, command_end_index)
     if url == 0: # no url, hand should write the inputed text
-        output = over.draw_text(ctx.message.content[command_end_index:], Path(path), origin)
+        output = over.draw_text(ctx.message.content[command_end_index:], Path(path), origin, path_addition)
     else: # url inputed, hand should draw on the image
         output = over.overlay_image(over.url_to_image(url), Path(path), origin)
     output.save(name + '.png')
@@ -57,7 +57,7 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
     track_command(ctx.author.id, message) # tracks the most recent command of a user
     os.remove(name + '.png')
 
-async def ify(ctx, scale, path, file_name, *args):
+async def ify(ctx, scale, path, file_name, *args, path_addition):
     """Command to paste a face on top of faces in an inputed image using facial recognition
 
        Args:
@@ -73,7 +73,7 @@ async def ify(ctx, scale, path, file_name, *args):
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
     else:
-        output = paste_on_face(Path(path), url, scale)
+        output = paste_on_face(Path(path), url, scale, path_addition)
     # if there were no faces found then send error
     if output == 0:
         await channel.send(embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
