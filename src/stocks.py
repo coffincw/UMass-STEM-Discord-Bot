@@ -62,7 +62,7 @@ async def stock_chart(ctx, driver, ticker, graph_type, period):
         # get screenshot
         print('time1: ' + str(time.ctime(time.time())))
         driver.get(url)
-        print('time1.5: ' + str(time.ctime(time.time()))
+        print('time1.5: ' + str(time.ctime(time.time())))
         driver.set_window_size(1920, 1080)
         print('time2: ' + str(time.ctime(time.time())))
 
