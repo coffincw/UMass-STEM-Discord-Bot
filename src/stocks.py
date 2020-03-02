@@ -4,7 +4,7 @@ import time
 import datetime
 from calendar import monthrange
 from selenium import webdriver
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from finnhub import client as Finnhub # api docs: https://finnhub.io/docs/api
 import requests
 import matplotlib
@@ -13,6 +13,22 @@ import pandas as pd
 
 FINNHUB_API_TOKEN = os.environ.get('FINNHUB_API_TOKEN')
 finnhub_client = Finnhub.Client(api_key=FINNHUB_API_TOKEN)
+
+# helper function to get the +/- sign of the price and percent change
+def get_string_change(current_price, price_change, percent_change, decimal_format):
+    sign = '+'
+    color = discord.Color.green()
+    if price_change < 0: # price decrease
+        price_change *= -1 # get rid of '-' sign
+        percent_change *= -1 # get rid of '-' sign
+        color = discord.Color.red()
+        sign = '-'
+
+    ccp = '$' + decimal_format.format(current_price).rstrip('0').rstrip('.') # cleaner current price format decimals and remove trailing 0s and .'s
+    cpc = sign + "$" + decimal_format.format(price_change).rstrip('0').rstrip('.') # cleaner price change format decimals and remove trailing 0s and .'s
+    cpercentc = sign + '{:,.2f}'.format(percent_change) + '%'
+    return ccp, cpc, cpercentc, color
+
 
 async def stock_price_today(ctx, ticker):
     # for indexes 'stocks' needs to be 'index'
@@ -34,18 +50,12 @@ async def stock_price_today(ctx, ticker):
                 return
         decimal_format = '{:,.5f}'
         
-    color = discord.Color.green() # default is price increase
-    sign = '+'
-    if price_change < 0: # price decrease
-        price_change *= -1 # get rid of '-' sign
-        percent_change *= -1 # get rid of '-' sign
-        color = discord.Color.red()
-        sign = '-'
-    ccp = decimal_format.format(current_price).rstrip('0').rstrip('.') # cleaner current price format decimals and remove trailing 0s and .'s
-    cpc = decimal_format.format(price_change).rstrip('0').rstrip('.') # cleaner price change format decimals and remove trailing 0s and .'s
+    ccp, cpc, cpercentc, color = get_string_change(current_price, price_change, percent_change, decimal_format)
+
+    
     embedded_message = discord.Embed(
         # format with appropriate ','
-        description=ticker.upper() + " Price: $" + ccp + " USD\nPrice Change: " + sign + "$" + cpc + " (" + sign + '{:,.2f}'.format(percent_change) + "%)", 
+        description=ticker.upper() + " Price: " + ccp + " USD\nPrice Change: " + cpc + " (" + cpercentc + ")", 
         color=color
         )
     embedded_message.set_footer(text='As of ' + str(time.ctime(time.time())))
@@ -59,8 +69,10 @@ def get_crypto_data(ticker, exchange):
     percent_change = ((current_price / candle_crypto["o"][-1])-1) * 100
     return candle_crypto["c"][-1], current_price - candle_crypto["o"][-1], ((current_price / candle_crypto["o"][-1])-1) * 100
 
-async def chart(ctx, ticker, timeframe, chart_type):
-    timeframe = timeframe.lower()
+async def chart(ctx, ticker, timeframe, chart_type, path_addition):
+    timeframe = timeframe.upper()
+    quote = finnhub_client.quote(symbol=ticker.upper())
+    current_price = quote["c"]
 
     # get current date
     current_day = datetime.datetime.now()
@@ -71,6 +83,7 @@ async def chart(ctx, ticker, timeframe, chart_type):
     # get the ipo date for the specified ticker
     try:
         ipo_date = company_info['ipo'].split('-') # [year, month, day]
+        company_name = company_info['name']
     except: # ticker doesn't exist
         await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
         return
@@ -82,25 +95,25 @@ async def chart(ctx, ticker, timeframe, chart_type):
     max_days = ipo_difference.days
 
     # set num days based on timeframe
-    if timeframe == 'd':
+    if timeframe == 'D':
         stock_candle = finnhub_client.stock_candle(symbol=ticker.upper(), resolution='1', count=200)
         await ctx.send(embed=discord.Embed(description='Intraday is currently not supported', color=discord.Color.dark_red()))
         return
-    elif timeframe == '5d':
+    elif timeframe == '5D':
         num_days = 5 if 5 < max_days else max_days
-    elif timeframe == 'm':
+    elif timeframe == 'M':
         num_days = 30 if 30 < max_days else max_days
-    elif timeframe == '6m':
+    elif timeframe == '6M':
         num_days = 182 if 182 < max_days else max_days
-    elif timeframe == 'y':
+    elif timeframe == 'Y':
         num_days = 365 if 365 < max_days else max_days
-    elif timeframe == 'ytd':
+    elif timeframe == 'YTD':
         ytd_difference = datetime.date.today() - datetime.date(current_day.year, 1, 1) 
         ytd = ytd_difference.days
         num_days = ytd if ytd < max_days else max_days
-    elif timeframe == '5y':
+    elif timeframe == '5Y':
         num_days = 1825 if 1825 < max_days else max_days
-    elif timeframe == 'max':
+    elif timeframe == 'MAX':
         num_days = max_days
     else:
         await ctx.send(embed=discord.Embed(description='Invalid timeframe specified!', color=discord.Color.dark_red()))
@@ -108,21 +121,76 @@ async def chart(ctx, ticker, timeframe, chart_type):
     
     # build either line or candle graph
     if chart_type == 'candle':
-        filename = candlestick(ticker.upper(), num_days, timeframe)
+        filename, start_price = candlestick(ticker.upper(), num_days, timeframe)
     elif chart_type == 'line':
-        filename = line(ticker.upper(), num_days, timeframe)
+        filename, start_price = line(ticker.upper(), num_days, timeframe, current_price)
     
+    crop_chart(filename, path_addition, company_name + ', ' + timeframe, ticker.upper() + ', ' + timeframe, start_price, current_price, ) 
+
     # send file to the calling channel
     await ctx.send(file=discord.File(filename))
 
     #remove file from os
     os.remove(filename)
 
+def crop_chart(filename, path_addition, title, alt_title, start_price, current_price):
+    im = Image.open(filename)
+    font = ImageFont.truetype(path_addition + 'fonts/timesbd.ttf', size=30)
+    price_change = current_price - start_price
+    percent_change = ((current_price / start_price)-1) * 100
+    ccp, cpc, cpercentc, color = get_string_change(current_price, price_change, percent_change, '{:,.2f}')
+
+    color = '#00ff00' if color == discord.Color.green() else '#ed2121'
+
+    # get image width and height
+    width, height = im.size
+
+    left = 50
+    top = 50
+    right = width - 130
+    bottom = height - 55
+
+    # crop
+    im = im.crop((left, top, right, bottom))
+
+    draw = ImageDraw.Draw(im)
+
+    # get new width and height
+    width, height = im.size 
+    title_width, title_height = draw.textsize(title, font=font)
+
+    # if company name too long then use ticker
+    if title_width > 400:
+        title = alt_title
+        title_width, title_height = draw.textsize(title, font=font)
+
+    location = ((width-title_width)/2, 10)
+
+    # draw title (Company Name, timeframe)
+    draw.text(location, title ,fill='white',font=font) 
+
+    # draw current price
+    draw.text((100, 10), ccp, fill='#3ec2fa', font=font)
+
+    # Use smaller font size
+    font = ImageFont.truetype(path_addition + 'fonts/timesbd.ttf', size=20)
+
+    # price change and percent change
+    pcpc = cpc + ' (' + cpercentc + ')'
+
+    # get price change and percent change width and height
+    pc_width, pc_height = draw.textsize(pcpc, font=font)
+
+    #draw price change and percent change
+    draw.text((width-17-pc_width, 20), cpc + ' (' + cpercentc + ')', fill=color, font=font)
+
+    im.save(filename)
+
 def candlestick(ticker, days, period):
-    df, start_price, end_price = create_dataframe(ticker, days)
+    df, start_price = create_dataframe(ticker, days)
 
     # define kwargs
-    kwargs = dict(type='candle', title = ticker.upper() + ', ' + period.upper(), ylabel='Share Price', volume = True, figratio=(10,8))
+    kwargs = dict(type='candle', ylabel='Share Price', volume = True, figratio=(10,8))
 
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121',inherit=True)
@@ -135,26 +203,26 @@ def candlestick(ticker, days, period):
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
     mplfinance.plot(df, **kwargs, style=s, savefig=save)
 
-    return filename
+    return filename, start_price
 
-def line(ticker, days, period):
-    df, start_price, end_price = create_dataframe(ticker, days)
+def line(ticker, days, period, current_price):
+    df, start_price = create_dataframe(ticker, days)
 
     # define kwargs
-    kwargs = dict(type='line', title = ticker.upper() + ', ' + period.upper(), ylabel='Share Price', volume = True, figratio=(10,8))
+    kwargs = dict(type='line', ylabel='Share Price', volume = True, figratio=(10,8))
 
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121', inherit=True)
 
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
-    s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc, facecolor='w', edgecolor='#ed2121' if start_price > end_price else '#00ff00', mavcolors=['#ed2121' if start_price > end_price else '#00ff00']) 
+    s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc, facecolor='w', edgecolor='#ed2121' if start_price > current_price else '#00ff00', mavcolors=['#ed2121' if start_price > current_price else '#00ff00']) 
 
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-line.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
     mplfinance.plot(df, **kwargs, style=s, savefig=save)
 
-    return filename
+    return filename, start_price
 
 def create_dataframe(ticker, days):
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
@@ -187,4 +255,4 @@ def create_dataframe(ticker, days):
     # Convert date to correct format
     stockdata_df.index = pd.to_datetime(stockdata_df.index)
 
-    return stockdata_df, reformatted_stockdata['Close'][0], reformatted_stockdata['Close'][-1]
+    return stockdata_df, reformatted_stockdata['Close'][0]

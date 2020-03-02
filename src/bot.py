@@ -401,7 +401,7 @@ async def stock_candle(ctx, ticker, timeframe):
         await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockcandle ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
         return
 
-    await stocks.chart(ctx, ticker, timeframe, 'candle')
+    await stocks.chart(ctx, ticker, timeframe, 'candle', path_addition)
 
 @client.command(name='stockline')
 async def stock_line(ctx, ticker, timeframe):
@@ -409,7 +409,7 @@ async def stock_line(ctx, ticker, timeframe):
         await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockline ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
         return
 
-    await stocks.chart(ctx, ticker, timeframe, 'line')
+    await stocks.chart(ctx, ticker, timeframe, 'line', path_addition)
 
 @client.command(name='stock')
 async def stock_price(ctx, ticker):
