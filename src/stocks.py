@@ -53,7 +53,7 @@ async def stock_price_today(ctx, ticker):
 
 # returns crypto data given the specified ticker and exchange
 def get_crypto_data(ticker, exchange):
-    candle_crypto = finnhub_client.crypto_candle(symbol=exchane + ':' + ticker.upper(), resolution="D", count=200)
+    candle_crypto = finnhub_client.crypto_candle(symbol=exchange + ':' + ticker.upper(), resolution="D", count=200)
     current_price = candle_crypto["c"][-1]
     price_change = current_price - candle_crypto["o"][-1]
     percent_change = ((current_price / candle_crypto["o"][-1])-1) * 100
