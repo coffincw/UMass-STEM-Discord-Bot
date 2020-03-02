@@ -1,22 +1,29 @@
 import discord
 import os
 import time
+import datetime
+from calendar import monthrange
 from selenium import webdriver
 from PIL import Image
+from finnhub import client as Finnhub # api docs: https://finnhub.io/docs/api
 import requests
+import matplotlib
+import mplfinance
+import pandas as pd
 
 FINNHUB_API_TOKEN = os.environ.get('FINNHUB_API_TOKEN')
+finnhub_client = Finnhub.Client(api_key=FINNHUB_API_TOKEN)
 
 async def stock_price_today(ctx, ticker):
     # for indexes 'stocks' needs to be 'index'
-    response = requests.get('https://finnhub.io/api/v1/quote?symbol=' + ticker.upper() + '&token='+ FINNHUB_API_TOKEN).json()
-    current_price = response["c"]
-    price_change = current_price - response["pc"]
+    quote = finnhub_client.quote(symbol=ticker.upper())
+    current_price = quote["c"]
+    price_change = current_price - quote["pc"]
     decimal_format = '{:,.2f}'
     
     try: # try stock
-        percent_change = ((current_price / response["pc"])-1) * 100
-    except: # invalid ticker entered --> response["pc"] = 0  leading to / 0
+        percent_change = ((current_price / quote["pc"])-1) * 100
+    except: # invalid ticker entered --> quote["pc"] = 0  leading to / 0
         try: # try crypto binance
             current_price, price_change, percent_change = get_crypto_data(ticker, 'BINANCE')
         except:
@@ -46,59 +53,137 @@ async def stock_price_today(ctx, ticker):
 
 # returns crypto data given the specified ticker and exchange
 def get_crypto_data(ticker, exchange):
-    response = requests.get('https://finnhub.io/api/v1/crypto/candle?symbol=' + exchange + ':' + ticker + '&resolution=D&count=1&token=' + FINNHUB_API_TOKEN).json()
-    current_price = response["c"][-1]
-    price_change = current_price - response["o"][-1]
-    percent_change = ((current_price / response["o"][-1])-1) * 100
-    return response["c"][-1], current_price - response["o"][-1], ((current_price / response["o"][-1])-1) * 100
+    candle_crypto = finnhub_client.crypto_candle(symbol=exchane + ':' + ticker.upper(), resolution="D", count=200)
+    current_price = candle_crypto["c"][-1]
+    price_change = current_price - candle_crypto["o"][-1]
+    percent_change = ((current_price / candle_crypto["o"][-1])-1) * 100
+    return candle_crypto["c"][-1], current_price - candle_crypto["o"][-1], ((current_price / candle_crypto["o"][-1])-1) * 100
 
+async def chart(ctx, ticker, timeframe, chart_type):
 
-async def stock_chart(ctx, driver, ticker, graph_type, period):
-    
-    if await check_if_valid_input(ctx, graph_type, period) == -1:
+    # get current date
+    current_day = datetime.datetime.now()
+
+    # pull company info from finnhub client
+    company_info = finnhub_client.company_profile(symbol=ticker.upper())
+
+    # get the ipo date for the specified ticker
+    try:
+        ipo_date = company_info['ipo'].split('-') # [year, month, day]
+    except: # ticker doesn't exist
+        await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
         return
-    url = 'https://finviz.com/quote.ashx?t=' + ticker + '&ty=' + graph_type + '&ta=0&p=' + period + '&b=1' 
-    async with ctx.channel.typing():
-        # get screenshot
-        print('time1: ' + str(time.ctime(time.time())))
-        driver.get(url)
-        print('time1.5: ' + str(time.ctime(time.time())))
-        driver.set_window_size(1920, 1080)
-        print('time2: ' + str(time.ctime(time.time())))
 
-        # if chart doesn't exist then its an invalid ticker
-        try:
-            chart_element = driver.find_element_by_id('chart0')
-        except:
-            await ctx.channel.send(embed=discord.Embed(description='Invalid ticker!', color=discord.Color.red()))
-            return
-        print('time3: ' + str(time.ctime(time.time())))
+    # calculate the difference between today and the ipo date
+    ipo_difference = datetime.date.today() - datetime.date(int(ipo_date[0]), int(ipo_date[1]), int(ipo_date[2]))
 
-        location = chart_element.location
-        size = chart_element.size
-        
-        driver.save_screenshot(ticker + '.png')
-        print('time4: ' + str(time.ctime(time.time())))
-        # crop screenshot
-        stock_image = Image.open(ticker + '.png')
-        x = location['x']
-        y = location['y']
-        width = x + size['width']
-        height = y + size['height']
-        cropped_image = stock_image.crop((int(x), int(y), int(width), int(height)))
-        cropped_image.save(ticker + '-cropped.png')
-        print('time5: ' + str(time.ctime(time.time())))
-        await ctx.channel.send(file=discord.File(ticker + '-cropped.png'))
+    # set max_days
+    max_days = ipo_difference.days
 
-        os.remove(ticker + '.png')
-        os.remove(ticker + '-cropped.png')
+    # set num days based on timeframe
+    if timeframe == 'd':
+        stock_candle = finnhub_client.stock_candle(symbol=ticker.upper(), resolution='1', count=200)
+        await ctx.send(embed=discord.Embed(description='Intraday is currently not supported', color=discord.Color.dark_red()))
+        return
+    elif timeframe == '5d':
+        num_days = 5 if 5 < max_days else max_days
+    elif timeframe == 'm':
+        num_days = 30 if 30 < max_days else max_days
+    elif timeframe == '6m':
+        num_days = 182 if 182 < max_days else max_days
+    elif timeframe == 'y':
+        num_days = 365 if 365 < max_days else max_days
+    elif timeframe == 'ytd':
+        ytd_difference = datetime.date.today() - datetime.date(current_day.year, 1, 1) 
+        ytd = ytd_difference.days
+        num_days = ytd if ytd < max_days else max_days
+    elif timeframe == '5y':
+        num_days = 1825 if 1825 < max_days else max_days
+    elif timeframe == 'max':
+        num_days = max_days
+    else:
+        await ctx.send(embed=discord.Embed(description='Invalid timeframe specified!', color=discord.Color.dark_red()))
+        return
     
-#checks if the input is valid
-async def check_if_valid_input(ctx, graph_type, period):
-    if graph_type not in ['l', 'c']:
-        await ctx.channel.send(embed=discord.Embed(description='Invalid chart type! Must be **c** for candle or **l** for line.', color=discord.Color.red()))
-        return -1
-    elif period not in ['d', 'w', 'm']:
-        await ctx.channel.send(embed=discord.Embed(description='Invalid period type! Must be **d** for day, **w** for week, or **m** for month.', color=discord.Color.red()))
-        return -1
-    return 0
+    # build either line or candle graph
+    if chart_type == 'candle':
+        filename = candlestick(ticker.upper(), num_days, timeframe)
+    elif chart_type == 'line':
+        filename = line(ticker.upper(), num_days, timeframe)
+    
+    # send file to the calling channel
+    await ctx.send(file=discord.File(filename))
+
+    #remove file from os
+    os.remove(filename)
+
+def candlestick(ticker, days, period):
+    df, start_price, end_price = create_dataframe(ticker, days)
+
+    # define kwargs
+    kwargs = dict(type='candle', title = ticker.upper() + ', ' + period.upper(), ylabel='Share Price', volume = True, figratio=(10,8))
+
+    # Create my own `marketcolors` to use with the `nightclouds` style:
+    mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121',inherit=True)
+
+    # Create a new style based on `nightclouds` but with my own `marketcolors`:
+    s  = mplfinance.make_mpf_style(base_mpf_style='nightclouds',marketcolors=mc)
+
+    # Plot the candlestick chart and save to ticker-chart.png
+    filename = ticker.upper() + '-candle.png'
+    save = dict(fname=filename, dpi = 100, pad_inches=0.25)
+    mplfinance.plot(df, **kwargs, style=s, savefig=save)
+
+    return filename
+
+def line(ticker, days, period):
+    df, start_price, end_price = create_dataframe(ticker, days)
+
+    # define kwargs
+    kwargs = dict(type='line', title = ticker.upper() + ', ' + period.upper(), ylabel='Share Price', volume = True, figratio=(10,8))
+
+    # Create my own `marketcolors` to use with the `nightclouds` style:
+    mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121', inherit=True)
+
+    # Create a new style based on `nightclouds` but with my own `marketcolors`:
+    s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc, facecolor='w', edgecolor='#ed2121' if start_price > end_price else '#00ff00', mavcolors=['#ed2121' if start_price > end_price else '#00ff00']) 
+
+    # Plot the candlestick chart and save to ticker-chart.png
+    filename = ticker.upper() + '-line.png'
+    save = dict(fname=filename, dpi = 100, pad_inches=0.25)
+    mplfinance.plot(df, **kwargs, style=s, savefig=save)
+
+    return filename
+
+def create_dataframe(ticker, days):
+    # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
+    r = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}')
+    r = r.json()
+
+    # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
+    stockdata = r['historical']
+    reformatted_stockdata = dict()
+    reformatted_stockdata['Date'] = []
+    reformatted_stockdata['Open'] = []
+    reformatted_stockdata['High'] = []
+    reformatted_stockdata['Low'] = []
+    reformatted_stockdata['Close'] = []
+    reformatted_stockdata['Volume'] = []
+    for index in range(len(stockdata)-1, -1, -1):
+        reformatted_stockdata['Date'].append(stockdata[index]['date'])
+        reformatted_stockdata['Open'].append(stockdata[index]['open'])
+        reformatted_stockdata['High'].append(stockdata[index]['high'])
+        reformatted_stockdata['Low'].append(stockdata[index]['low'])
+        reformatted_stockdata['Close'].append(stockdata[index]['close'])
+        reformatted_stockdata['Volume'].append(stockdata[index]['volume'])
+
+    # Convert to dataframe
+    stockdata_df = pd.DataFrame.from_dict(reformatted_stockdata) 
+
+    # Set date as the index
+    stockdata_df.set_index('Date', inplace=True)
+
+    # Convert date to correct format
+    stockdata_df.index = pd.to_datetime(stockdata_df.index)
+
+    return stockdata_df, reformatted_stockdata['Close'][0], reformatted_stockdata['Close'][-1]

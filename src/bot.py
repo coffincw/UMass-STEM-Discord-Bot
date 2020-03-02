@@ -10,7 +10,6 @@ import imageio
 imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 import overlay
-import browser
 import filters
 import stocks
 import stem_role_commands
@@ -25,7 +24,6 @@ BOT_ROLE = "bots"
 BOT_ENVIRONMENT = os.environ.get('BOT_ENVIRONMENT')
 
 path_addition = '' if BOT_ENVIRONMENT == 'web' else '../'
-driver = browser.create_browser(BOT_ENVIRONMENT)
 
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 client.remove_command('help')
@@ -111,6 +109,7 @@ async def on_message_delete(message):
                 await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
     except:
         pass
+
 @client.event
 async def on_message_edit(before, after):
     """This function runs whenever a message is edited
@@ -395,13 +394,21 @@ async def my_roles(ctx):
 
 ## vvv STOCK COMMANDS vvv
 
-@client.command(name='stockchart')
-async def stock_chart(ctx, *args):
-    if len(args) < 3:
-        await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stock ticker l|c d|w|m", color=discord.Color.red()))
+@client.command(name='stockcandle')
+async def stock_candle(ctx, ticker, timeframe):
+    if len(ticker) == 0 or len(timeframe) == 0:
+        await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockcandle ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
         return
 
-    await stocks.stock_chart(ctx, driver, args[0], args[1], args[2])
+    await stocks.chart(ctx, ticker, timeframe, 'candle')
+
+@client.command(name='stockline')
+async def stock_line(ctx, ticker, timeframe):
+    if len(ticker) == 0 or len(timeframe) == 0:
+        await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockline ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
+        return
+
+    await stocks.chart(ctx, ticker, timeframe, 'line')
 
 @client.command(name='stock')
 async def stock_price(ctx, ticker):
