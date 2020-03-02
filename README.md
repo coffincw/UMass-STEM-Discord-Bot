@@ -30,10 +30,12 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the available *Meme* and *Image Filter* commands
 
 ## Stocks
-- stockchart [ticker charttype timeframe]
-    - Displays the stock's data in a graph
 - stock [ticker]
     - Display stock price, price change, percent change
+- stockcandle [ticker timeframe]
+    - Displays the stock's candle data over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX
+- stockline [ticker timeframe]
+    - Displays the stock\'s data in a line graph over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX
   
 ### Memes
 - mdraw [image/image link/text]

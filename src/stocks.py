@@ -60,6 +60,7 @@ def get_crypto_data(ticker, exchange):
     return candle_crypto["c"][-1], current_price - candle_crypto["o"][-1], ((current_price / candle_crypto["o"][-1])-1) * 100
 
 async def chart(ctx, ticker, timeframe, chart_type):
+    timeframe = timeframe.lower()
 
     # get current date
     current_day = datetime.datetime.now()
