@@ -102,17 +102,17 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     elif timeframe == '5D':
         num_days = 5 if 5 < max_days else max_days
     elif timeframe == 'M':
-        num_days = 30 if 30 < max_days else max_days
+        num_days = 22 if 22 < max_days else max_days
     elif timeframe == '6M':
-        num_days = 182 if 182 < max_days else max_days
+        num_days = 130 if 130 < max_days else max_days
     elif timeframe == 'Y':
-        num_days = 365 if 365 < max_days else max_days
+        num_days = 261 if 261 < max_days else max_days
     elif timeframe == 'YTD':
         ytd_difference = datetime.date.today() - datetime.date(current_day.year, 1, 1) 
-        ytd = ytd_difference.days
-        num_days = ytd if ytd < max_days else max_days
+        weeks = ytd_difference.days//7
+        num_days = weeks*5 if weeks*5 < max_days else max_days
     elif timeframe == '5Y':
-        num_days = 1825 if 1825 < max_days else max_days
+        num_days = 1305 if 1305 < max_days else max_days
     elif timeframe == 'MAX':
         num_days = max_days
     else:
