@@ -71,8 +71,8 @@ def get_crypto_data(ticker, exchange):
 
 async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     timeframe = timeframe.upper()
-    quote = finnhub_client.quote(symbol=ticker.upper())
-    current_price = quote["c"]
+    quote = requests.get(f'https://financialmodelingprep.com/api/v3/real-time-price/{ticker.upper()}').json()
+    current_price = quote["price"]
 
     # get current date
     current_day = datetime.datetime.now()
