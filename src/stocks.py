@@ -191,8 +191,7 @@ def create_close_line(dates, close):
     for i in range(len(dates)-1):
         data['Close'].append(close)
 
-    print(len(data['Date']))
-    print(len(data['Close']))
+    # Create the dataframe from dictionary
     previous_close = pd.DataFrame.from_dict(data)
 
     # Set date as the index
@@ -211,6 +210,7 @@ def candlestick(ticker, days, period):
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121',inherit=True)
 
+    # Add 'previous close' horizontal line
     previous_close_line = create_close_line(dates, start_price)
     guide_lines = mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
 
@@ -233,6 +233,7 @@ def line(ticker, days, period, current_price):
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121', inherit=True)
 
+    # Add 'previous close' horizontal line
     previous_close_line = create_close_line(dates, start_price)
     guide_lines = mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
 
@@ -254,9 +255,10 @@ def create_dataframe(ticker, days, intraday_request_frequency):
         stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}').json()
         stockdata = stockdata['historical']
 
+    # most recent trading day info
     time_format = '%Y-%m-%d %H:%M:%S'
-    last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date()
-    print(last_trading_day)
+    last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date() 
+
 
     # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
     reformatted_stockdata = dict()
