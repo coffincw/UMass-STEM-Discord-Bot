@@ -71,14 +71,16 @@ def get_crypto_data(ticker, exchange):
 
 async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     timeframe = timeframe.upper()
-    quote = requests.get(f'https://financialmodelingprep.com/api/v3/real-time-price/{ticker.upper()}').json()
-    current_price = quote["price"]
+    ticker = ticker.upper()
+    quote = requests.get(f'https://financialmodelingprep.com/api/v3/quote/{ticker}').json()
+    current_price = quote[0]["price"]
+    
 
     # get current date
     current_day = datetime.datetime.now()
 
     # pull company info from finnhub client
-    company_info = finnhub_client.company_profile(symbol=ticker.upper())
+    company_info = finnhub_client.company_profile(symbol=ticker)
 
     # get the ipo date for the specified ticker
     try:
@@ -119,11 +121,11 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     
     # build either line or candle graph
     if chart_type == 'candle':
-        filename, start_price = candlestick(ticker.upper(), num_days, timeframe)
+        filename, start_price = candlestick(ticker, num_days, timeframe)
     elif chart_type == 'line':
-        filename, start_price = line(ticker.upper(), num_days, timeframe, current_price)
+        filename, start_price = line(ticker, num_days, timeframe, current_price)
     
-    crop_chart(filename, path_addition, company_name + ', ' + timeframe, ticker.upper() + ', ' + timeframe, start_price, current_price, ) 
+    crop_chart(filename, path_addition, company_name + ', ' + timeframe, ticker + ', ' + timeframe, start_price, current_price, ) 
 
     # send file to the calling channel
     await ctx.send(file=discord.File(filename))
@@ -249,16 +251,17 @@ def line(ticker, days, period, current_price):
 
 def create_dataframe(ticker, days, intraday_request_frequency):
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
+    intraday = False
     if days == 1: # intraday
+        intraday = True
         stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-chart/{intraday_request_frequency}min/{ticker}').json()
+        
+        # most recent trading day info
+        time_format = '%Y-%m-%d %H:%M:%S'
+        last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date() 
     else:
         stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}').json()
         stockdata = stockdata['historical']
-
-    # most recent trading day info
-    time_format = '%Y-%m-%d %H:%M:%S'
-    last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date() 
-
 
     # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
     reformatted_stockdata = dict()
@@ -269,7 +272,7 @@ def create_dataframe(ticker, days, intraday_request_frequency):
     reformatted_stockdata['Close'] = []
     reformatted_stockdata['Volume'] = []
     for index in range(len(stockdata)-1, -1, -1):
-        if datetime.datetime.strptime(stockdata[index]['date'], time_format).date() == last_trading_day:
+        if not intraday or datetime.datetime.strptime(stockdata[index]['date'], time_format).date() == last_trading_day:
             reformatted_stockdata['Date'].append(stockdata[index]['date'])
             reformatted_stockdata['Open'].append(stockdata[index]['open'])
             reformatted_stockdata['High'].append(stockdata[index]['high'])
