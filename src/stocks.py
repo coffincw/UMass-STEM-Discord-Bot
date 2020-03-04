@@ -96,9 +96,7 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
 
     # set num days based on timeframe
     if timeframe == 'D':
-        stock_candle = finnhub_client.stock_candle(symbol=ticker.upper(), resolution='1', count=200)
-        await ctx.send(embed=discord.Embed(description='Intraday is currently not supported', color=discord.Color.dark_red()))
-        return
+        num_days = 1
     elif timeframe == '5D':
         num_days = 5 if 5 < max_days else max_days
     elif timeframe == 'M':
@@ -186,8 +184,26 @@ def crop_chart(filename, path_addition, title, alt_title, start_price, current_p
 
     im.save(filename)
 
+def create_close_line(dates, close):
+    data = dict()
+    data['Date'] = dates
+    data['Close'] = [close]
+    for i in range(len(dates)-1):
+        data['Close'].append(close)
+
+    print(len(data['Date']))
+    print(len(data['Close']))
+    previous_close = pd.DataFrame.from_dict(data)
+
+    # Set date as the index
+    previous_close.set_index('Date', inplace=True)
+
+    # Convert date to correct format
+    previous_close.index = pd.to_datetime(previous_close.index)
+    return previous_close
+
 def candlestick(ticker, days, period):
-    df, start_price = create_dataframe(ticker, days)
+    df, start_price, dates = create_dataframe(ticker, days, 5)
 
     # define kwargs
     kwargs = dict(type='candle', ylabel='Share Price', volume = True, figratio=(10,8))
@@ -195,18 +211,21 @@ def candlestick(ticker, days, period):
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121',inherit=True)
 
+    previous_close_line = create_close_line(dates, start_price)
+    guide_lines = mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
+
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
     s  = mplfinance.make_mpf_style(base_mpf_style='nightclouds',marketcolors=mc)
 
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-candle.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
-    mplfinance.plot(df, **kwargs, style=s, savefig=save)
+    mplfinance.plot(df, addplot=guide_lines, **kwargs, style=s, savefig=save)
 
     return filename, start_price
 
 def line(ticker, days, period, current_price):
-    df, start_price = create_dataframe(ticker, days)
+    df, start_price, dates = create_dataframe(ticker, days, 1)
 
     # define kwargs
     kwargs = dict(type='line', ylabel='Share Price', volume = True, figratio=(10,8))
@@ -214,23 +233,32 @@ def line(ticker, days, period, current_price):
     # Create my own `marketcolors` to use with the `nightclouds` style:
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121', inherit=True)
 
+    previous_close_line = create_close_line(dates, start_price)
+    guide_lines = mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
+
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
     s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc, facecolor='w', edgecolor='#ed2121' if start_price > current_price else '#00ff00', mavcolors=['#ed2121' if start_price > current_price else '#00ff00']) 
 
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-line.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
-    mplfinance.plot(df, **kwargs, style=s, savefig=save)
+    mplfinance.plot(df, addplot=guide_lines, **kwargs, style=s, savefig=save)
 
     return filename, start_price
 
-def create_dataframe(ticker, days):
+def create_dataframe(ticker, days, intraday_request_frequency):
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
-    r = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}')
-    r = r.json()
+    if days == 1: # intraday
+        stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-chart/{intraday_request_frequency}min/{ticker}').json()
+    else:
+        stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}').json()
+        stockdata = stockdata['historical']
+
+    time_format = '%Y-%m-%d %H:%M:%S'
+    last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date()
+    print(last_trading_day)
 
     # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
-    stockdata = r['historical']
     reformatted_stockdata = dict()
     reformatted_stockdata['Date'] = []
     reformatted_stockdata['Open'] = []
@@ -239,12 +267,13 @@ def create_dataframe(ticker, days):
     reformatted_stockdata['Close'] = []
     reformatted_stockdata['Volume'] = []
     for index in range(len(stockdata)-1, -1, -1):
-        reformatted_stockdata['Date'].append(stockdata[index]['date'])
-        reformatted_stockdata['Open'].append(stockdata[index]['open'])
-        reformatted_stockdata['High'].append(stockdata[index]['high'])
-        reformatted_stockdata['Low'].append(stockdata[index]['low'])
-        reformatted_stockdata['Close'].append(stockdata[index]['close'])
-        reformatted_stockdata['Volume'].append(stockdata[index]['volume'])
+        if datetime.datetime.strptime(stockdata[index]['date'], time_format).date() == last_trading_day:
+            reformatted_stockdata['Date'].append(stockdata[index]['date'])
+            reformatted_stockdata['Open'].append(stockdata[index]['open'])
+            reformatted_stockdata['High'].append(stockdata[index]['high'])
+            reformatted_stockdata['Low'].append(stockdata[index]['low'])
+            reformatted_stockdata['Close'].append(stockdata[index]['close'])
+            reformatted_stockdata['Volume'].append(stockdata[index]['volume'])
 
     # Convert to dataframe
     stockdata_df = pd.DataFrame.from_dict(reformatted_stockdata) 
@@ -255,4 +284,4 @@ def create_dataframe(ticker, days):
     # Convert date to correct format
     stockdata_df.index = pd.to_datetime(stockdata_df.index)
 
-    return stockdata_df, reformatted_stockdata['Close'][0]
+    return stockdata_df, reformatted_stockdata['Close'][0], reformatted_stockdata['Date']
