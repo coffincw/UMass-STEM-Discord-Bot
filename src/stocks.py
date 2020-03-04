@@ -240,12 +240,12 @@ def line(ticker, days, period, current_price):
     guide_lines = mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
 
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
-    s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc, facecolor='w', edgecolor='#ed2121' if start_price > current_price else '#00ff00', mavcolors=['#ed2121' if start_price > current_price else '#00ff00']) 
+    s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc) 
 
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-line.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
-    mplfinance.plot(df, addplot=guide_lines, **kwargs, style=s, savefig=save)
+    mplfinance.plot(df, addplot=guide_lines, **kwargs, linecolor='#ed2121' if start_price > current_price else '#00ff00', style=s, savefig=save)
 
     return filename, start_price
 
