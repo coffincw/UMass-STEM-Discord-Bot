@@ -373,6 +373,7 @@ def get_from_time(days):
     return from_time
 
 def get_candle_data(ticker, res, days):
+    today = datetime.datetime.now()
     from_time = get_from_time(days)
     current_time = int(datetime.datetime.now().timestamp())
     candle = finnhub_client.stock_candle(symbol=ticker, resolution=res, **{'from':str(from_time), 'to': str(current_time)})
