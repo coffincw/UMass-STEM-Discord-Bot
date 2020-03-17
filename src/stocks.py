@@ -72,16 +72,16 @@ def get_quote(ticker):
     return quote, None
 
 
-def get_crypto_candle_data(ticker, to_time, from_time):
+def get_crypto_candle_data(ticker, to_time, from_time, res):
     # """Gets the json for the crypto candle data for the ticker
     # If ticker doesn't exist then it will return a json block:
     # { s: 'no_data'}
     # """
-    candle_crypto = finnhub_client.crypto_candle(symbol = 'BINANCE:'+ ticker, resolution=1, **{'from':str(from_time), 'to': str(to_time)})
+    candle_crypto = finnhub_client.crypto_candle(symbol = 'BINANCE:'+ ticker, resolution=res, **{'from':str(from_time), 'to': str(to_time)})
     status = candle_crypto['s']
     if status == 'ok':
         return candle_crypto
-    candle_crypto = finnhub_client.crypto_candle(symbol = 'COINBASE:'+ ticker, resolution=1, **{'from':str(from_time), 'to': str(to_time)})
+    candle_crypto = finnhub_client.crypto_candle(symbol = 'COINBASE:'+ ticker, resolution=res, **{'from':str(from_time), 'to': str(to_time)})
     status = candle_crypto['s']
     if status == 'ok':
         return candle_crypto
@@ -89,7 +89,7 @@ def get_crypto_candle_data(ticker, to_time, from_time):
     # Iterate through remaining exchanges
     crypto_exchanges = finnhub_client.crypto_exchange()
     for exchange in crypto_exchanges:
-        candle_crypto = finnhub_client.crypto_candle(symbol = exchange + ':'+ ticker, resolution=1, **{'from':str(from_time), 'to': str(to_time)})
+        candle_crypto = finnhub_client.crypto_candle(symbol = exchange + ':'+ ticker, resolution=res, **{'from':str(from_time), 'to': str(to_time)})
         status = candle_crypto['s']
         if status == 'ok':
             return candle_crypto 
@@ -100,8 +100,6 @@ def get_crypto_candle_data(ticker, to_time, from_time):
 async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     timeframe = timeframe.upper()
     ticker = ticker.upper()
-    # quote = requests.get(f'https://financialmodelingprep.com/api/v3/quote/{ticker}').json()
-    # current_price = quote[0]["price"]
     quote, dec = get_quote(ticker)
     current_price = quote['c']
 
@@ -111,19 +109,18 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     # pull company info from finnhub client
     company_info = finnhub_client.company_profile(symbol=ticker)
 
-    # # get the ipo date for the specified ticker
-    # try:
-    #     ipo_date = company_info['ipo'].split('-') # [year, month, day]
-    #     company_name = company_info['name']
-    # except: # ticker doesn't exist
-    #     await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
-    #     return
+    # get the ipo date for the specified ticker
+    try:
+        ipo_date = company_info['ipo'].split('-') # [year, month, day]
+        company_name = company_info['name']
+    except: # ticker doesn't exist
+        company_name = ticker
 
     # # calculate the difference between today and the ipo date
     # ipo_difference = datetime.date.today() - datetime.date(int(ipo_date[0]), int(ipo_date[1]), int(ipo_date[2]))
 
     # # set max_days
-    # max_days = ipo_difference.days
+    max_days = 20000
 
     # set num days based on timeframe
     if timeframe == 'D':
@@ -158,7 +155,6 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
         await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
         return
 
-    company_name = 'test'
     crop_chart(filename, path_addition, company_name + ', ' + timeframe, ticker + ', ' + timeframe, start_price, current_price, ) 
 
     # send file to the calling channel
@@ -266,9 +262,9 @@ def create_endtrading_line(dates, low, high):
 
 def candlestick(ticker, days, period):
     quote, dec = get_quote(ticker)
-    df, dates = create_dataframe(ticker, days, 5, quote['pc'])
+    df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 5, quote['pc'])
     if quote['t'] == 0: #invalid ticker
-        return '', quote['pc']
+        return '', -1
     # define kwargs
     kwargs = dict(type='candle', ylabel='Share Price', volume = True, figratio=(10,8))
 
@@ -276,13 +272,22 @@ def candlestick(ticker, days, period):
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121',inherit=True)
 
     # Add 'previous close' horizontal line and 'end trading' verticle line
-    previous_close_line = create_close_line(dates, quote['pc'])
-    endtrading_line = create_endtrading_line(dates, quote['l'] if quote['l'] < quote['pc'] else quote['pc'], quote['h'] if quote['h'] > quote['pc'] else quote['pc'])
+    previous_close_line = create_close_line(dates, start_price)
     guide_lines = [
-        mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot'),
-        mplfinance.make_addplot(endtrading_line, color='#fcfc03')
+        mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
     ]
-
+    
+    
+    today = datetime.datetime.now()
+    closing = datetime.datetime(today.year, today.month, today.day, 16) # closing time object
+    day_of_the_week = datetime.datetime.today().weekday()
+    
+    if create_vert_line and (today > closing or day_of_the_week > 4):
+        low = quote['l'] if quote['l'] < start_price else start_price
+        high = quote['h'] if quote['h'] > start_price else start_price
+        endtrading_line = create_endtrading_line(dates, low, high)
+        guide_lines.append(mplfinance.make_addplot(endtrading_line, color='#fcfc03'))
+    
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
     s  = mplfinance.make_mpf_style(base_mpf_style='nightclouds',marketcolors=mc)
 
@@ -295,10 +300,10 @@ def candlestick(ticker, days, period):
 
 def line(ticker, days, period, current_price):
     quote, dec = get_quote(ticker)
-    df, dates = create_dataframe(ticker, days, 1, quote['pc'])
+    df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 1, quote['pc'])
     
     if quote['t'] == 0: #invalid ticker
-        return '', quote['pc']
+        return '', -1
 
     # define kwargs
     kwargs = dict(type='line', ylabel='Share Price', volume = True, figratio=(10,8))
@@ -307,12 +312,21 @@ def line(ticker, days, period, current_price):
     mc = mplfinance.make_marketcolors(up='#00ff00',down='#ed2121', inherit=True)
 
     # Add 'previous close' horizontal line and 'end trading' verticle line
-    previous_close_line = create_close_line(dates, quote['pc'])
-    endtrading_line = create_endtrading_line(dates, quote['l'] if quote['l'] < quote['pc'] else quote['pc'], quote['h'] if quote['h'] > quote['pc'] else quote['pc'])
+    previous_close_line = create_close_line(dates, start_price)
     guide_lines = [
-        mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot'),
-        mplfinance.make_addplot(endtrading_line, color='#fcfc03')
+        mplfinance.make_addplot(previous_close_line, color='#3ec2fa', linestyle='dashdot')
     ]
+    
+    
+    today = datetime.datetime.now()
+    closing = datetime.datetime(today.year, today.month, today.day, 16) # closing time object
+    day_of_the_week = datetime.datetime.today().weekday()
+    
+    if create_vert_line and (today > closing or day_of_the_week > 4):
+        low = quote['l'] if quote['l'] < start_price else start_price
+        high = quote['h'] if quote['h'] > start_price else start_price
+        endtrading_line = create_endtrading_line(dates, low, high)
+        guide_lines.append(mplfinance.make_addplot(endtrading_line, color='#fcfc03'))
 
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
     s  = mplfinance.make_mpf_style(base_mpf_style = 'nightclouds',marketcolors = mc) 
@@ -320,9 +334,9 @@ def line(ticker, days, period, current_price):
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-line.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
-    mplfinance.plot(df, addplot=guide_lines, **kwargs, linecolor='#ed2121' if quote['pc'] > current_price else '#00ff00', style=s, savefig=save)
+    mplfinance.plot(df, addplot=guide_lines, **kwargs, linecolor='#ed2121' if start_price > current_price else '#00ff00', style=s, savefig=save)
 
-    return filename, quote['pc']
+    return filename, start_price
 
 def get_intraday_data(ticker, res):
     ticker = ticker.upper()
@@ -343,38 +357,67 @@ def get_intraday_data(ticker, res):
         from_time = int(prevday.timestamp())
     candle = finnhub_client.stock_candle(symbol=ticker, resolution=res, **{'from':str(from_time), 'to': str(current_time)})
     status = candle['s']
+    is_not_crypto = True
     if status != 'ok':
         prev = today-datetime.timedelta(days=1)
         from_time = int(prev.timestamp())
-        candle = get_crypto_candle_data(ticker, current_time, from_time)
-    return candle
+        if res == 5:
+            res = 15
+        else:
+            res = 5
+        candle = get_crypto_candle_data(ticker, current_time, from_time, res)
+        is_not_crypto = False
+    return candle, is_not_crypto
 
 def create_dataframe(ticker, days, res, previous_close):
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
-    intraday = False
     if days == 1: # intraday
-        intraday = True
-        stockdata = get_intraday_data(ticker, res)
+        stockdata, is_intraday_not_crypto = get_intraday_data(ticker, res)
         status = stockdata['s']
         if status != 'ok': # invalid ticker
             return None, None
-        
-        # # most recent trading day info
-        # time_format = '%Y-%m-%d %H:%M:%S'
-        # last_trading_day = datetime.datetime.strptime(stockdata[0]['date'], time_format).date() 
+    elif days < 6:
+        today = datetime.datetime.now()
+        opening = datetime.datetime(today.year, today.month, today.day, 9, 30) # opening time object
+        current_time = int(datetime.datetime.now().timestamp())
+        days_ago = opening - datetime.timedelta(days=days+1)
+        from_time = int(days_ago.timestamp())
+        stockdata = finnhub_client.stock_candle(symbol=ticker, resolution=30, **{'from':str(from_time), 'to': str(current_time)})
+        status = stockdata['s']
+        is_intraday_not_crypto = True
+        if status != 'ok':
+            prev = today-datetime.timedelta(days=1)
+            from_time = int(prev.timestamp())
+            if res == 5:
+                res = 15
+            else:
+                res = 5
+            stockdata = get_crypto_candle_data(ticker, current_time, from_time, res)
+            status = stockdata['s']
+        if status != 'ok': # invalid ticker
+            return None, None
     else:
         return None, -1
+        is_intraday_not_crypto = False
         stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}').json()
         stockdata = stockdata['historical']
 
     # # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
     reformatted_stockdata = dict()
-    reformatted_stockdata['Date'] = [datetime.datetime.fromtimestamp(stockdata['t'][0]) - datetime.timedelta(days=1)]
-    reformatted_stockdata['Open'] = [previous_close]
-    reformatted_stockdata['High'] = [previous_close]
-    reformatted_stockdata['Low'] = [previous_close]
-    reformatted_stockdata['Close'] = [previous_close]
-    reformatted_stockdata['Volume'] = [0]
+    
+    reformatted_stockdata['Date'] = []
+    reformatted_stockdata['Open'] = []
+    reformatted_stockdata['High'] = []
+    reformatted_stockdata['Low'] = []
+    reformatted_stockdata['Close'] = []
+    reformatted_stockdata['Volume'] = []
+    if days == 1:
+        reformatted_stockdata['Date'].append(datetime.datetime.fromtimestamp(stockdata['t'][0]) - datetime.timedelta(days=1))
+        reformatted_stockdata['Open'].append(previous_close)
+        reformatted_stockdata['High'].append(previous_close)
+        reformatted_stockdata['Low'].append(previous_close)
+        reformatted_stockdata['Close'].append(previous_close)
+        reformatted_stockdata['Volume'].append(0)
     for index in range(len(stockdata['t'])):
         reformatted_stockdata['Date'].append(datetime.datetime.fromtimestamp(stockdata['t'][index]))
         reformatted_stockdata['Open'].append(stockdata['o'][index])
@@ -400,4 +443,4 @@ def create_dataframe(ticker, days, res, previous_close):
     # Convert date to correct format
     stockdata_df.index = pd.to_datetime(stockdata_df.index)
 
-    return stockdata_df, reformatted_stockdata['Date']
+    return stockdata_df, reformatted_stockdata['Date'], is_intraday_not_crypto, reformatted_stockdata['Close'][0]
