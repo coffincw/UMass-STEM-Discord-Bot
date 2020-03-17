@@ -1,6 +1,7 @@
 import discord
 import os
 import time
+import re
 import datetime
 from calendar import monthrange
 from selenium import webdriver
@@ -71,7 +72,6 @@ def get_quote(ticker):
     
     return quote, None
 
-
 def get_crypto_candle_data(ticker, to_time, from_time, res):
     # """Gets the json for the crypto candle data for the ticker
     # If ticker doesn't exist then it will return a json block:
@@ -96,6 +96,43 @@ def get_crypto_candle_data(ticker, to_time, from_time, res):
     # status is never 'ok' returns { s: 'no_data'}
     return candle_crypto 
     
+def get_num_days(timeframe):
+    d = re.compile('\d+[D]')
+    m = re.compile('\d+[M]')
+    w = re.compile('\d+[W]')
+    y = re.compile('\d+[Y]')
+
+
+    # set num days based on timeframe
+    if timeframe == 'D' or d.match(timeframe) is not None:
+        timeframe = timeframe[:-1] # trim off 'D'
+        if len(timeframe) == 0: # was just 'D'
+            num_days = 1
+        else:
+            num_days = int(timeframe)
+    elif timeframe == 'W' or w.match(timeframe) is not None:
+        timeframe = timeframe[:-1] # trim off 'M'
+        if len(timeframe) == 0: # was just 'M'
+            num_days = 7
+        else:
+            num_days = int(timeframe) * 7
+    elif timeframe == 'M' or m.match(timeframe) is not None:
+        timeframe = timeframe[:-1] # trim off 'M'
+        if len(timeframe) == 0: # was just 'M'
+            num_days = 30
+        else:
+            num_days = int(timeframe) * 30
+    elif timeframe == 'Y' or y.match(timeframe) is not None:
+        timeframe = timeframe[:-1] # trim off 'Y'
+        if len(timeframe) == 0: # was just 'Y'
+            num_days = 365
+        else:
+            num_days = int(timeframe) * 365
+    elif timeframe == 'MAX':
+        num_days = 15000
+    else:
+        num_days = -1
+    return num_days
 
 async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     timeframe = timeframe.upper()
@@ -119,37 +156,16 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     # # calculate the difference between today and the ipo date
     # ipo_difference = datetime.date.today() - datetime.date(int(ipo_date[0]), int(ipo_date[1]), int(ipo_date[2]))
 
-    # # set max_days
-    max_days = 20000
-
-    # set num days based on timeframe
-    if timeframe == 'D':
-        num_days = 1
-    elif timeframe == '5D':
-        num_days = 5 if 5 < max_days else max_days
-    elif timeframe == 'M':
-        num_days = 22 if 22 < max_days else max_days
-    elif timeframe == '6M':
-        num_days = 130 if 130 < max_days else max_days
-    elif timeframe == 'Y':
-        num_days = 261 if 261 < max_days else max_days
-    elif timeframe == 'YTD':
-        ytd_difference = datetime.date.today() - datetime.date(current_day.year, 1, 1) 
-        weeks = ytd_difference.days//7
-        num_days = weeks*5 if weeks*5 < max_days else max_days
-    elif timeframe == '5Y':
-        num_days = 1305 if 1305 < max_days else max_days
-    elif timeframe == 'MAX':
-        num_days = max_days
-    else:
+    num_days = get_num_days(timeframe)
+    if num_days == -1:
         await ctx.send(embed=discord.Embed(description='Invalid timeframe specified!', color=discord.Color.dark_red()))
         return
     
     # build either line or candle graph
     if chart_type == 'candle':
-        filename, start_price = candlestick(ticker, num_days, timeframe)
+        filename, start_price = candlestick(ticker, num_days, timeframe, quote)
     elif chart_type == 'line':
-        filename, start_price = line(ticker, num_days, timeframe, current_price)
+        filename, start_price = line(ticker, num_days, timeframe, quote)
     
     if start_price == -1:
         await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
@@ -260,8 +276,7 @@ def create_endtrading_line(dates, low, high):
     return end_trading
 
 
-def candlestick(ticker, days, period):
-    quote, dec = get_quote(ticker)
+def candlestick(ticker, days, period, quote):
     df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 5, quote['pc'])
     if quote['t'] == 0: #invalid ticker
         return '', -1
@@ -298,8 +313,7 @@ def candlestick(ticker, days, period):
 
     return filename, quote['pc']
 
-def line(ticker, days, period, current_price):
-    quote, dec = get_quote(ticker)
+def line(ticker, days, period, quote):
     df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 1, quote['pc'])
     
     if quote['t'] == 0: #invalid ticker
@@ -334,73 +348,68 @@ def line(ticker, days, period, current_price):
     # Plot the candlestick chart and save to ticker-chart.png
     filename = ticker.upper() + '-line.png'
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
-    mplfinance.plot(df, addplot=guide_lines, **kwargs, linecolor='#ed2121' if start_price > current_price else '#00ff00', style=s, savefig=save)
+    mplfinance.plot(df, addplot=guide_lines, **kwargs, linecolor='#ed2121' if start_price > quote['c'] else '#00ff00', style=s, savefig=save)
 
     return filename, start_price
 
-def get_intraday_data(ticker, res):
-    ticker = ticker.upper()
+def get_from_time(days):
     today = datetime.datetime.now()
     opening = datetime.datetime(today.year, today.month, today.day, 9, 30) # opening time object
-    closing = datetime.datetime(today.year, today.month, today.day, 16) # closing time object
     day_of_the_week = datetime.datetime.today().weekday()
-    current_time = int(datetime.datetime.now().timestamp())
-    from_time = 0
 
-    if day_of_the_week < 5 and today > opening: # weekday after trading starts
-        from_time = int(opening.timestamp())
-    elif day_of_the_week < 5: # weekday before trading time
-        prevday = opening - datetime.timedelta(days=1)
-        from_time = int(prevday.timestamp())
-    else: # weekend
-        prevday = opening - datetime.timedelta(days=(day_of_the_week-4))
-        from_time = int(prevday.timestamp())
+    if days == 1:
+        if day_of_the_week < 5 and today > opening: # weekday after trading starts
+            from_time = int(opening.timestamp())
+        elif day_of_the_week < 5: # weekday before trading time
+            prevday = opening - datetime.timedelta(days=1)
+            from_time = int(prevday.timestamp())
+        else: # weekend
+            prevday = opening - datetime.timedelta(days=(day_of_the_week-4))
+            from_time = int(prevday.timestamp())
+    else:
+        days_ago = opening - datetime.timedelta(days=days+1)
+        from_time = int(days_ago.timestamp())
+
+    return from_time
+
+def get_candle_data(ticker, res, days):
+    from_time = get_from_time(days)
+    current_time = int(datetime.datetime.now().timestamp())
     candle = finnhub_client.stock_candle(symbol=ticker, resolution=res, **{'from':str(from_time), 'to': str(current_time)})
     status = candle['s']
     is_not_crypto = True
     if status != 'ok':
-        prev = today-datetime.timedelta(days=1)
-        from_time = int(prev.timestamp())
-        if res == 5:
-            res = 15
-        else:
-            res = 5
+        if days == 1:
+            prev = today-datetime.timedelta(days=1)
+            from_time = int(prev.timestamp())
         candle = get_crypto_candle_data(ticker, current_time, from_time, res)
         is_not_crypto = False
+    
     return candle, is_not_crypto
 
 def create_dataframe(ticker, days, res, previous_close):
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
     if days == 1: # intraday
-        stockdata, is_intraday_not_crypto = get_intraday_data(ticker, res)
+        stockdata, is_intraday_not_crypto = get_candle_data(ticker, res, days)
         status = stockdata['s']
         if status != 'ok': # invalid ticker
-            return None, None
+            return None, None, True, -1
     elif days < 6:
-        today = datetime.datetime.now()
-        opening = datetime.datetime(today.year, today.month, today.day, 9, 30) # opening time object
-        current_time = int(datetime.datetime.now().timestamp())
-        days_ago = opening - datetime.timedelta(days=days+1)
-        from_time = int(days_ago.timestamp())
-        stockdata = finnhub_client.stock_candle(symbol=ticker, resolution=30, **{'from':str(from_time), 'to': str(current_time)})
+        if res == 5:
+            res = 60
+        else:
+            res = 30
+        stockdata, is_intraday_not_crypto = get_candle_data(ticker, res, days)
         status = stockdata['s']
-        is_intraday_not_crypto = True
-        if status != 'ok':
-            prev = today-datetime.timedelta(days=1)
-            from_time = int(prev.timestamp())
-            if res == 5:
-                res = 15
-            else:
-                res = 5
-            stockdata = get_crypto_candle_data(ticker, current_time, from_time, res)
-            status = stockdata['s']
+        is_intraday_not_crypto = False # override function output
         if status != 'ok': # invalid ticker
-            return None, None
+            return None, None, False, -1
     else:
-        return None, -1
-        is_intraday_not_crypto = False
-        stockdata = requests.get(f'https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?timeseries={days}').json()
-        stockdata = stockdata['historical']
+        stockdata, is_intraday_not_crypto = get_candle_data(ticker, 'D', days)
+        status = stockdata['s']
+        is_intraday_not_crypto = False # override function output
+        if status != 'ok': # invalid ticker
+            return None, None, False, -1
 
     # # reformat the stock date from [{date: 'x-x-x', open: x, high: x, etc}, {}, {}, ...] to {Date: ['x-x-x', 'x-x-x', ...], Open: [x, x, ...], ...}
     reformatted_stockdata = dict()
@@ -425,14 +434,6 @@ def create_dataframe(ticker, days, res, previous_close):
         reformatted_stockdata['Low'].append(stockdata['l'][index])
         reformatted_stockdata['Close'].append(stockdata['c'][index])
         reformatted_stockdata['Volume'].append(stockdata['v'][index])
-    # for index in range(len(stockdata)-1, -1, -1):
-    #     if not intraday or datetime.datetime.strptime(stockdata[index]['date'], time_format).date() == last_trading_day:
-    #         reformatted_stockdata['Date'].append(stockdata[index]['date'])
-    #         reformatted_stockdata['Open'].append(stockdata[index]['open'])
-    #         reformatted_stockdata['High'].append(stockdata[index]['high'])
-    #         reformatted_stockdata['Low'].append(stockdata[index]['low'])
-    #         reformatted_stockdata['Close'].append(stockdata[index]['close'])
-    #         reformatted_stockdata['Volume'].append(stockdata[index]['volume'])
 
     # Convert to dataframe
     stockdata_df = pd.DataFrame.from_dict(reformatted_stockdata) 
