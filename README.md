@@ -33,9 +33,11 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 - stock [ticker]
     - Display stock price, price change, percent change
 - stockcandle [ticker timeframe]
-    - Displays the stock's candle data over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX
+    - Displays the stock's candle data over specified timeframe.  
+      - Possible timeframes (multiples can be specified ex. 5D): D, W, M, Y, MAX
 - stockline [ticker timeframe]
-    - Displays the stock\'s data in a line graph over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX
+    - Displays the stock\'s data in a line graph over specified timeframe.
+      - Possible timeframes (multiples can be specified ex. 5D): D, W, M, Y, MAX
   
 ### Memes
 - mdraw [image/image link/text]
@@ -108,9 +110,3 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 ## Dependencies
 To install the dependencies, in the root folder, run:
 `pip install -r requirements.txt`
-
-
-
-
-
-
