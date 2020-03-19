@@ -249,22 +249,42 @@ def create_close_line(dates, close):
     previous_close.index = pd.to_datetime(previous_close.index)
     return previous_close
 
-def create_endtrading_line(dates, low, high):
-    today = datetime.datetime.now()
-    date = datetime.datetime(today.year, today.month, today.day, 16)
-    data = dict()
-    data['Close'] = []
-    data['Date'] = dates
+def add_line_at_date(date, data, dates):
+    closing_time_exists = False
     skip = False
     for i in range(len(dates)):
         if skip:
             skip = False
             continue
         if dates[i] == date:
+            closing_time_exists = True
             data['Close'].extend([0, 999999])
             skip = True
             continue
         data['Close'].append(float('nan'))
+    return data, closing_time_exists
+
+def create_endtrading_line(dates, low, high):
+    today = dates[-1]
+    date = datetime.datetime(today.year, today.month, today.day, 16)
+    data = dict()
+    data['Close'] = []
+    data['Date'] = dates
+    
+    alternate = True
+    iteration = 1
+    
+    data, successful = add_line_at_date(date, data, dates)
+    while not successful:
+        data['Close'] = []
+        if alternate:
+            date = datetime.datetime(today.year, today.month, today.day, 15, 60-iteration)
+        else:
+            date = datetime.datetime(today.year, today.month, today.day, 16, iteration)
+            iteration += 1
+        alternate = not alternate
+        data, successful = add_line_at_date(date, data, dates)
+
     # Create the dataframe from dictionary
     end_trading = pd.DataFrame.from_dict(data)
 
@@ -293,7 +313,7 @@ def candlestick(ticker, days, period, quote):
     ]
     
     
-    today = datetime.datetime.now()
+    today = dates[-1]
     closing = datetime.datetime(today.year, today.month, today.day, 16) # closing time object
     day_of_the_week = datetime.datetime.today().weekday()
     
@@ -332,7 +352,7 @@ def line(ticker, days, period, quote):
     ]
     
     
-    today = datetime.datetime.now()
+    today = dates[-1]
     closing = datetime.datetime(today.year, today.month, today.day, 16) # closing time object
     day_of_the_week = datetime.datetime.today().weekday()
     
