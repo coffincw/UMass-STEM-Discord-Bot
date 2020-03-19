@@ -223,7 +223,7 @@ def get_num_days(timeframe):
         num_days = -1
     return num_days
 
-async def chart(ctx, ticker, timeframe, chart_type, path_addition):
+async def chart(ctx, ticker, timeframe, chart_type):
     """Called from stock_candle() and stock_line() in bot.py
     Creates the stock chart for the specified ticker and timeframe
 
@@ -275,7 +275,7 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
         await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
         return
 
-    crop_chart(filename, path_addition, company_name + ', ' + timeframe, ticker + ', ' + timeframe, start_price, current_price, ) 
+    crop_chart(filename, company_name + ', ' + timeframe, ticker + ', ' + timeframe, start_price, current_price, ) 
 
     # send file to the calling channel
     await ctx.send(file=discord.File(filename))
@@ -283,7 +283,7 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     #remove file from os
     os.remove(filename)
 
-def crop_chart(filename, path_addition, title, alt_title, start_price, current_price):
+def crop_chart(filename, title, alt_title, start_price, current_price):
     """Crops the chart and adds the enlarged title, current price,
     price change and percent change
 
@@ -301,7 +301,7 @@ def crop_chart(filename, path_addition, title, alt_title, start_price, current_p
         the current share price
     """
     im = Image.open(filename)
-    font = ImageFont.truetype(path_addition + 'fonts/timesbd.ttf', size=30)
+    font = ImageFont.truetype('fonts/timesbd.ttf', size=30)
     price_change = current_price - start_price
     percent_change = ((current_price / start_price)-1) * 100
     ccp, cpc, cpercentc, color = get_string_change(current_price, price_change, percent_change, '{:,.2f}')
@@ -339,7 +339,7 @@ def crop_chart(filename, path_addition, title, alt_title, start_price, current_p
     draw.text((100, 10), ccp, fill='#3ec2fa', font=font)
 
     # Use smaller font size
-    font = ImageFont.truetype(path_addition + 'fonts/timesbd.ttf', size=20)
+    font = ImageFont.truetype('fonts/timesbd.ttf', size=20)
 
     # price change and percent change
     pcpc = cpc + ' (' + cpercentc + ')'
@@ -670,7 +670,7 @@ def create_dataframe(ticker, days, res, previous_close):
     current_price : float
         the most recently retched share price
     """
-    
+
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
     if days == 1: # intraday
         stockdata, is_intraday_not_crypto = get_candle_data(ticker, res, days)

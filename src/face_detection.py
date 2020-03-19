@@ -13,10 +13,10 @@ mar_scale = (2.0, 0.625, 0.85)
 tim_scale = (1.7, 0.3, 0.5)
 
 # pastes image "face" on image opened from image_path
-def paste_on_face(face_path, image_url, face_scale, path_addition):
+def paste_on_face(face_path, image_url, face_scale):
     # open image in opencv format and find the coordinates and dimensions of faces
     image_for_coordinates = open_image_cv(image_url)
-    faces = face_coordinates(image_for_coordinates, path_addition)
+    faces = face_coordinates(image_for_coordinates)
 
     #open the image and face to paste with the Image library
     image = url_to_image(image_url)
@@ -47,9 +47,9 @@ def paste_on_face(face_path, image_url, face_scale, path_addition):
     return image
 
 # returns a list of the face coordinates and widths and heights of the faces in the inputed image
-def face_coordinates(image, path_addition):
+def face_coordinates(image):
     #sets the cascade file, change this for learning to identify different features
-    casc_path = path_addition + "opencv-data/haarcascade_frontalface_default.xml"
+    casc_path = "opencv-data/haarcascade_frontalface_default.xml"
 
     # Create haar cascade
     face_cascade = cv2.CascadeClassifier(casc_path)
