@@ -15,8 +15,34 @@ import pandas as pd
 FINNHUB_API_TOKEN = os.environ.get('FINNHUB_API_TOKEN')
 finnhub_client = Finnhub.Client(api_key=FINNHUB_API_TOKEN)
 
-# helper function to get the +/- sign of the price and percent change
+# 
 def get_string_change(current_price, price_change, percent_change, decimal_format):
+    """Helper function to get the +/- sign of the
+    price and percent change along with the color
+
+    Parameters
+    ----------
+    current_price : float
+        current share price of the ticker
+    price_change : float
+        difference between the previous close price and the current price
+    percent_change : float
+        percent difference between the previous close price nad the current price
+    decimal_format : string
+        string format for the numbers
+
+    Returns
+    -------
+    ccp : string
+        cleaner current price with formatted decimals and removal of trailing 0s and .'s
+    cpc : string
+        cleaner price change with formatted decimals and removal of trailing 0s and .'s
+    cpercentc : string 
+        cleaner percent change with formatted decimals
+    color : discord.Color
+        color for the embedded message
+    """
+
     sign = '+'
     color = discord.Color.green()
     if price_change < 0: # price decrease
@@ -32,6 +58,19 @@ def get_string_change(current_price, price_change, percent_change, decimal_forma
 
 
 async def stock_price_today(ctx, ticker):
+    """Called by stocK_price() in bot.py, returns
+    the current price, percent change, and price
+    change for the specified ticker
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        context of the command
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+
+    """
+
     # for indexes 'stocks' needs to be 'index'
     quote, decimal_format = get_quote(ticker.upper())
     if quote['t'] == 0:
@@ -53,6 +92,25 @@ async def stock_price_today(ctx, ticker):
     await ctx.send(embed=embedded_message)
 
 def get_quote(ticker):
+    """Gets the quote for the specified ticker, 
+    the quote includes the open price (o), 
+    high price (h), low price (l), current price (c), 
+    previous close price (pc), timestamp (t)
+
+    Parameters
+    ----------
+    ticker : string
+        stock ticker
+
+    Returns
+    -------
+    quote : dictionary
+        quote for the stock
+    dec : string
+        string format for the numbers
+
+    """
+
     quote = finnhub_client.quote(symbol=ticker)
     if quote['t'] != 0:
         return quote, '{:,.2f}'
@@ -73,10 +131,27 @@ def get_quote(ticker):
     return quote, None
 
 def get_crypto_candle_data(ticker, to_time, from_time, res):
-    # """Gets the json for the crypto candle data for the ticker
-    # If ticker doesn't exist then it will return a json block:
-    # { s: 'no_data'}
-    # """
+    """Gets the json for the crypto candle data for the ticker
+    If ticker doesn't exist then it will return a json block
+    where s : 'no data'
+
+    Parameters
+    ----------
+    ticker : string
+        crypto ticker
+    to_time : timestamp
+        timestamp to mark the most recent data to be fetched
+    from_time : timestamp
+        timestamp to mark the oldest data to be fetched
+    res : int or string (must be: 1, 5, 15, 30, 60, D, W, M)
+        resolution, frequency of data points
+
+    Returns
+    -------
+    candle_crypto : dictionary
+        candle data for the specified crypto ticker
+    """
+
     candle_crypto = finnhub_client.crypto_candle(symbol = 'BINANCE:'+ ticker, resolution=res, **{'from':str(from_time), 'to': str(to_time)})
     status = candle_crypto['s']
     if status == 'ok':
@@ -97,6 +172,20 @@ def get_crypto_candle_data(ticker, to_time, from_time, res):
     return candle_crypto 
     
 def get_num_days(timeframe):
+    """Given the passed in timeframe, gets the number of
+    days to which the timeframe translates
+
+    Parameters
+    ----------
+    timeframe : string
+        the timeframe from which to fetch the stock data
+
+    Returns
+    -------
+    num_days : int
+        number of days in the timeframe
+    """
+
     d = re.compile('\d+[D]')
     m = re.compile('\d+[M]')
     w = re.compile('\d+[W]')
@@ -135,6 +224,21 @@ def get_num_days(timeframe):
     return num_days
 
 async def chart(ctx, ticker, timeframe, chart_type, path_addition):
+    """Called from stock_candle() and stock_line() in bot.py
+    Creates the stock chart for the specified ticker and timeframe
+
+    Parameters
+    ----------
+    ctx : discord.ext.commands.Context
+        context of the command
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+    timeframe : string
+        the timeframe from which to fetch the stock data
+    chart_type : string
+        either 'line' or 'candle' represents which type of chart to create
+    """
+
     timeframe = timeframe.upper()
     ticker = ticker.upper()
     quote, dec = get_quote(ticker)
@@ -163,9 +267,9 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     
     # build either line or candle graph
     if chart_type == 'candle':
-        filename, start_price = candlestick(ticker, num_days, timeframe, quote)
+        filename, start_price = candlestick(ticker, num_days, quote)
     elif chart_type == 'line':
-        filename, start_price = line(ticker, num_days, timeframe, quote)
+        filename, start_price = line(ticker, num_days, quote)
     
     if start_price == -1:
         await ctx.send(embed=discord.Embed(description='Invalid ticker', color=discord.Color.dark_red()))
@@ -180,6 +284,22 @@ async def chart(ctx, ticker, timeframe, chart_type, path_addition):
     os.remove(filename)
 
 def crop_chart(filename, path_addition, title, alt_title, start_price, current_price):
+    """Crops the chart and adds the enlarged title, current price,
+    price change and percent change
+
+    Parameters
+    ----------
+    filename : string
+        the filename of the chart created with mplfinance
+    title : string
+        the title of the chart (the company name)
+    alt_title : string
+        the alternative title of the chart (company ticker)
+    start_price : float
+        previous close share price
+    current_price : float
+        the current share price
+    """
     im = Image.open(filename)
     font = ImageFont.truetype(path_addition + 'fonts/timesbd.ttf', size=30)
     price_change = current_price - start_price
@@ -233,6 +353,21 @@ def crop_chart(filename, path_addition, title, alt_title, start_price, current_p
     im.save(filename)
 
 def create_close_line(dates, close):
+    """Creates the horizontal line that represents the
+    previous close price of the stock
+
+    Parameters
+    ----------
+    dates : list(datetime)
+        dates in the chart
+    close : float
+        previous close share price
+
+    Returns
+    -------
+    previous_close : DataFrame
+        horizontal previous close line
+    """
     data = dict()
     data['Date'] = dates
     data['Close'] = [close]
@@ -249,22 +384,57 @@ def create_close_line(dates, close):
     previous_close.index = pd.to_datetime(previous_close.index)
     return previous_close
 
-def add_line_at_date(date, data, dates):
+def add_line_at_date(date, dates):
+    """Creates list with 'nan' values except for the date 
+    that matches the specified date this date and the next
+    date has close values 0, 999999 this will create a nearly
+    verticle line to be put on the chart
+
+    Parameters
+    ----------
+    date : datetime object
+        the date to create the verticle line
+    dates : list(datetime)
+        dates in the chart
+
+    Returns
+    -------
+    closes : list
+        close price list (all nan values except 0, 999999 if date in dates)
+    closing_time_exists : boolean
+        true if date in dates and 0, 999999 added to closes
+    """
+
     closing_time_exists = False
     skip = False
+    closes = []
     for i in range(len(dates)):
         if skip:
             skip = False
             continue
         if dates[i] == date:
             closing_time_exists = True
-            data['Close'].extend([0, 999999])
+            closes.extend([0, 999999])
             skip = True
             continue
-        data['Close'].append(float('nan'))
-    return data, closing_time_exists
+        closes.append(float('nan'))
+    return closes, closing_time_exists
 
-def create_endtrading_line(dates, low, high):
+def create_endtrading_line(dates):
+    """Creates the verticle line that represents the end
+    of the trading period (4pm EST)
+
+    Parameters
+    ----------
+    dates : list(datetime)
+        dates in the chart
+
+    Returns
+    -------
+    end_trading : DataFrame
+        verticle end trading line
+    """
+
     today = dates[-1]
     date = datetime.datetime(today.year, today.month, today.day, 16)
     data = dict()
@@ -274,7 +444,7 @@ def create_endtrading_line(dates, low, high):
     alternate = True
     iteration = 1
     
-    data, successful = add_line_at_date(date, data, dates)
+    data['Close'], successful = add_line_at_date(date, dates)
     while not successful:
         data['Close'] = []
         if alternate:
@@ -283,7 +453,7 @@ def create_endtrading_line(dates, low, high):
             date = datetime.datetime(today.year, today.month, today.day, 16, iteration)
             iteration += 1
         alternate = not alternate
-        data, successful = add_line_at_date(date, data, dates)
+        data['Close'], successful = add_line_at_date(date, dates)
 
     # Create the dataframe from dictionary
     end_trading = pd.DataFrame.from_dict(data)
@@ -295,8 +465,26 @@ def create_endtrading_line(dates, low, high):
     end_trading.index = pd.to_datetime(end_trading.index)
     return end_trading
 
+def candlestick(ticker, days, quote):
+    """Creates a candlestick plot
 
-def candlestick(ticker, days, period, quote):
+    Parameters
+    ----------
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+    days : int
+        number of days of data to fetch
+    quote : dictionary
+        quote for the ticker - for more info see get_quote()
+
+    Returns
+    -------
+    filename : string
+        name of the image file created by mpl.plot()
+    pc : float
+        previous close share price
+    """
+
     df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 5, quote['pc'])
     if quote['t'] == 0: #invalid ticker
         return '', -1
@@ -318,9 +506,7 @@ def candlestick(ticker, days, period, quote):
     day_of_the_week = datetime.datetime.today().weekday()
     
     if create_vert_line and (today > closing or day_of_the_week > 4):
-        low = quote['l'] if quote['l'] < start_price else start_price
-        high = quote['h'] if quote['h'] > start_price else start_price
-        endtrading_line = create_endtrading_line(dates, low, high)
+        endtrading_line = create_endtrading_line(dates)
         guide_lines.append(mplfinance.make_addplot(endtrading_line, color='#fcfc03'))
     
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
@@ -333,9 +519,28 @@ def candlestick(ticker, days, period, quote):
 
     return filename, quote['pc']
 
-def line(ticker, days, period, quote):
+def line(ticker, days, quote):
+    """Creates a line plot
+
+    Parameters
+    ----------
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+    days : int
+        number of days of data to fetch
+    quote : dictionary
+        quote for the ticker - for more info see get_quote()
+
+    Returns
+    -------
+    filename : string
+        name of the image file created by mpl.plot()
+    pc : float
+        previous close share price
+    """
+
     df, dates, create_vert_line, start_price = create_dataframe(ticker, days, 1, quote['pc'])
-    
+
     if quote['t'] == 0: #invalid ticker
         return '', -1
 
@@ -357,9 +562,7 @@ def line(ticker, days, period, quote):
     day_of_the_week = datetime.datetime.today().weekday()
     
     if create_vert_line and (today > closing or day_of_the_week > 4):
-        low = quote['l'] if quote['l'] < start_price else start_price
-        high = quote['h'] if quote['h'] > start_price else start_price
-        endtrading_line = create_endtrading_line(dates, low, high)
+        endtrading_line = create_endtrading_line(dates)
         guide_lines.append(mplfinance.make_addplot(endtrading_line, color='#fcfc03'))
 
     # Create a new style based on `nightclouds` but with my own `marketcolors`:
@@ -373,6 +576,20 @@ def line(ticker, days, period, quote):
     return filename, start_price
 
 def get_from_time(days):
+    """Gets the timestamp for the time 'days' away
+    from the to_time
+
+    Parameters
+    ----------
+    days : int
+        number of days from the to_time to get the timestamp
+
+    Returns
+    -------
+    from_time : timestamp
+        timestamp 'days' away from the current time
+    """
+
     today = datetime.datetime.now()
     opening = datetime.datetime(today.year, today.month, today.day, 9, 30) # opening time object
     day_of_the_week = datetime.datetime.today().weekday()
@@ -393,6 +610,25 @@ def get_from_time(days):
     return from_time
 
 def get_candle_data(ticker, res, days):
+    """Gets the candle data for the ticker
+
+    Parameters
+    ----------
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+    res : int or string (must be: 1, 5, 15, 30, 60, D, W, M)
+        resolution, frequency of data points
+    days : int
+        number of days of data to fetch
+
+    Returns
+    -------
+    candle : dictionary
+        candle data for the specified ticker
+    is_not_crypto : boolean
+        false if the ticker is crypto, true otherwise
+    """
+
     today = datetime.datetime.now()
     from_time = get_from_time(days)
     current_time = int(datetime.datetime.now().timestamp())
@@ -409,6 +645,32 @@ def get_candle_data(ticker, res, days):
     return candle, is_not_crypto
 
 def create_dataframe(ticker, days, res, previous_close):
+    """Creates the dataframe to be used by the mplfinance plot()
+    function to chart the data
+
+    Parameters
+    ----------
+    ticker : string
+        stock ticker (ex. AAPL, MSFT, TSLA, ^DJI, BTCUSDT)
+    days : int
+        number of days of data to fetch
+    res : int or string (must be: 1, 5, 15, 30, 60, D, W, M)
+        resolution, frequency of data points
+    previous_close : float
+        used only for intraday - previous days close share price
+
+    Returns
+    -------
+    stockdata_df : DataFrame
+        dataframe created with the candle data of the passed in ticker
+    dates : list(datetime)
+        dates in the data
+    is_intraday_not_crypto : boolean
+        only true if the ticker is not crypto and days is 1
+    current_price : float
+        the most recently retched share price
+    """
+    
     # api docs for financialmodelingprep.com: https://financialmodelingprep.com/developer/docs/
     if days == 1: # intraday
         stockdata, is_intraday_not_crypto = get_candle_data(ticker, res, days)
