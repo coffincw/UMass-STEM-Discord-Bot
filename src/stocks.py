@@ -517,7 +517,7 @@ def candlestick(ticker, days, quote):
     save = dict(fname=filename, dpi = 100, pad_inches=0.25)
     mplfinance.plot(df, addplot=guide_lines, **kwargs, style=s, savefig=save)
 
-    return filename, quote['pc']
+    return filename, start_price
 
 def line(ticker, days, quote):
     """Creates a line plot
