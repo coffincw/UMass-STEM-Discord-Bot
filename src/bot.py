@@ -11,7 +11,6 @@ imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 import overlay
 import filters
-import stocks
 import stem_role_commands
 import face_detection
 import custom_meme
