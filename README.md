@@ -97,15 +97,17 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 - remove missing housing and major role
     - bot removes the missing housing and major role if someone has set both a housing and major role
 
-## How to add to the bot
+## How to contribute
 1. Fork repo
 2. Install required dependencies
 2. Write additional implementations
 3. Create a bot on the [Discord Developer Portal](https://discordapp.com/developers/applications/)
-4. Replace line 21 in *bot.py* `BOT_TOKEN = os.environ.get('BOT_TOKEN')` with `BOT_TOKEN = 'Put your bot token here'`
+4. Add your bot's token to your computer's environmental variables
+    - key: 'BOT_TOKEN'
+    - value: 'YOUR BOT TOKEN'
 5. Invite your bot to a private test server
 6. Test added bot commands
-7. Once working make a pull request
+7. Once working, create a pull request
 
 ## Dependencies
 To install the dependencies, in the root folder, run:
