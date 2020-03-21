@@ -394,23 +394,15 @@ async def my_roles(ctx):
 
 @client.command(name='stockcandle')
 async def stock_candle(ctx, ticker, timeframe):
-    if len(ticker) == 0 or len(timeframe) == 0:
-        await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockcandle ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
-        return
-
-    await stocks.chart(ctx, ticker, timeframe, 'candle')
+    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stockcandle instead.", color=discord.Color.red()))
 
 @client.command(name='stockline')
 async def stock_line(ctx, ticker, timeframe):
-    if len(ticker) == 0 or len(timeframe) == 0:
-        await ctx.channel.send(embed=discord.Embed(description="Invalid command format.  Do: $stockline ticker d|m|6m|y|ytd|5y|max", color=discord.Color.red()))
-        return
-
-    await stocks.chart(ctx, ticker, timeframe, 'line')
+    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stockline instead.", color=discord.Color.red()))
 
 @client.command(name='stock')
 async def stock_price(ctx, ticker):
-    await stocks.stock_price_today(ctx, ticker)
+    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stock instead.", color=discord.Color.red()))
 
 
 # vvv MEME COMMANDS vvv
