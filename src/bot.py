@@ -148,7 +148,7 @@ async def help(ctx):
     }
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
-        '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages'
+        '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
         '*$covid* [optional: "state"]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 20 states by cases in the U.S'
     }
     STOCK_COMMANDS = {
@@ -340,15 +340,16 @@ async def corona(ctx, *args):
         cases_output = ''
         deaths_output = ''
         for state in sorted(data, key=lambda state: state['case'], reverse=True):
+            fatal_perc = state['death']/state['case']
             states_output += str(i) + '. ' + state['state'] + '\n'
             cases_output += '{:,d}'.format(state['case']) + '\n'
-            deaths_output += '{:,d}'.format(state['death']) + '\n'
+            deaths_output += '{:,d}'.format(state['death']) + ' ({:,.2f}%)'.format((state['death']/state['case']) * 100) + '\n'
             i += 1
             if i > 20:
                 break
-        embed.add_field(name = 'State', value = states_output, inline=True)
-        embed.add_field(name = 'Cases', value = cases_output, inline=True)
-        embed.add_field(name = 'Deaths', value = deaths_output, inline=True)
+        embed.add_field(name = 'State', value = states_output[:-1], inline=True)
+        embed.add_field(name = 'Cases', value = cases_output[:-1], inline=True)
+        embed.add_field(name = 'Deaths', value = deaths_output[:-1], inline=True)
         await ctx.send(embed=embed)
 
     else:
@@ -359,7 +360,9 @@ async def corona(ctx, *args):
         for block in data:
             if str(block['state']) == state:
                 found = True
-                description = 'Cases: ' + '{:,d}'.format(block['case']) + '\n' + 'Deaths: ' + '{:,d}'.format(block['death'])
+                description = 'Cases: ' + '{:,d}'.format(block['case'])
+                description += '\nDeaths: ' + '{:,d}'.format(block['death'])
+                description += '\nFatality Rate: ' + '{:,.2f}%'.format((block['death']/block['case']) * 100)
                 break
         
         if not found:
