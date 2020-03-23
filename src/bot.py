@@ -16,6 +16,7 @@ import filters
 import stem_role_commands
 import face_detection
 import custom_meme
+import coronavirus as corona
 import os
 import time
 
@@ -25,7 +26,7 @@ BOT_ROLE = "bots"
 
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 client.remove_command('help')
-FINNHUB_CORONA_TOKEN = os.environ.get('FINNHUB_API_TOKEN_5')
+
 
 @client.event
 async def on_ready():
@@ -149,7 +150,7 @@ async def help(ctx):
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
-        '*$covid* [optional: "state"]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 20 states by cases in the U.S'
+        '*$covid* [optional: "state"]': 'Displays the number of cases and deaths related to COVID19 in the specified state/province, if no state given displays the top 15 states/provinces by cases in the U.S/Canada'
     }
     STOCK_COMMANDS = {
         '*$stock [ticker]*': 'Display stock price, price change, percent change',
@@ -331,56 +332,15 @@ async def server_members(ctx):
     await ctx.send('There are ' + str(num_members) + ' server members')
 
 @client.command(name = 'covid19', aliases = ['corona', 'covid', 'coronavirus'])
-async def corona(ctx, *args):
-    data = requests.get('https://finnhub.io/api/v1/covid19/us?&token=' + FINNHUB_CORONA_TOKEN).json()
-    if len(args) < 1:
-        embed = discord.Embed(title='Coronavirus Statistics', color=discord.Color.teal())
-        i = 1
-        states_output = ''
-        cases_output = ''
-        deaths_output = ''
-        for state in sorted(data, key=lambda state: state['case'], reverse=True):
-            fatal_perc = state['death']/state['case']
-            states_output += str(i) + '. ' + state['state'] + '\n'
-            cases_output += '{:,d}'.format(state['case']) + '\n'
-            deaths_output += '{:,d}'.format(state['death']) + ' ({:,.2f}%)'.format((state['death']/state['case']) * 100) + '\n'
-            i += 1
-            if i > 20:
-                break
-        embed.add_field(name = 'State', value = states_output[:-1], inline=True)
-        embed.add_field(name = 'Cases', value = cases_output[:-1], inline=True)
-        embed.add_field(name = 'Deaths', value = deaths_output[:-1], inline=True)
-        await ctx.send(embed=embed)
+async def covid(ctx, *args):
+    """Command to generate coronavirus statistics
 
-    else:
-        state = args[0]
-        state = capitalize_all_words(state)
-        found = False
-        description = ''
-        for block in data:
-            if str(block['state']) == state:
-                found = True
-                description = 'Cases: ' + '{:,d}'.format(block['case'])
-                description += '\nDeaths: ' + '{:,d}'.format(block['death'])
-                description += '\nFatality Rate: ' + '{:,.2f}%'.format((block['death']/block['case']) * 100)
-                break
-        
-        if not found:
-            await ctx.channel.send(embed=discord.Embed(description="Invalid state, make sure you use the full name not the abbreviation", color=discord.Color.red()))
-            return
-        else:
-            embed = discord.Embed(title=state + ' Coronavirus Statistics', description=description, color=discord.Color.teal())
-        await ctx.send(embed=embed)
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
+    """
+    await corona.coronavirus(ctx, args)
 
-
-
-def capitalize_all_words(str):
-    string_list = str.split()
-    output = ''
-    for string in string_list:
-        output += string.capitalize() + ' '
-    output = output[:-1]
-    return output
 
 # vvv ROLE COMMANDS vvv
 
