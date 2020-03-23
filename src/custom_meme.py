@@ -87,7 +87,22 @@ async def ify(ctx, scale, path, file_name, *args):
     except:
         await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
     
+async def zoomcam(ctx, path, file_name, *args):
+    channel = ctx.channel
+    url = over.get_image_url_args(ctx, args[0], 1, 0)
+    if url == 0: # invalid image
+        await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
+        return
+    else:
+        output = over.paste_in_streamer_corner(Path(path), url)
 
+    output.save(file_name)
+    try:
+        message = await channel.send(file=discord.File(file_name))
+        track_command(ctx.author.id, message)
+        os.remove(file_name)
+    except:
+        await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
 
 def track_command(author, bot_message):
     """tracks the authors most recent command

@@ -242,6 +242,26 @@ def paste_text_top_bottom(top, bottom, background_image):
 
     return background_image
 
+def paste_in_streamer_corner(zoomer_path, image_url):
+
+    #open the image and zoomer to paste with the Image library
+    image = url_to_image(image_url)
+    zoomer = Image.open(zoomer_path)
+
+    # resize zoomer (always want to scale down zoomer as 8X zoomer's dimensions would be too big for discord anyway)
+    image_w, image_h = image.size
+    zoomer.thumbnail((image_w/8, image_h/8))
+    
+    # get the position to paste the zoomer
+    zoomer_w, zoomer_h = zoomer.size
+    x_pos = int(image_w - zoomer_w - (image_w/100))
+    y_pos = int((image_h/100))
+
+    # paste zoomer on the image
+    image.paste(zoomer, (x_pos, y_pos))
+
+    return image
+
 def url_to_image(url):
     response = requests.get(url)
     ImageFile.LOAD_TRUNCATED_IMAGES = True                                                  # needed to avoid uneeded errors caused by weird image input

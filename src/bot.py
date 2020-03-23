@@ -531,6 +531,10 @@ async def surprisedpikachu_overlay(ctx, *args):
     """
     await custom_meme.ify(ctx, face_detection.sp_scale, 'memes/surprised-pikachu.png', 'surprisedpikachu.png', args)
 
+@client.command(name='zoombarr', aliases=['streamerbarr'])
+async def zoombarr(ctx, *args):
+    await custom_meme.zoomcam(ctx, 'memes/barrington/zoombarr.png', 'zoombarr_final.png', args)
+
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
     """Command to generate memes with top and bottom text
