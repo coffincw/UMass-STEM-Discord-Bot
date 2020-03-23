@@ -83,10 +83,38 @@ async def ify(ctx, scale, path, file_name, *args):
     try:
         message = await channel.send(file=discord.File(file_name))
         track_command(ctx.author.id, message)
-        os.remove(file_name)
     except:
         await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
-    
+    os.remove(file_name)
+
+async def zoomcam(ctx, path, file_name, *args):
+    """Command to paste a a zoomer in the corner of an image
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - path: zoomer image path
+        - file_name: output file name
+        - args: arguments of the message
+    """
+    channel = ctx.channel
+    url = over.get_image_url_args(ctx, args[0], 1, 0)
+    if url == 0: # invalid image
+        await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
+        return
+    else:
+        output = over.paste_in_streamer_corner(Path(path), url)
+
+    if output == 0:
+        await channel.send(embed=discord.Embed(description="Encountered issue converting image to RGBA, please try a different image", color=discord.Color.red()))
+        return
+
+    output.save(file_name)
+    try:
+        message = await channel.send(file=discord.File(file_name))
+        track_command(ctx.author.id, message)
+    except:
+        await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+    os.remove(file_name)
 
 
 def track_command(author, bot_message):

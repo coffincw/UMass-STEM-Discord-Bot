@@ -59,20 +59,22 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 
 [![bdraw example](https://i.gyazo.com/c598fe1f391e75f0207dc392332cd622.gif)](https://gyazo.com/c598fe1f391e75f0207dc392332cd622)
 
-- barrify [image]
+- barrify [image/image link]
     - The bot uses computer vision to put the barr emote on peoples faces in the inputed image
 
-**Example of the $barrify [image] meme generator**
+**Example of the $barrify [image/image link] meme generator**
 
 [![barrify example](https://i.gyazo.com/8da3a10f6f2ff0b3e59f3535fad204c6.gif)](https://gyazo.com/8da3a10f6f2ff0b3e59f3535fad204c6)
 
-- surprisedpikachu [image]
+- surprisedpikachu [image/image link]
     - Similar to barrify the bot responds with the inputed image with surprised pikachu over identified faces
-- marify [image]
+- marify [image/image link]
     - Similar to barrify the bot responds with the inputed image with marius's face over the identified faces
-- timify [image]
+- timify [image/image link]
     - Similar to barrify the bot responds with the inputed image with tim's face over the indentified faces
-- *okay* [image]
+- zoombarr [image/image link]
+    - Pastes an image of barr from Zoom onto the given image in the top right corner
+- *okay* [image/image link]
     - The bot turns the given image into a video with marius saying okay as the background noise
 - meme ["top" "bottom" image]
     - The bot responds with the inputed image with the specifed text on it in typical meme format
