@@ -150,7 +150,7 @@ async def help(ctx):
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
-        '*$covid* [optional: "state"]': 'Displays the number of cases and deaths related to COVID19 in the specified state/province, if no state given displays the top 15 states/provinces by cases in the U.S/Canada'
+        '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state/province, if no state given displays the top 15 states/provinces by cases in the U.S/Canada'
     }
     STOCK_COMMANDS = {
         '*$stock [ticker]*': 'Display stock price, price change, percent change',
@@ -333,14 +333,14 @@ async def server_members(ctx):
     await ctx.send('There are ' + str(num_members) + ' server members')
 
 @client.command(name = 'covid19', aliases = ['corona', 'covid', 'coronavirus'])
-async def covid(ctx, *args):
+async def covid(ctx):
     """Command to generate coronavirus statistics
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
-    await corona.coronavirus(ctx, args)
+    await corona.coronavirus(ctx)
 
 
 # vvv ROLE COMMANDS vvv
