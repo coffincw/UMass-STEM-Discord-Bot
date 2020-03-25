@@ -11,7 +11,7 @@ async def coronavirus(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
-    argument = ctx.message.content[6:].strip() # after '$covid' remove spaces
+    argument = ctx.message.content[6:].strip().strip('\"') # after '$covid' remove spaces
     data = requests.get('https://finnhub.io/api/v1/covid19/us?&token=' + FINNHUB_CORONA_TOKEN).json()
     if len(argument) < 1:
         embed = discord.Embed(title='Coronavirus Statistics', color=discord.Color.teal())
