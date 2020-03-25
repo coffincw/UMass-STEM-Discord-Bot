@@ -20,7 +20,7 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
     """
     channel = ctx.channel
     #in case of gif
-    url = over.get_gif_url(ctx, 7)
+    url = over.get_gif_url(ctx, command_end_index)
     if url != 0:
         #get list of frames
         imgList = over.gif_url_to_image_list(url, 1)

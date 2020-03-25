@@ -4,15 +4,16 @@ import os
 
 FINNHUB_CORONA_TOKEN = os.environ.get('FINNHUB_API_TOKEN_5')
 
-async def coronavirus(ctx, args):
+async def coronavirus(ctx):
     """Generate coronavirus statistics
 
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
+    argument = ctx.message.content[6:].strip() # after '$covid' remove spaces
     data = requests.get('https://finnhub.io/api/v1/covid19/us?&token=' + FINNHUB_CORONA_TOKEN).json()
-    if len(args) < 1:
+    if len(argument) < 1:
         embed = discord.Embed(title='Coronavirus Statistics', color=discord.Color.teal())
         i = 1
         for state in sorted(data, key=lambda state: state['case'], reverse=True): # iterate through the state blocks sorted by case number
@@ -26,8 +27,7 @@ async def coronavirus(ctx, args):
         await ctx.send(embed=embed)
 
     else:
-        state = args[0]
-        state = capitalize_all_words(state)
+        state = capitalize_all_words(argument)
         found = False
         description = ''
         for block in data:
