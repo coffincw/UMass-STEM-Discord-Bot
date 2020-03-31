@@ -150,12 +150,7 @@ async def help(ctx):
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
-        '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state/province, if no state given displays the top 15 states/provinces by cases in the U.S/Canada'
-    }
-    STOCK_COMMANDS = {
-        '*$stock [ticker]*': 'Display stock price, price change, percent change',
-        '*$stockcandle [ticker timeframe]*': 'Displays the stock\'s candle data over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX',
-        '*$stockline [ticker timeframe]*': 'Displays the stock\'s data in a line graph over specified timeframe.  Possible timeframes: D, 5D, M, 6M, YTD, Y, 5Y, MAX',
+        '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S'
     }
     
     embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
@@ -181,17 +176,6 @@ async def help(ctx):
         embed.add_field(
             name = command,
             value = GENERAL_COMMANDS[command],
-            inline = False
-        )
-    embed.add_field(
-        name = '-------------------------------------------------------------------',
-        value = '-----------------------------STOCKS-----------------------------',
-        inline = False
-    )
-    for command in STOCK_COMMANDS:
-        embed.add_field(
-            name = command,
-            value = STOCK_COMMANDS[command],
             inline = False
         )
     embed.set_footer(text='To see the meme and image filter commands use the $memehelp command')
