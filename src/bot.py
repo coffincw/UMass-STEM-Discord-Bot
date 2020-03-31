@@ -199,6 +199,7 @@ async def meme_help(ctx):
         '*surprisedpikachu [image/url]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
         '*marify [image/url]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
         '*timify [image/url]*': 'The bot uses computer vision through the OpenCV library to put tim on identified faces in the inputed image',
+        '*liamify [image/url]*': 'The bot uses computer vision through the OpenCV library to put liam on identified faces in the inputed image',
         '*zoombarr [image/url]*': 'Pastes an image of barr from Zoom onto the given image in the top right corner',
         '*$meme ["top" "bottom" image/url]*': 'The bot outputs the inputed image with the specified text in the old meme format',
         '*$okay* [image/url]':'The bot turns the given image into a video with marius saying okay as the background noise',
@@ -499,6 +500,15 @@ async def barrify(ctx, *args):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     await custom_meme.ify(ctx, face_detection.barr_scale, 'memes/barrington/barr-face.png', 'barrify.png', args)
+
+@client.command(name='liamify')
+async def liamify(ctx, *args):
+    """Command to paste liam's face on top of faces in an inputed image using facial recognition
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    await custom_meme.ify(ctx, face_detection.liam_scale, 'memes/liam-head.png', 'liamify.png', args)
 
 @client.command(name='marify', aliases=['marrify'])
 async def marify(ctx, *args):

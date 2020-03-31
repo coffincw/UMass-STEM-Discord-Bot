@@ -8,6 +8,7 @@ from io import BytesIO
 
 # face scale, x adjustment, y adjustment
 barr_scale = (2.2, 0.625, 0.9375)
+liam_scale = (1.5, 0.4, 0.4)
 sp_scale = (1.9, 0.55, 0.75)
 mar_scale = (2.0, 0.625, 0.85)
 tim_scale = (1.7, 0.3, 0.5)

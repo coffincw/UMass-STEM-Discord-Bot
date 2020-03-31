@@ -74,6 +74,8 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Similar to barrify the bot responds with the inputed image with marius's face over the identified faces
 - timify [image/image link]
     - Similar to barrify the bot responds with the inputed image with tim's face over the indentified faces
+- liamify [image/image link]
+    - Similar to barrify the bot responds with the inputed image with liam's face over the indentified faces
 - zoombarr [image/image link]
     - Pastes an image of barr from Zoom onto the given image in the top right corner
 - *okay* [image/image link]
