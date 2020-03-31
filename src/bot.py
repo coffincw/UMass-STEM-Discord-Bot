@@ -150,13 +150,14 @@ async def help(ctx):
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
-        '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S'
+        '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S',
+        '*covidp*': 'Displays the number of cases, and deaths related to COVID19 in the top 15 U.S states. Sorted by percentage of the state infected.'
     }
     
     embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     embed.add_field(
-        name = '-------------------------------------------------------------------',
-        value = '------------------------------ROLES------------------------------',
+        name = '-----------------------------------------------------------',
+        value = '--------------------------ROLES--------------------------',
         inline = False
     )
     
@@ -168,8 +169,8 @@ async def help(ctx):
         )
 
     embed.add_field(
-        name = '-------------------------------------------------------------------',
-        value = '-----------------------------GENERAL-----------------------------',
+        name = '-----------------------------------------------------------',
+        value = '-------------------------GENERAL-------------------------',
         inline = False
     )
     for command in GENERAL_COMMANDS:
@@ -214,8 +215,8 @@ async def meme_help(ctx):
     }
     
     embed.add_field(
-        name = '-------------------------------------------------------------------',
-        value = '------------------------------MEMES------------------------------',
+        name = '-----------------------------------------------------------',
+        value = '--------------------------MEMES--------------------------',
         inline = False
     )
     for command in MEME_COMMANDS:
@@ -225,8 +226,8 @@ async def meme_help(ctx):
             inline = False
         )
     embed.add_field(
-        name = '-------------------------------------------------------------------',
-        value = '--------------------------IMAGE FILTERS--------------------------',
+        name = '-----------------------------------------------------------',
+        value = '----------------------IMAGE FILTERS----------------------',
         inline = False
     )
     for command in IMAGE_FILTER_COMMANDS:
@@ -324,8 +325,18 @@ async def covid(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
-    await corona.coronavirus(ctx)
+    await corona.coronavirus(ctx, False)
 
+@client.command(name = 'covid19p', aliases = ['coronap', 'covidp', 'coronavirusp'])
+async def covidp(ctx):
+    """Command to generate coronavirus statistics sorted by percentage infected
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+        - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
+    """
+    print('running')
+    await corona.coronavirus(ctx, True)
 
 # vvv ROLE COMMANDS vvv
 

@@ -26,6 +26,8 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the top 10 most active users on the server (or mentioned channel) measured by quantity of messages
 - covid [optional: state]
     - Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S
+- covidp
+    - Displays the number of cases, and deaths related to COVID19 in the top 15 U.S states. Sorted by percentage of the state infected.
 - help
     - Displays the available *Role* and *General* commands
 - memehelp
