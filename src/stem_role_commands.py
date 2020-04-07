@@ -32,14 +32,16 @@ async def list_roles(ctx, client):
             class_role_list += role[0][1:].capitalize() + ', '
             continue
         if role[0].endswith('127'):
-            class_role_list = class_role_list[:len(class_role_list)-2]
+            class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
             class_role_list += '\n**Mathematics**\n'
         if role[0].startswith('math') or role[0].startswith('stats'):
             class_role_list += role[0].capitalize() + ', '
             continue
-        class_role_list = class_role_list[:len(class_role_list)-2]
-        class_role_list += '\n**Other**\n'
-        class_role_list += role[0].capitalize()
+        if role[0].endswith('499'):
+            class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
+            class_role_list += '\n**Other**\n'
+        class_role_list += role[0].capitalize() + ', '
+    class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
     await ctx.channel.send(embed=getlist)

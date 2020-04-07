@@ -242,6 +242,29 @@ def paste_text_top_bottom(top, bottom, background_image):
 
     return background_image
 
+def paste_in_streamer_corner(zoomer_path, image_url):
+
+    #open the image and zoomer to paste with the Image library
+    try:
+        image = url_to_image(image_url)
+    except:
+        return 0
+    zoomer = Image.open(zoomer_path)
+
+    # resize zoomer (always want to scale down zoomer as 8X zoomer's dimensions would be too big for discord anyway)
+    image_w, image_h = image.size
+    zoomer.thumbnail((image_w/3, image_h/3))
+    
+    # get the position to paste the zoomer
+    zoomer_w, zoomer_h = zoomer.size
+    x_pos = int(image_w - zoomer_w - (image_h/100))
+    y_pos = int((image_h/100))
+
+    # paste zoomer on the image
+    image.paste(zoomer, (x_pos, y_pos))
+
+    return image
+
 def url_to_image(url):
     response = requests.get(url)
     ImageFile.LOAD_TRUNCATED_IMAGES = True                                                  # needed to avoid uneeded errors caused by weird image input
@@ -276,11 +299,11 @@ def gif_url_to_image_list(url, cmd):
 def get_image_url(ctx, index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0]['url']
+        image_url = ctx.message.attachments[0].url
     except:                                                                                 # if the member used a url with the command
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
-            if ctx.message.content.endswith(ext):
+            if ctx.message.content.lower().endswith(ext):
                 image_url = ctx.message.content[index:]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
@@ -301,13 +324,14 @@ def get_gif_url(ctx, index):
 def get_image_url_args(ctx, args, num_args, image_arg_index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0]['url']
+        image_url = ctx.message.attachments[0].url
     except:                                                                                 # if the member used a url with the command
         if len(args) != num_args:
             return 0
         extension = ['.jpg', '.png', '.jpeg']
+        
         for ext in extension:
-            if args.endswith(ext):
+            if args[image_arg_index].lower().endswith(ext):
                 image_url = args[image_arg_index]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
