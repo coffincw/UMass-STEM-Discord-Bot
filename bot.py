@@ -609,6 +609,15 @@ async def timify(ctx, *args):
     """
     await ify(ctx, tim_scale, 'memes/tim/tim-face.png', 'timify.png', args)
 
+@client.command(name='lanify')
+async def timify(ctx, *args):
+    """Command to paste lan's face on top of faces in an inputed image using facial recognition
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    await ify(ctx, tim_scale, 'memes/lan/lan-face.png', 'lan-face.png', args)
+
 @client.command(name='surprisedpikachu', pass_context=True)
 async def surprisedpikachu_overlay(ctx, *args):
     """Command to paste suprised pikachu on top of faces in an inputed image using facial recognition
