@@ -202,7 +202,7 @@ async def meme_help(ctx):
         '*lanify [image/url]*': 'The bot uses computer vision through the OpenCV library to put lan on identified faces in the inputed image',
         '*liamify [image/url]*': 'The bot uses computer vision through the OpenCV library to put liam on identified faces in the inputed image',
         '*zoombarr [image/url]*': 'Pastes an image of barr from Zoom onto the given image in the top right corner',
-        '*zoommarius [image/url]*': 'Pastes an image of marius from Zoom onto the given image in the top right corner',
+        '*zoommar [image/url]*': 'Pastes an image of marius from Zoom onto the given image in the top right corner',
         '*zoomarun [image/url]*': 'Pastes an image of arun from Zoom onto the given image in the top right corner',
         '*$meme ["top" "bottom" image/url]*': 'The bot outputs the inputed image with the specified text in the old meme format',
         '*$okay* [image/url]':'The bot turns the given image into a video with marius saying okay as the background noise',
