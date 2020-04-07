@@ -558,7 +558,7 @@ async def zoombarr(ctx, *args):
     """
     await custom_meme.zoomcam(ctx, 'memes/barrington/zoombarr.png', 'zoombarr_final.png', args)
 
-@client.command(name='zoommarius', aliases=['streamermarius', 'zoom-marr', 'zoom-mar', 'zoom-marius'])
+@client.command(name='zoommar', aliases=['streamermarius', 'zoommarius', 'zoom-marr', 'zoom-mar', 'zoom-marius'])
 async def zoommarius(ctx, *args):
     """Command to paste an image of marius from Zoom onto the given image in the top right corner
 
