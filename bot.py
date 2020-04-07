@@ -610,7 +610,7 @@ async def timify(ctx, *args):
     await ify(ctx, tim_scale, 'memes/tim/tim-face.png', 'timify.png', args)
 
 @client.command(name='lanify')
-async def timify(ctx, *args):
+async def lanify(ctx, *args):
     """Command to paste lan's face on top of faces in an inputed image using facial recognition
 
        Args:
