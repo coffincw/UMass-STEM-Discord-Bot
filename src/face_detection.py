@@ -12,6 +12,7 @@ liam_scale = (1.7, 0.45, 0.5)
 sp_scale = (1.9, 0.55, 0.75)
 mar_scale = (2.0, 0.625, 0.85)
 tim_scale = (1.7, 0.3, 0.5)
+lan_scale = (1.55, 0.45, 0.4)
 
 # pastes image "face" on image opened from image_path
 def paste_on_face(face_path, image_url, face_scale):
