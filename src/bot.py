@@ -538,7 +538,7 @@ async def lanify(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await ify(ctx, tim_scale, 'memes/lan/lan-face.png', 'lan-face.png', args)
+    await custom_meme.ify(ctx, face_detection.lan_scale, 'memes/lan/lan-face.png', 'lan-face.png', args)
 
 @client.command(name='surprisedpikachu', pass_context=True)
 async def surprisedpikachu_overlay(ctx, *args):
