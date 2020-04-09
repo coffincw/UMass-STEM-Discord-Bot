@@ -574,7 +574,7 @@ async def zoomarun(ctx, *args):
        Args:
         - ctx: context that the command occured use this to access the message and other attributes
     """
-    await custom_meme.zoomcam(ctx, 'memes/arun/zoomarun.png', 'zoomarun_final.png', args)
+    await custom_meme.zoomcam(ctx, 'memes/arun/zoom-arun.png', 'zoomarun_final.png', args)
 
 @client.command(name='meme', pass_context=True)
 async def meme_generator(ctx, *args):
