@@ -32,51 +32,42 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the available *Role* and *General* commands
 - memehelp
     - Displays the available *Meme* and *Image Filter* commands
-
-## Stocks
-- stock [ticker]
-    - Display stock price, price change, percent change
-- stockcandle [ticker timeframe]
-    - Displays the stock's candle data over specified timeframe.  
-      - Possible timeframes (multiples can be specified ex. 5D): D, W, M, Y, MAX
-- stockline [ticker timeframe]
-    - Displays the stock\'s data in a line graph over specified timeframe.
-      - Possible timeframes (multiples can be specified ex. 5D): D, W, M, Y, MAX
   
 ### Memes
-- mdraw [image/image link/text]
+**Note:** If no argument specified for draw, ify, and zoom commands the bot will use the last image outputted by the bot.
+- mdraw [image/image link/text/nothing]
     - The bot responds with an image of marius drawing whatever image or text is passed as the argument
-- tdraw [image/image link/text]
+- tdraw [image/image link/text/nothing]
     - The bot responds with an image of tim drawing whatever image or text is passed as the argument
-- ldraw [image/image link/text]
+- ldraw [image/image link/text/nothing]
     - The bot responds with an image of lan drawing whatever image or text is passed as the argument
-- landraw [image/image link/text]
+- landraw [image/image link/text/nothing]
     - The bot responds with a different image of lan drawing whatever image or text is passed as the argument
-- shelpoint [image/image link/text]
+- shelpoint [image/image link/text/nothing]
     - The bot responds with an image of Dan Sheldon pointing at whatever image or text is passed as the argument
-- bdraw [image/image link/text]
+- bdraw [image/image link/text/nothing]
     - The bot responds with an image of barrington drawing whatever image or text is passed as the argument
 
 **Example of the $bdraw [text] generator**
 
 [![bdraw example](https://i.gyazo.com/c598fe1f391e75f0207dc392332cd622.gif)](https://gyazo.com/c598fe1f391e75f0207dc392332cd622)
 
-- barrify [image/image link]
+- barrify [image/image link/nothing]
     - The bot uses computer vision to put the barr emote on peoples faces in the inputed image
 
 **Example of the $barrify [image/image link] meme generator**
 
 [![barrify example](https://i.gyazo.com/8da3a10f6f2ff0b3e59f3535fad204c6.gif)](https://gyazo.com/8da3a10f6f2ff0b3e59f3535fad204c6)
 
-- surprisedpikachu [image/image link]
+- surprisedpikachu [image/image link/nothing]
     - Similar to barrify the bot responds with the inputed image with surprised pikachu over identified faces
-- marify [image/image link]
+- marify [image/image link/nothing]
     - Similar to barrify the bot responds with the inputed image with marius's face over the identified faces
-- timify [image/image link]
+- timify [image/image link/nothing]
     - Similar to barrify the bot responds with the inputed image with tim's face over the indentified faces
-- liamify [image/image link]
+- liamify [image/image link/nothing]
     - Similar to barrify the bot responds with the inputed image with liam's face over the indentified faces
-- zoombarr [image/image link]
+- zoombarr [image/image link/nothing]
     - Pastes an image of barr from Zoom onto the given image in the top right corner
 - *okay* [image/image link]
     - The bot turns the given image into a video with marius saying okay as the background noise
