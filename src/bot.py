@@ -9,7 +9,7 @@ from discord.ext.commands import Bot
 from finnhub import client as Finnhub
 import asyncio
 import imageio
-imageio.plugins.ffmpeg.download()
+imageio.plugins.ffmpeg.download() # needed for Heroku build
 import moviepy.editor as mp
 import overlay
 import filters
@@ -585,7 +585,7 @@ async def meme_generator(ctx, *args):
         - *args: arguments passed in with the command
     """
     channel = ctx.channel
-    url = overlay.get_image_url_args(ctx, args, 3, 2)
+    url = overlay.get_image_url_args(ctx.message, args, 3, 2)
     if url == 0: # invalid image
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -612,10 +612,10 @@ async def intensify(ctx, *args):
     channel = ctx.channel
     try:
         factor = float(args[0])
-        url = overlay.get_image_url_args(ctx, args, 2, 1)
+        url = overlay.get_image_url_args(ctx.message, args, 2, 1)
     except:
         factor = 2 # default if no factor specified
-        url = overlay.get_image_url_args(ctx, args, 1, 0)    
+        url = overlay.get_image_url_args(ctx.message, args, 1, 0)    
     if url == 0: # invalid image
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -642,7 +642,7 @@ async def mirror(ctx, *args):
     """
     channel = ctx.channel
     try:
-        url = overlay.get_image_url_args(ctx, args, 2, 2)
+        url = overlay.get_image_url_args(ctx.message, args, 2, 2)
         axis = args[0]
     except:
         await channel.send(embed=discord.Embed(description="Invalid input", color=discord.Color.red()))
@@ -677,7 +677,7 @@ async def highlight_edge(ctx, *args):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     channel = ctx.channel
-    url = overlay.get_image_url_args(ctx, args, 1, 0)
+    url = overlay.get_image_url_args(ctx.message, args, 1, 0)
     if url == 0:
         await channel.send(embed=discord.Embed(description="Invalid Image"), color=discord.Color.red())
         return
@@ -706,7 +706,7 @@ async def custom_edge_highlight(ctx, *args):
     except:
         await channel.send(embed=discord.Embed(description="Invalid Parameters", color=discord.Color.red()))
         return
-    url = overlay.get_image_url_args(ctx, args, 4, 3)
+    url = overlay.get_image_url_args(ctx.message, args, 4, 3)
     if url == 0:
         await channel.send(embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return
@@ -730,7 +730,7 @@ async def noise_filter(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     channel = ctx.channel
-    url = overlay.get_image_url(ctx, 7)
+    url = overlay.get_image_url(ctx.message, 7)
     if url == 0:
         await channel.send(embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return
@@ -752,7 +752,7 @@ async def pixelate(ctx, *args):
         - *args: arguments passed into the command (in this case the pixelation factor)
     """
     channel = ctx.channel
-    url = overlay.get_image_url_args(ctx, args, 2, 1)
+    url = overlay.get_image_url_args(ctx.message, args, 2, 1)
     try:
         factor = float(args[0])
     except:
@@ -779,7 +779,7 @@ async def saturate(ctx, *args):
         - *args: arguments passed into the command (in this case the pixelation factor)
     """
     channel = ctx.channel
-    url = overlay.get_image_url_args(ctx, args, 2, 1)
+    url = overlay.get_image_url_args(ctx.message, args, 2, 1)
     try:
         factor = float(args[0])
     except:
@@ -805,7 +805,7 @@ async def make_okay(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     channel = ctx.channel
-    url = overlay.get_image_url(ctx, 6)
+    url = overlay.get_image_url(ctx.message, 6)
     if url == 0:
         await channel.send(embed=discord.Embed(description="Invalid Image", color=discord.Color.red()))
         return

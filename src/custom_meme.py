@@ -19,32 +19,9 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
         - name: output file name
     """
     channel = ctx.channel
-    #in case of gif
-    url = over.get_gif_url(ctx, command_end_index)
-    if url != 0:
-        #get list of frames
-        imgList = over.gif_url_to_image_list(url, 1)
-        if imgList == 0:
-            #if invalid list return
-            await channel.send(embed=discord.Embed(description="invalid image", color=discord.Color.red()))
-            return
-            #get list of image clips
-        gifClip = make_draw_gif(imgList, 0)
-        gifClip.write_gif(name + '.gif', 24, program='imageio')
-        try:
-            #check if message is <8 mb
-            message = await channel.send(file=discord.File(name + '.gif'))
-        except:
-            #random color cause why not
-            randRGB = lambda: random.randint(0, 255)
-            randColor=int('%02X%02X%02X' % (randRGB(), randRGB(), randRGB()), 16)
-            os.remove(name + '.gif')
-            await channel.send(embed=discord.Embed(description="GIF + image becomes too large to send, sorry :(", color=randColor))
-            return
-        track_command(ctx.author.id, message)
-        os.remove(name + '.gif')
-        return
-    url = over.get_image_url(ctx, command_end_index)
+    url = over.get_image_url(ctx.message, command_end_index)
+    # no input given, try to use previous bot output   
+        
     if url == 0: # no url, hand should write the inputed text
         output = over.draw_text(ctx.message.content[command_end_index:], Path(path), origin)
     else: # url inputed, hand should draw on the image
@@ -68,7 +45,10 @@ async def ify(ctx, scale, path, file_name, *args):
         - file_name: output file name
     """
     channel = ctx.channel
-    url = over.get_image_url_args(ctx, args[0], 1, 0)
+
+    url = over.get_image_url_args(ctx.message, args[0], 1, 0)
+
+    
     if url == 0: # invalid image
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return
@@ -97,7 +77,8 @@ async def zoomcam(ctx, path, file_name, *args):
         - args: arguments of the message
     """
     channel = ctx.channel
-    url = over.get_image_url_args(ctx, args[0], 1, 0)
+
+    url = over.get_image_url_args(ctx.message, args[0], 1, 0)
     if url == 0: # invalid image
         await channel.send(embed=discord.Embed(description="Invalid image", color=discord.Color.red()))
         return

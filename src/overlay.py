@@ -271,60 +271,49 @@ def url_to_image(url):
     image = Image.open(BytesIO(response.content)).convert("RGBA")
     return image
 
-def gif_url_to_image_list(url, cmd):
-    response = requests.get(url)
-    ImageFile.LOAD_TRUNCATED_IMAGES = True
-    frameList = []
-    try:
-        gif = Image.open(BytesIO(response.content))
-    except:
-        return 0
-    for frame in ImageSequence.Iterator(gif):
-        width, height = frame.size
-        if width <= 500 and height <=500:
-            refactor_width = 500
-            ratio_percent = (refactor_width/float(width))
-            refactor_height = int((float(height)*float(ratio_percent)))
-            frame = frame.resize((refactor_width, refactor_height))
-            #resizing if the image has a tendency to be too big even for small gifs, used for high res templates
-            if cmd > 2:
-                width, height = frame.size
-                refactor_width = 600
-                ratio_percent = (refactor_width/float(width))
-                refactor_height = (int(float(height)*float(ratio_percent)))
-                frame = frame.resize((refactor_width, refactor_height))
-        frameList.append(frame.convert("RGBA"))
-    return frameList
+# def gif_url_to_image_list(url, cmd):
+#     response = requests.get(url)
+#     ImageFile.LOAD_TRUNCATED_IMAGES = True
+#     frameList = []
+#     try:
+#         gif = Image.open(BytesIO(response.content))
+#     except:
+#         return 0
+#     for frame in ImageSequence.Iterator(gif):
+#         width, height = frame.size
+#         if width <= 500 and height <=500:
+#             refactor_width = 500
+#             ratio_percent = (refactor_width/float(width))
+#             refactor_height = int((float(height)*float(ratio_percent)))
+#             frame = frame.resize((refactor_width, refactor_height))
+#             #resizing if the image has a tendency to be too big even for small gifs, used for high res templates
+#             if cmd > 2:
+#                 width, height = frame.size
+#                 refactor_width = 600
+#                 ratio_percent = (refactor_width/float(width))
+#                 refactor_height = (int(float(height)*float(ratio_percent)))
+#                 frame = frame.resize((refactor_width, refactor_height))
+#         frameList.append(frame.convert("RGBA"))
+#     return frameList
 
-def get_image_url(ctx, index):
+def get_image_url(message, index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0].url
+        image_url = message.attachments[0].url
     except:                                                                                 # if the member used a url with the command
         extension = ['.jpg', '.png', '.jpeg']
         for ext in extension:
-            if ctx.message.content.lower().endswith(ext):
-                image_url = ctx.message.content[index:]
+            if message.content.lower().endswith(ext):
+                image_url = message.content[index:]
         if (image_url == ''):                                                               # if member didnt use a url or send a file
             return 0
     return image_url
 
-def get_gif_url(ctx, index):
-    gif_url = ''
-    try:
-        gif_url = ctx.message.attachments[0]['url']
-    except:
-        if ctx.message.content.endswith('.gif'):
-            gif_url = ctx.message.content[index:]
-        if(gif_url == ''):
-            return 0
-    return gif_url
 
-
-def get_image_url_args(ctx, args, num_args, image_arg_index):
+def get_image_url_args(message, args, num_args, image_arg_index):
     image_url = ''
     try:                                                                                    # if the member attached an image with the command
-        image_url = ctx.message.attachments[0].url
+        image_url = message.attachments[0].url
     except:                                                                                 # if the member used a url with the command
         if len(args) != num_args:
             return 0
