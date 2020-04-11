@@ -9,6 +9,7 @@ from discord.ext.commands import Bot
 from finnhub import client as Finnhub
 import asyncio
 import imageio
+imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 import overlay
 import filters
