@@ -189,21 +189,21 @@ async def meme_help(ctx):
     )
     embed.set_author(name='Meme Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     MEME_COMMANDS = {
-        '*$mdraw [image/url/text]*': 'Sends a photo of marius drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$tdraw [image/url/text]*': 'Sends a photo of tim drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$bdraw [image/url/text]*': 'Sends a photo of barrington drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$ldraw [image/url/text]*': 'Sends a photo of lan drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$landrew [image/url/text]*': 'Sends a photo of a different occasion of lan drawing the specified image or text, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$shelpoint [image/url/text]*': 'Sends a photo of dan sheldon pointing to the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*barrify [image/url]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
-        '*surprisedpikachu [image/url]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
-        '*marify [image/url]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
-        '*timify [image/url]*': 'The bot uses computer vision through the OpenCV library to put tim on identified faces in the inputed image',
-        '*lanify [image/url]*': 'The bot uses computer vision through the OpenCV library to put lan on identified faces in the inputed image',
-        '*liamify [image/url]*': 'The bot uses computer vision through the OpenCV library to put liam on identified faces in the inputed image',
-        '*zoombarr [image/url]*': 'Pastes an image of barr from Zoom onto the given image in the top right corner',
-        '*zoommar [image/url]*': 'Pastes an image of marius from Zoom onto the given image in the top right corner',
-        '*zoomarun [image/url]*': 'Pastes an image of arun from Zoom onto the given image in the top right corner',
+        '*$mdraw [image/url/text/nothing]*': 'Sends a photo of marius drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$tdraw [image/url/text/nothing]*': 'Sends a photo of tim drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$bdraw [image/url/text/nothing]*': 'Sends a photo of barrington drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$ldraw [image/url/text/nothing]*': 'Sends a photo of lan drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$landrew [image/url/text/nothing]*': 'Sends a photo of a different occasion of lan drawing the specified image or text, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$shelpoint [image/url/text/nothing]*': 'Sends a photo of dan sheldon pointing to the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*barrify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
+        '*surprisedpikachu [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
+        '*marify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
+        '*timify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put tim on identified faces in the inputed image',
+        '*lanify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put lan on identified faces in the inputed image',
+        '*liamify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put liam on identified faces in the inputed image',
+        '*zoombarr [image/url/nothing]*': 'Pastes an image of barr from Zoom onto the given image in the top right corner',
+        '*zoommar [image/url/nothing]*': 'Pastes an image of marius from Zoom onto the given image in the top right corner',
+        '*zoomarun [image/url/nothing]*': 'Pastes an image of arun from Zoom onto the given image in the top right corner',
         '*$meme ["top" "bottom" image/url]*': 'The bot outputs the inputed image with the specified text in the old meme format',
         '*$okay* [image/url]':'The bot turns the given image into a video with marius saying okay as the background noise',
         '*$erase*': 'Deletes the most recent m/bdraw or barrify generated by the bot'
@@ -240,6 +240,7 @@ async def meme_help(ctx):
             value = IMAGE_FILTER_COMMANDS[command],
             inline = False
         )
+    embed.set_footer(text='If no argument specified for draw, ify, and zoom commands the bot will use the last image outputted by the bot')
     await ctx.send(embed=embed)
 
 @client.command(name = 'leaderboard')
