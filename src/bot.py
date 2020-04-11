@@ -9,7 +9,6 @@ from discord.ext.commands import Bot
 from finnhub import client as Finnhub
 import asyncio
 import imageio
-imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 import overlay
 import filters
@@ -492,7 +491,7 @@ async def erase(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     if custom_meme.bot_last_command[ctx.author.id] is not None:
-        await client.delete_message(custom_meme.bot_last_command[ctx.author.id])
+        await custom_meme.bot_last_command[ctx.author.id].delete()
         custom_meme.bot_last_command[ctx.author.id] = None #Clears this back up to avoid errors
 
 @client.command(name='barrify', aliases = ['barify', 'barringtonify', 'barry-ify'])
