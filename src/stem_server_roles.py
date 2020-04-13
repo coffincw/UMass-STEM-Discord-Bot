@@ -4,13 +4,14 @@ HOUSING_ROLE_IDS = {501529720932925441: ('alumni', 'alum', 'alumn'),
                     444332880894754818: ('central','baker', 'van meter', 'brett', 'brooks', 'butterfield', 'chadbourne', 'gorman', 'greenough', 'wheeler'), 
                     444332735838814210: ('southwest', 'sw', 'swest', 'cance', 'coolidge', 'crampton', 'emerson', 'james', 'john adams', 'ja', 'jqa', 'john quincy adams', 'kennedy', 'mackimmie', 'melville', 'moore', 'patterson', 'pierpont', 'prince', 'thoreau', 'washington'),
                     444332948322517003: ('northeast', 'ne', 'crabtree', 'dwight', 'hamlin', 'johnson', 'knowlton', 'leach', 'lewis', 'mary lyon', 'thatcher'),
-                    444588763427897344: ('north apts', 'north apartments', 'north apartment'), 
+                    444588763427897344: ('north apts', 'north apartments', 'north apartment', 'north'), 
                     444333125670010890: ('honors college', 'honors', 'chc', 'commonwealth honors college', 'birch', 'elm', 'linden', 'maple', 'oak', 'sycamore'),
                     405025553448566795: ('off-campus', 'off campus', 'offcampus', 'commute', 'commuter'),
                     524016335299280908: ('prospective student', 'hs', 'high school', 'accepted', 'accepted student')
 }
 
-MAJOR_ROLE_IDS = {442786317273792523: ('electrical engineering', 'ee', 'electrical-engineering'),
+MAJOR_ROLE_IDS = {699138234743259177: ('architecture',),
+                  442786317273792523: ('electrical engineering', 'ee', 'electrical-engineering'),
                   506504010585604132: ('computer engineering', 'ce', 'comp-engineering', 'computer-engineering'),
                   504715524152754199: ('chemical engineering', 'cheme'),
                   506504177242079241: ('biomedical engineering', 'be', 'bio-engineering'),
@@ -121,4 +122,9 @@ GRAD_YEAR_ROLE_IDS = {570652917133213700: ('2019',),
                       570653206137536512: ('2023',),
                       669414012185870337: ('2024',),
                       572977093244092416: ('grad student', 'graduate student', 'grad')
+}
+
+SPECIAL_ROLE_IDS = {
+    692237964679577670: ('bot contributor',),
+    666125056589692928: ('moderator', 'mod')
 }

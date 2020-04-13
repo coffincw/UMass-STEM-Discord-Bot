@@ -1,5 +1,6 @@
 import discord
-from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS
+import asyncio
+from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS
 
 def merge_dict(v, w, x, y): # merges dictionaries w, x, y together
     z = x.copy()
@@ -8,67 +9,84 @@ def merge_dict(v, w, x, y): # merges dictionaries w, x, y together
     z.update(v)
     return z
 
+def capitalize_all_words(in_str):
+    words = in_str.split()
+    output = ''
+    for word in words:
+        output += word.capitalize() + ' '
+    return output[:-1]
+
 async def list_roles(ctx, client):
     getlist = discord.Embed(color=discord.Color.blue())
     getlist.set_author(name='Roles | Use $get [role] to add a role', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     housing_role_list = ''
-    for role in HOUSING_ROLE_IDS.values():
-        housing_role_list += role[0].capitalize() + '\n'
+    housing_roles = sorted(HOUSING_ROLE_IDS.values(), key=lambda x: x[0])
+    for role in housing_roles:
+        housing_role_list += capitalize_all_words(role[0]) + '\n'
     getlist.add_field(name = 'Housing Roles', value=housing_role_list, inline=False)
     major_role_list = ''
-    for role in MAJOR_ROLE_IDS.values():
-        major_role_list += role[0].capitalize() + '\n'
+    major_roles = sorted(MAJOR_ROLE_IDS.values(), key=lambda x: x[0])
+    for role in major_roles:
+        major_role_list += capitalize_all_words(role[0]) + '\n'
     getlist.add_field(name = 'Major Roles', value=major_role_list, inline=False)
     grad_role_list = ''
     for role in GRAD_YEAR_ROLE_IDS.values():
-        grad_role_list += role[0].capitalize() + '\n'
+        grad_role_list += capitalize_all_words(role[0]) + '\n'
     getlist.add_field(name = 'Graduation Year Roles', value=grad_role_list, inline=False)
     class_role_list = ''
     for role in CLASS_ROLE_IDS.values():
+        name = role[0].upper()
         if class_role_list == '':
             class_role_list += '**Computer Science**\n'
-        if role[0].startswith('cs') or role[0].startswith('cics'):
-            class_role_list += role[0][0].capitalize()
-            class_role_list += role[0][1:].capitalize() + ', '
+        if name.startswith('CS') or name.startswith('CICS'):
+            class_role_list += name + ', '
             continue
-        if role[0].endswith('127'):
+        if name.endswith('127'):
             class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
             class_role_list += '\n**Mathematics**\n'
-        if role[0].startswith('math') or role[0].startswith('stats'):
-            class_role_list += role[0].capitalize() + ', '
+        if name.startswith('MATH') or name.startswith('STATS'):
+            class_role_list += name + ', '
             continue
-        if role[0].endswith('499'):
+        if name.endswith('499'):
             class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
             class_role_list += '\n**Other**\n'
-        class_role_list += role[0].capitalize() + ', '
+        class_role_list += name + ', '
     class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
     await ctx.channel.send(embed=getlist)
 
 async def list_my_roles(ctx, client, member):
-    mylist = discord.Embed(color=0xb5a2c8)
-    mylist.set_author(name = '' + member.name + '\'s roles', icon_url = member.avatar_url)
-    housing_roles = ''
-    major_roles = ''
-    graduation_year = ''
-    class_specific_roles = []
+    housing_roles, major_roles, graduation_year = '', '', ''
+    class_specific_roles, special_roles = [], []
     
-    for role in member.roles:
+    for role in sorted(member.roles, key=lambda x: x.name):
+        name = capitalize_all_words(role.name)
         if role.id in HOUSING_ROLE_IDS:
-            housing_roles += role.name.capitalize() + '\n'
+            housing_roles += name + '\n'
         if role.id in MAJOR_ROLE_IDS:
-            major_roles += role.name.capitalize() + '\n'
+            major_roles += name + '\n'
         if role.id in CLASS_ROLE_IDS:
-            class_specific_roles.append(role.name)
+            class_specific_roles.append(role.name.upper())
         if role.id in GRAD_YEAR_ROLE_IDS:
-            graduation_year = role.name + '\n'
+            graduation_year = name + '\n'
+        if role.id in SPECIAL_ROLE_IDS:
+            special_roles.append(name)
 
     # add class roles in alphabetic order
     class_specific = ''
     class_specific_roles = sorted(class_specific_roles)
     for role in class_specific_roles:
         class_specific += role + '\n'
+    
+    # add special roles in alphabetic order
+    special = ''
+    special_roles = sorted(special_roles)
+    for role in special_roles:
+        special += role + '\n'
+
+    mylist = discord.Embed(color=0xb5a2c8, description= '**' + special + '**')
+    mylist.set_author(name = '' + member.name + '\'s roles', icon_url = member.avatar_url)
 
     if housing_roles == '':
         mylist.add_field(name = 'Housing Roles', value='Missing housing role, set your residential area role in #role-assignment', inline=False)
@@ -118,6 +136,7 @@ async def stem_add_role(requested_role, member, client):
                         return
 
                 await member.add_roles(role_to_add)
+                await asyncio.sleep(1)
                 await check_major_housing_role(member, client)
                 await channel.send(embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
                 return
@@ -151,6 +170,7 @@ async def stem_remove_role(requested_role, member, client):
                 for alias in housing_major_role:
                     if role_lower == alias:
                         await member.remove_roles(role)
+                        await asyncio.sleep(1)
                         await check_major_housing_role(member, client)
                         await channel.send(embed=discord.Embed(description="Removed " + role.name + " from " + member.name, color=discord.Color.green()))
                         return
