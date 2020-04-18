@@ -1,7 +1,6 @@
 requests==2.22.0
 opencv_python==4.2.0.32
 imageio==2.4.1
-finnhub==0.1.1
 moviepy==1.0.1
 numpy==1.18.1
 discord.py==1.3.1
