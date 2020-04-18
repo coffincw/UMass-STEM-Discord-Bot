@@ -6,7 +6,6 @@ import discord
 import requests
 from discord import Game
 from discord.ext.commands import Bot
-from finnhub import client as Finnhub
 import asyncio
 import imageio
 imageio.plugins.ffmpeg.download() # needed for Heroku build
