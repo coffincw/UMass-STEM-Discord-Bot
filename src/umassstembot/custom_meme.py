@@ -64,7 +64,10 @@ async def ify(ctx, scale, path, file_name, *args):
             else:
                 await channel.send(embed=discord.Embed(description="No previous bot command to pull from. Please specify a valid image.", color=discord.Color.red()))
                 return
-        output = paste_on_face(Path(path), url, scale)
+        try:
+            output = paste_on_face(Path(path), url, scale)
+        except:
+            await channel.send(embed=discord.Embed(description='Unidentified Image, try a different image', color=discord.Color.red()))
         # if there were no faces found then send error
         if output == 0:
             await channel.send(embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
