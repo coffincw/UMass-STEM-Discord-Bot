@@ -5,6 +5,7 @@ import math
 import random
 from io import BytesIO
 import textwrap
+imageio.plugins.ffmpeg.download()
 import moviepy.editor as mp
 from pathlib import Path
 
