@@ -32,6 +32,13 @@ def test_facedetection01():
     path = Path('memes/barrington/barr-face.png')
 
     print(os.getcwd())
+    print(tname)
+
+    for root, dirs, files in os.walk(".", topdown=False):
+        for name in files:
+            print(os.path.join(root, name))
+        for name in dirs:
+            print(os.path.join(root, name))
 
     output = face_detection.paste_on_face(path,image_link,scale)
     output.save(tname)
