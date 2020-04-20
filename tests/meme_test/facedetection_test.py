@@ -41,7 +41,7 @@ def test_facedetection01():
             print(os.path.join(root, name))
 
     output = face_detection.paste_on_face(path,image_link,scale)
-    output.save(tname)
+    output.save(fname)
 
     
 
