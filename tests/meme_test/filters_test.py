@@ -10,20 +10,20 @@ base='filters'
 tdir = os.path.join('tests','test_images',base)
 refd = os.path.join('tests','reference_images',base)
 
-testfiles = [os.path.join(tdir,base+'_intensify.png'),
-             os.path.join(tdir,base+'_highlight.png'),
-             os.path.join(tdir,base+'_customHighlight.png'),
-             os.path.join(tdir,base+'_mirrorY.png'),
-             os.path.join(tdir,base+'_mirrorX.png'),
-             os.path.join(tdir,base+'_pixelate.png'),
-             os.path.join(tdir,base+'_saturate.png')
-            ]
+# testfiles = [os.path.join(tdir,base+'_intensify.png'),
+#              os.path.join(tdir,base+'_highlight.png'),
+#              os.path.join(tdir,base+'_customHighlight.png'),
+#              os.path.join(tdir,base+'_mirrorY.png'),
+#              os.path.join(tdir,base+'_mirrorX.png'),
+#              os.path.join(tdir,base+'_pixelate.png'),
+#              os.path.join(tdir,base+'_saturate.png')
+#             ]
 
-for fn in testfiles:
-    try:
-        os.remove(fn)
-    except:
-        print('Error removing file "'+fn+'"')
+# for fn in testfiles:
+#     try:
+#         os.remove(fn)
+#     except:
+#         print('Error removing file "'+fn+'"')
 
 
 TOLERANCE = 11.0

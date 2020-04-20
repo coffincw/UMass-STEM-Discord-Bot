@@ -6,17 +6,8 @@ from pathlib import Path
 from matplotlib.testing.compare import compare_images
 
 base='facedetection'
-tdir = os.path.join('test_images',base)
-refd = os.path.join('reference_images',base)
-
-globpattern = os.path.join(tdir,base+'*.png')
-oldtestfiles = glob.glob(globpattern)
-
-for fn in oldtestfiles:
-    try:
-        os.remove(fn)
-    except:
-        print('Error removing file "'+fn+'"')
+tdir = os.path.join('tests','test_images',base)
+refd = os.path.join('tests','reference_images',base)
 
 
 TOLERANCE = 11.0
@@ -31,19 +22,8 @@ def test_facedetection01():
     scale = face_detection.barr_scale
     path = Path('memes/barrington/barr-face.png')
 
-    print(os.getcwd())
-    print(tname)
-
-    for root, dirs, files in os.walk(".", topdown=False):
-        for name in files:
-            print(os.path.join(root, name))
-        for name in dirs:
-            print(os.path.join(root, name))
-
     output = face_detection.paste_on_face(path,image_link,scale)
     output.save(tname)
-
-    
 
     tsize = os.path.getsize(tname)
     print(glob.glob(tname),'[',tsize,'bytes',']')
