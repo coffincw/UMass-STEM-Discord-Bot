@@ -6,8 +6,8 @@ from pathlib import Path
 from matplotlib.testing.compare import compare_images
 
 base='facedetection'
-tdir = os.path.join('tests','test_images',base)
-refd = os.path.join('tests','reference_images',base)
+tdir = os.path.join('test_images',base)
+refd = os.path.join('reference_images',base)
 
 globpattern = os.path.join(tdir,base+'*.png')
 oldtestfiles = glob.glob(globpattern)
@@ -41,7 +41,7 @@ def test_facedetection01():
             print(os.path.join(root, name))
 
     output = face_detection.paste_on_face(path,image_link,scale)
-    output.save(fname)
+    output.save(tname)
 
     
 
@@ -55,7 +55,6 @@ def test_facedetection01():
     if result is not None:
        print('result=',result)
     assert result is None
-    assert 1 == 0
 
 def test_facedetection02():
     fname = base+'02.png'
