@@ -31,8 +31,12 @@ def test_facedetection01():
     scale = face_detection.barr_scale
     path = Path('memes/barrington/barr-face.png')
 
+    print(os.getcwd())
+
     output = face_detection.paste_on_face(path,image_link,scale)
     output.save(tname)
+
+    
 
     tsize = os.path.getsize(tname)
     print(glob.glob(tname),'[',tsize,'bytes',']')
@@ -44,6 +48,7 @@ def test_facedetection01():
     if result is not None:
        print('result=',result)
     assert result is None
+    assert 1 == 0
 
 def test_facedetection02():
     fname = base+'02.png'
