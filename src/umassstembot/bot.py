@@ -6,7 +6,6 @@ import discord
 import requests
 from discord import Game
 from discord.ext.commands import Bot
-from finnhub import client as Finnhub
 import asyncio
 import imageio
 imageio.plugins.ffmpeg.download() # needed for Heroku build
@@ -189,12 +188,12 @@ async def meme_help(ctx):
     )
     embed.set_author(name='Meme Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     MEME_COMMANDS = {
-        '*$mdraw [image/url/text/nothing]*': 'Sends a photo of marius drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$tdraw [image/url/text/nothing]*': 'Sends a photo of tim drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$bdraw [image/url/text/nothing]*': 'Sends a photo of barrington drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$ldraw [image/url/text/nothing]*': 'Sends a photo of lan drawing the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$landrew [image/url/text/nothing]*': 'Sends a photo of a different occasion of lan drawing the specified image or text, keep in mind that discord\'s gif size restrictions are a bit harsh',
-        '*$shelpoint [image/url/text/nothing]*': 'Sends a photo of dan sheldon pointing to the specified image or text or gif, keep in mind that discord\'s gif size restrictions are a bit harsh',
+        '*$mdraw [image/url/text/nothing]*': 'Sends a photo of marius drawing the specified image or text',
+        '*$tdraw [image/url/text/nothing]*': 'Sends a photo of tim drawing the specified image or text',
+        '*$bdraw [image/url/text/nothing]*': 'Sends a photo of barrington drawing the specified image or text',
+        '*$ldraw [image/url/text/nothing]*': 'Sends a photo of lan drawing the specified image or text',
+        '*$landrew [image/url/text/nothing]*': 'Sends a photo of a different occasion of lan drawing the specified image or text',
+        '*$shelpoint [image/url/text/nothing]*': 'Sends a photo of dan sheldon pointing to the specified image or text',
         '*barrify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put barrington on identified faces in the inputed image',
         '*surprisedpikachu [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put surprised pikachu on identified faces in the inputed image',
         '*marify [image/url/nothing]*': 'The bot uses computer vision through the OpenCV library to put marius on identified faces in the inputed image',
