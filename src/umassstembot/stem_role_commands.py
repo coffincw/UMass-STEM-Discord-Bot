@@ -85,7 +85,10 @@ async def list_my_roles(ctx, client, member):
     for role in special_roles:
         special += role + '\n'
 
-    mylist = discord.Embed(color=0xb5a2c8, description= '**' + special + '**')
+    if special is not '':
+        mylist = discord.Embed(color=0xb5a2c8, description= '**' + special + '**')
+    else:
+        mylist = discord.Embed(color=0xb5a2c8)
     mylist.set_author(name = '' + member.name + '\'s roles', icon_url = member.avatar_url)
 
     if housing_roles == '':
