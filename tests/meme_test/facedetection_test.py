@@ -9,18 +9,18 @@ base='facedetection'
 tdir = os.path.join('tests','test_images',base)
 refd = os.path.join('tests','reference_images',base)
 
-
 TOLERANCE = 11.0
 
 def test_facedetection01():
+    """Test pasting on face with one face"""
 
     fname = base+'01.png'
     tname = os.path.join(tdir,fname)
     rname = os.path.join(refd,fname)
 
-    image_link = 'https://s.hdnux.com/photos/51/23/24/10827008/3/920x920.jpg'
-    scale = face_detection.barr_scale
-    path = Path('memes/barrington/barr-face.png')
+    image_link  = 'https://s.hdnux.com/photos/51/23/24/10827008/3/920x920.jpg'
+    scale       = face_detection.barr_scale
+    path        = Path('memes/barrington/barr-face.png')
 
     output = face_detection.paste_on_face(path,image_link,scale)
     output.save(tname)
@@ -37,13 +37,15 @@ def test_facedetection01():
     assert result is None
 
 def test_facedetection02():
+    """Test pasting on face with multiple faces"""
+
     fname = base+'02.png'
     tname = os.path.join(tdir,fname)
     rname = os.path.join(refd,fname)
 
-    image_link = 'https://p1.pxfuel.com/preview/133/768/57/sikhs-india-indians-people-turban-sikhism-smile.jpg'
-    scale = face_detection.mar_scale
-    path = Path('memes/marius/marius-face.png')
+    image_link  = 'https://p1.pxfuel.com/preview/133/768/57/sikhs-india-indians-people-turban-sikhism-smile.jpg'
+    scale       = face_detection.mar_scale
+    path        = Path('memes/marius/marius-face.png')
 
     output = face_detection.paste_on_face(path,image_link,scale)
     output.save(tname)
@@ -60,7 +62,11 @@ def test_facedetection02():
     assert result is None
 
 def test_facedetection03():
-    
+    """
+    Test face_coordinates function and the
+    open_image_cv function
+    """
+
     image_link = 'https://p1.pxfuel.com/preview/133/768/57/sikhs-india-indians-people-turban-sikhism-smile.jpg'
     image_for_coordinates = face_detection.open_image_cv(image_link)
     faces = face_detection.face_coordinates(image_for_coordinates)

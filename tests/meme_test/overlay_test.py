@@ -9,19 +9,10 @@ base='overlay'
 tdir = os.path.join('tests','test_images',base)
 refd = os.path.join('tests','reference_images',base)
 
-# globpattern = os.path.join(tdir,base+'*.png')
-# oldtestfiles = glob.glob(globpattern)
-
-# for fn in oldtestfiles:
-#     try:
-#         os.remove(fn)
-#     except:
-#         print('Error removing file "'+fn+'"')
-
-
 TOLERANCE = 11.0
 
 def test_overlay01():
+    """Test draw text command with single line"""
 
     fname = base+'01.png'
     tname = os.path.join(tdir,fname)
@@ -46,6 +37,7 @@ def test_overlay01():
     assert result is None
 
 def test_overlay02():
+    """Test draw text command with multiple lines"""
 
     fname = base+'02.png'
     tname = os.path.join(tdir,fname)
@@ -71,6 +63,7 @@ def test_overlay02():
 
 
 def test_overlay03():
+    """Test draw image command"""
 
     fname = base+'03.png'
     tname = os.path.join(tdir,fname)
@@ -95,6 +88,7 @@ def test_overlay03():
     assert result is None
 
 def test_overlay04():
+    """Test meme command with simple input"""
 
     fname = base+'04.png'
     tname = os.path.join(tdir,fname)
@@ -119,6 +113,7 @@ def test_overlay04():
     assert result is None
 
 def test_overlay05():
+    """Test meme command with multi-line input"""
 
     fname = base+'05.png'
     tname = os.path.join(tdir,fname)
@@ -143,6 +138,7 @@ def test_overlay05():
     assert result is None
 
 def test_overlay06():
+    """Test url_to_image function"""
 
     fname = base+'06.png'
     tname = os.path.join(tdir,fname)
@@ -165,6 +161,7 @@ def test_overlay06():
     assert result is None
 
 def test_overlay07():
+    """Test zoom command"""
 
     fname = base+'07.png'
     tname = os.path.join(tdir,fname)
