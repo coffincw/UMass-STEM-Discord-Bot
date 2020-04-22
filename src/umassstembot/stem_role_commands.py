@@ -1,12 +1,12 @@
 import discord
 import asyncio
 from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS
+from discord.utils import get
 
-def merge_dict(v, w, x, y): # merges dictionaries w, x, y together
-    z = x.copy()
-    z.update(y)
-    z.update(w)
-    z.update(v)
+def merge_dict(dicts): # merges dictionaries together
+    z = dicts[0].copy()
+    for i in range(1, len(dicts)):
+        z.update(dicts[i])
     return z
 
 def capitalize_all_words(in_str):
@@ -105,9 +105,27 @@ async def list_my_roles(ctx, client, member):
         mylist.add_field(name = 'Graduation Year', value=graduation_year, inline=False)
     await ctx.channel.send(embed=mylist)    
 
+async def stats(ctx):
+    contents = ctx.message.content[6:].strip().lower()
+    if len(contents) == 0:
+        await ctx.send(embed=discord.Embed(description='You must specify a valid role, for example: $stats Computer Science', color=discord.Color.red()))
+        return
+    possible_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS])
+    found = False
+    for role_id, role_names in possible_roles.items():
+        for alias in role_names:
+            if contents == alias: # valid role
+                found = True
+                role = get(ctx.guild.roles, id=role_id)
+                break
+    if not found:
+        await ctx.send(embed=discord.Embed(description='Invalid role specified. You must specify a valid role, for example: $stats Computer Science', color=discord.Color.red()))
+        return      
+    await ctx.send(embed=discord.Embed(title=role.name + ' Role Statistics', description = 'Count: ' + str(len(role.members)), color=discord.Color.greyple()))
+
 async def stem_add_role(requested_role, member, client):
     channel = requested_role.channel
-    available_roles = merge_dict(HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS)
+    available_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS])
     role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
     is_grad_role = False
 

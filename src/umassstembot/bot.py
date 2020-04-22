@@ -144,7 +144,8 @@ async def help(ctx):
         '*$getlist*': 'Sends a list of all the available roles',
         '*$get [role]*': 'Gives you the specified role',
         '*$remove [role]*': 'Removes the specified role from you',
-        '*$myroles [optional: @mention]*': 'Displays the roles of the specified user, if none given displays caller\'s roles'
+        '*$myroles [optional: @mention]*': 'Displays the roles of the specified user, if none given displays caller\'s roles',
+        '*$stats [role]*': 'Outputs the member count for the specified role. Please do not mention the role in the command, just state the name'
     }
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
@@ -320,6 +321,15 @@ async def refresh_count_messages(ctx):
 async def server_members(ctx):
     num_members = len(set(client.get_all_members()))
     await ctx.send('There are ' + str(num_members) + ' server members')
+
+@client.command(name = 'stats')
+async def statistics(ctx):
+    """Command to get the requested role's statistics including count
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    await stem_role_commands.stats(ctx)
 
 @client.command(name = 'covid19', aliases = ['corona', 'covid', 'coronavirus'])
 async def covid(ctx):
