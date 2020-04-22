@@ -596,6 +596,7 @@ async def meme_generator(ctx, *args):
         message = await channel.send(file=discord.File('meme.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('meme.png')
 
@@ -629,6 +630,7 @@ async def intensify(ctx, *args):
         message = await channel.send(file=discord.File('intensify.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('intensify.png')
 
@@ -642,10 +644,11 @@ async def mirror(ctx, *args):
     """
     channel = ctx.channel
     try:
-        url = overlay.get_image_url_args(ctx.message, args, 2, 2)
+        url = overlay.get_image_url_args(ctx.message, args, 2, 1)
         axis = args[0]
     except:
         await channel.send(embed=discord.Embed(description="Invalid input", color=discord.Color.red()))
+        return
     if axis != "x" and axis != "y" and axis != "X" and axis != "Y":
         await channel.send(embed=discord.Embed(description="Invalid axis, please use x or y", color=discord.Color.red()))
         return
@@ -656,6 +659,7 @@ async def mirror(ctx, *args):
             message = await channel.send(file=discord.File("mirror_x.png"))
         except:
             message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+            return
         custom_meme.track_command(ctx.author.id, message)
         os.remove("mirror_x.png")
         return
@@ -666,6 +670,7 @@ async def mirror(ctx, *args):
             message = await channel.send(file=discord.File("mirror_y.png"))
         except:
             message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+            return
         custom_meme.track_command(ctx.author.id, message)
         os.remove("mirror_y.png")
 
@@ -687,6 +692,7 @@ async def highlight_edge(ctx, *args):
         message = await channel.send(file=discord.File('highlighted.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('highlighted.png')
 
@@ -719,6 +725,7 @@ async def custom_edge_highlight(ctx, *args):
         message = await channel.send(file=discord.File('custom_highlight.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('custom_highlight.png')
 
@@ -740,6 +747,7 @@ async def noise_filter(ctx):
         message = await channel.send(file=discord.File('noise.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('noise.png')
 
@@ -767,6 +775,7 @@ async def pixelate(ctx, *args):
         message = await channel.send(file=discord.File('pixelate.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('pixelate.png')
 
@@ -794,6 +803,7 @@ async def saturate(ctx, *args):
         message = await channel.send(file=discord.File('saturate.png'))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove('saturate.png')
 
@@ -815,6 +825,7 @@ async def make_okay(ctx):
         message = await channel.send(file=discord.File("okay.mp4"))
     except:
         message = await channel.send(embed=discord.Embed(description="Image too large", color=discord.Color.red()))
+        return
     custom_meme.track_command(ctx.author.id, message)
     os.remove("okay.mp4")
 
