@@ -121,7 +121,7 @@ async def stats(ctx):
     if not found:
         await ctx.send(embed=discord.Embed(description='Invalid role specified. You must specify a valid role, for example: $stats Computer Science', color=discord.Color.red()))
         return      
-    await ctx.send(embed=discord.Embed(title=role.name + ' Role Statistics', description = 'Count: ' + str(len(role.members)), color=discord.Color.greyple()))
+    await ctx.send(embed=discord.Embed(title=role.name + ' Role Statistics', description = 'Count: ' + str(len(role.members)) + '\nPercentage of Members: ' + "{:.3f}%".format((len(role.members)/ctx.message.guild.member_count)*100), color=discord.Color.greyple()))
 
 async def stem_add_role(requested_role, member, client):
     channel = requested_role.channel

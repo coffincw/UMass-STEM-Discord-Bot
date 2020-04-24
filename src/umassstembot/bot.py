@@ -42,7 +42,7 @@ async def on_member_join(member):
     if member.guild.id == 387465995176116224:
         welcome_channel = client.get_channel(387465995176116226) # introductions
 
-        num_members = len(set(client.get_all_members()))
+        num_members = member.guild.member_count
 
         # used to randomly pick one of the available drawing professors
         professor_chosen = random.randint(0, 6)
@@ -145,7 +145,7 @@ async def help(ctx):
         '*$get [role]*': 'Gives you the specified role',
         '*$remove [role]*': 'Removes the specified role from you',
         '*$myroles [optional: @mention]*': 'Displays the roles of the specified user, if none given displays caller\'s roles',
-        '*$stats [role]*': 'Outputs the member count for the specified role. Please do not mention the role in the command, just state the name'
+        '*$stats [role]*': 'Outputs the member count and percentage of total server members for the specified role. Please do not mention the role in the command, just state the name'
     }
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
@@ -319,8 +319,7 @@ async def refresh_count_messages(ctx):
 
 @client.command(name = 'members')
 async def server_members(ctx):
-    num_members = len(set(client.get_all_members()))
-    await ctx.send('There are ' + str(num_members) + ' server members')
+    await ctx.send('There are ' + str(ctx.message.guild.member_count) + ' server members')
 
 @client.command(name = 'stats')
 async def statistics(ctx):
