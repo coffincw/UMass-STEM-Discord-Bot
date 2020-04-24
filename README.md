@@ -19,7 +19,7 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 - myroles [optional: @user]
   - Prints out the calling user's (or mentioned user's) roles organized by category
 - stats [role]
-  - Outputs the member count for the specified role.
+  - Outputs the member count and percentage of total server members for the specified role.
 
 ### General
 - members

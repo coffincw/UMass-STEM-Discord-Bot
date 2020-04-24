@@ -145,7 +145,7 @@ async def help(ctx):
         '*$get [role]*': 'Gives you the specified role',
         '*$remove [role]*': 'Removes the specified role from you',
         '*$myroles [optional: @mention]*': 'Displays the roles of the specified user, if none given displays caller\'s roles',
-        '*$stats [role]*': 'Outputs the member count for the specified role. Please do not mention the role in the command, just state the name'
+        '*$stats [role]*': 'Outputs the member count and percentage of total server members for the specified role. Please do not mention the role in the command, just state the name'
     }
     GENERAL_COMMANDS = {
         '*$members*': 'Displays the number of members on the server',
