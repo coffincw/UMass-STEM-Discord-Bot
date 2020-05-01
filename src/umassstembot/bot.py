@@ -40,7 +40,7 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     if member.guild.id == 387465995176116224:
-        welcome_channel = client.get_channel(387465995176116226) # introductions
+        welcome_channel = client.get_channel(705670780704391259) # introductions
 
         num_members = member.guild.member_count
 
@@ -363,10 +363,12 @@ async def get_role(requested_role):
     member = requested_role.author
     channel = requested_role.channel
     if requested_role.guild.id == 387465995176116224:
-        if requested_role.channel.id == 537732009108439048 or requested_role.channel.id == 501594682820788224:
+        if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == 705668942038958130:
             await stem_role_commands.stem_add_role(requested_role, member, client)
         else:
-            await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment", color=discord.Color.dark_red()))
+            message = await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment\nThis message will auto-delete in 15 seconds", color=discord.Color.dark_red()))
+            await message.delete(delay=15)
+            await requested_role.message.delete(delay=15)
     else:
         await channel.send(embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 
@@ -380,10 +382,12 @@ async def remove_role(requested_role):
     member = requested_role.author
     channel = requested_role.channel
     if requested_role.guild.id == 387465995176116224:
-        if requested_role.channel.id == 537732009108439048 or requested_role.channel.id == 501594682820788224:
+        if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == 705668942038958130:
             await stem_role_commands.stem_remove_role(requested_role, member, client)
         else:
-            await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment", color=discord.Color.dark_red()))
+            message = await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment\nThis message will auto-delete in 15 seconds", color=discord.Color.dark_red()))
+            await message.delete(delay=15)
+            await requested_role.message.delete(delay=15)
     else:
         await channel.send(embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
 
