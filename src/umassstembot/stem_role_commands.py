@@ -18,7 +18,7 @@ def capitalize_all_words(in_str):
 
 async def list_roles(ctx, client):
     getlist = discord.Embed(color=discord.Color.blue())
-    getlist.set_author(name='Roles | Use $get [role] to add a role', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
+    getlist.set_author(name='Roles | Use $get [role] in #role-assignment to add a role', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     housing_role_list = ''
     housing_roles = sorted(HOUSING_ROLE_IDS.values(), key=lambda x: x[0])
     for role in housing_roles:
@@ -54,7 +54,7 @@ async def list_roles(ctx, client):
     class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
     getlist.set_footer(text='If you want a role added to the server @Caleb or suggest it in #suggestions')
-    await ctx.channel.send(embed=getlist)
+    await ctx.message.author.send(embed=getlist)
 
 async def list_my_roles(ctx, client, member):
     housing_roles, major_roles, graduation_year = '', '', ''
@@ -103,12 +103,16 @@ async def list_my_roles(ctx, client, member):
         mylist.add_field(name = 'Class Roles', value=class_specific, inline=False)
     if graduation_year != '':
         mylist.add_field(name = 'Graduation Year', value=graduation_year, inline=False)
-    await ctx.channel.send(embed=mylist)    
+    message = await ctx.channel.send(embed=mylist)    
+    await message.delete(delay=30)
+    await ctx.message.delete(delay=30)
 
 async def stats(ctx):
     contents = ctx.message.content[6:].strip().lower()
     if len(contents) == 0:
-        await ctx.send(embed=discord.Embed(description='You must specify a valid role, for example: $stats Computer Science', color=discord.Color.red()))
+        message = await ctx.send(embed=discord.Embed(description='You must specify a valid role, for example: $stats Computer Science\nThis message will auto-delete in 15 seconds', color=discord.Color.red()))
+        message.delete(delay=15)
+        ctx.message.delete(delay=15)
         return
     possible_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS])
     found = False
@@ -119,9 +123,13 @@ async def stats(ctx):
                 role = get(ctx.guild.roles, id=role_id)
                 break
     if not found:
-        await ctx.send(embed=discord.Embed(description='Invalid role specified. You must specify a valid role, for example: $stats Computer Science', color=discord.Color.red()))
+        message = await ctx.send(embed=discord.Embed(description='Invalid role specified. You must specify a valid role, for example: $stats Computer Science\nThis message will auto-delete in 15 seconds', color=discord.Color.red()))
+        message.delete(delay=15)
+        ctx.message.delete(delay=15)
         return      
-    await ctx.send(embed=discord.Embed(title=role.name + ' Role Statistics', description = 'Count: ' + str(len(role.members)), color=discord.Color.greyple()))
+    message = await ctx.send(embed=discord.Embed(title=role.name + ' Role Statistics', description = 'Count: ' + str(len(role.members)), color=discord.Color.greyple()))
+    message.delete(delay=30)
+    ctx.message.delete(delay=30)
 
 async def stem_add_role(requested_role, member, client):
     channel = requested_role.channel
@@ -142,7 +150,9 @@ async def stem_add_role(requested_role, member, client):
                 # check if member already has the requested role
                 for member_role in member.roles:
                     if member_role.name.lower() == role_names[0]:
-                        await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!", color=discord.Color.gold()))
+                        message = await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have this role!\nUse the $remove [role] command to remove it!\nThis message will auto-delete in 15 seconds", color=discord.Color.gold()))
+                        await message.delete(delay=15)
+                        await requested_role.message.delete(delay=15)
                         return
 
                 # if the member doesnt already have the requested role
@@ -153,15 +163,22 @@ async def stem_add_role(requested_role, member, client):
                 # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
                 for grad_year_roles in GRAD_YEAR_ROLE_IDS.values():
                     if role_to_add.name.lower() in grad_year_roles and is_grad_role:
-                        await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have a graduation year role!\nUse the $remove [role] command to remove it in order to add a different one!", color=discord.Color.gold()))
+                        message = await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you already have a graduation year role!\nUse the $remove [role] command to remove it in order to add a different one!\nThis message will auto-delete in 15 seconds", color=discord.Color.gold()))
+                        await message.delete(delay=15)
+                        await requested_role.message.delete(delay=15)
                         return
 
                 await member.add_roles(role_to_add)
                 await asyncio.sleep(1)
                 await check_major_housing_role(member, client)
-                await channel.send(embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!", color=discord.Color.green()))
+                message = await channel.send(embed=discord.Embed(description="Added " + role_to_add.name + " to " + member.name + "\nUse the $remove [role] command to remove it!\nThis message will auto-delete in 15 seconds", color=discord.Color.green()))
+                await message.delete(delay=15)
+                await requested_role.message.delete(delay=15)
                 return
-    await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles", color=discord.Color.red()))
+    message = await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", there is no role with that name!\nUse the $getlist command to see the available roles\nThis message will auto-delete in 15 seconds", color=discord.Color.red()))
+    await message.delete(delay=15)
+    await requested_role.message.delete(delay=15)
+
 
 async def check_major_housing_role(member, client):
     member_has_hr = False
@@ -193,8 +210,14 @@ async def stem_remove_role(requested_role, member, client):
                         await member.remove_roles(role)
                         await asyncio.sleep(1)
                         await check_major_housing_role(member, client)
-                        await channel.send(embed=discord.Embed(description="Removed " + role.name + " from " + member.name, color=discord.Color.green()))
+                        message = await channel.send(embed=discord.Embed(description="Removed " + role.name + " from " + member.name + '\nThis message will auto-delete in 15 seconds', color=discord.Color.green()))
+                        await message.delete(delay=15)
+                        await requested_role.message.delete(delay=15)
                         return
-            await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role", color=discord.Color.red()))
+            message = await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you can't remove that role\nThis message will auto-delete in 15 seconds", color=discord.Color.red()))
+            await message.delete(delay=15)
+            await requested_role.message.delete(delay=15)
             return
-    await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name", color=discord.Color.red()))
+    message = await channel.send(embed=discord.Embed(description="I'm sorry, " + member.name + ", you don't have a role with that name\nThis message will auto-delete in 15 seconds", color=discord.Color.red()))
+    await message.delete(delay=15)
+    await requested_role.message.delete(delay=15)
