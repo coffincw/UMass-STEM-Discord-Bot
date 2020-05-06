@@ -369,7 +369,6 @@ async def covidp(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
-    print('running')
     await corona.coronavirus(ctx, True)
 
 # vvv ROLE COMMANDS vvv
@@ -443,21 +442,6 @@ async def my_roles(ctx):
         await ctx.message.delete(delay=15)
         return
     await stem_role_commands.list_my_roles(ctx, client, member) # found in stem_role_commands.py
-
-## vvv STOCK COMMANDS vvv
-
-@client.command(name='stockcandle')
-async def stock_candle(ctx, ticker, timeframe):
-    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stockcandle instead.", color=discord.Color.red()))
-
-@client.command(name='stockline')
-async def stock_line(ctx, ticker, timeframe):
-    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stockline instead.", color=discord.Color.red()))
-
-@client.command(name='stock')
-async def stock_price(ctx, ticker):
-    await ctx.channel.send(embed=discord.Embed(description="Stock commands have been moved to the Discord Stock Exchange Bot.\nPlease use %stock instead.", color=discord.Color.red()))
-
 
 # vvv MEME COMMANDS vvv
 @client.command(name='mdraw')

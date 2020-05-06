@@ -80,12 +80,21 @@ async def coronavirus(ctx, sort_by_percentage):
     if len(argument) < 1:
         embed = discord.Embed(title='Coronavirus Statistics', color=discord.Color.teal())
         i = 1
+        case_count = 0
+        pop_count = 0
+        death_count = 0
         for state in sorted(only_states_data, key=lambda state: state['case'] if not sort_by_percentage else (state['case']/get_pop(state['state'].strip())), reverse=True): # iterate through the state blocks sorted by case number
-            state_name, cases_output, deaths_output = build_top_corona_output(state)
-            embed.add_field(name = str(i) + '. ' + state_name + '\n', value = 'Cases: ' + cases_output + 'Deaths: ' + deaths_output, inline=True)
+            
+            case_count += state['case']
+            death_count += state['death']
+            pop_count += get_pop(state['state'].strip())
+            if i < 16:
+                state_name, cases_output, deaths_output = build_top_corona_output(state)
+                embed.add_field(name = str(i) + '. ' + state_name + '\n', value = 'Cases: ' + cases_output + 'Deaths: ' + deaths_output, inline=True)
             i += 1
-            if i > 15:
-                break
+
+        embed.description = ('-------= U.S Totals =-------\nCases: ' + '{:,d} '.format(case_count) + '(' + str(round((case_count/pop_count) * 100, 4)) + '%)' + '\nDeaths: '
+                            '{:,d} '.format(death_count) + '(' + str(round((death_count/pop_count) * 100, 4)) + '%)')
         await ctx.send(embed=embed)
 
     else:
