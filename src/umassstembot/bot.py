@@ -374,9 +374,6 @@ async def covidp(ctx):
 
 # vvv CALENDAR STUFF VVV
 
-# clientID: 967316579695-mcm4fgmcq35jt8j6m30eakp2dlu13lvp.apps.googleusercontent.com
-# client SECRET: H3BaNWBIhZJL5WhWA-uPaRBC
-
 @client.command(name='calendar')
 async def get_calendar(ctx):
     await calendar.get_events(ctx)
