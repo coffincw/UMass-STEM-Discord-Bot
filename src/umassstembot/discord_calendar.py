@@ -35,7 +35,7 @@ def get_credentials():
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
                                   client_secret=GOOGLE_CLIENT_SECRET,
                                   scope='https://www.googleapis.com/auth/calendar',
-                                  redirect_uris=["https://umass-stem-bot.herokuapp.com/"])
+                                  redirect_uris=["http://umass-stem-bot.herokuapp.com/auth/google/callback"])
         flow.user_agent = 'calendar-stff'
         credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
