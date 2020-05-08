@@ -11,6 +11,7 @@ import imageio
 imageio.plugins.ffmpeg.download() # needed for Heroku build
 import moviepy.editor as mp
 import overlay
+import discord_calendar as calendar
 import filters
 import stem_role_commands
 import face_detection
@@ -370,6 +371,15 @@ async def covidp(ctx):
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
     await corona.coronavirus(ctx, True)
+
+# vvv CALENDAR STUFF VVV
+
+@client.command(name='calendar')
+async def get_calendar(ctx):
+    if message.guild.id != 387465995176116224:
+        await calendar.get_events(ctx)
+    else:
+        await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
 # vvv ROLE COMMANDS vvv
 
