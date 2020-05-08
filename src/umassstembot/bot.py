@@ -11,6 +11,7 @@ import imageio
 imageio.plugins.ffmpeg.download() # needed for Heroku build
 import moviepy.editor as mp
 import overlay
+import discord_calendar as calendar
 import filters
 import stem_role_commands
 import face_detection
@@ -370,6 +371,15 @@ async def covidp(ctx):
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
     await corona.coronavirus(ctx, True)
+
+# vvv CALENDAR STUFF VVV
+
+# clientID: 967316579695-mcm4fgmcq35jt8j6m30eakp2dlu13lvp.apps.googleusercontent.com
+# client SECRET: H3BaNWBIhZJL5WhWA-uPaRBC
+
+@client.command(name='calendar')
+async def get_calendar(ctx):
+    await calendar.get_events(ctx)
 
 # vvv ROLE COMMANDS vvv
 
