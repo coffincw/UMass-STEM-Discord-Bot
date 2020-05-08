@@ -26,14 +26,16 @@ def get_credentials():
     credential_path = os.path.join(credential_dir, 'json-file.json')
 
     store = Storage(credential_path)
-    credentials = store.get()
+    #credentials = store.get()
+    credentials = None
     # credentials_json = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
     # credentials = GoogleCredentials.from_json(cred_test)
     if not credentials or credentials.invalid:
+        print('test')
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
                                   client_secret=GOOGLE_CLIENT_SECRET,
                                   scope='https://www.googleapis.com/auth/calendar',
-                                  redirect_uris=["urn:ietf:wg:oauth:2.0:oob","http://localhost"])
+                                  redirect_uris=["https://umass-stem-bot.herokuapp.com/"])
         flow.user_agent = 'calendar-stff'
         credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
