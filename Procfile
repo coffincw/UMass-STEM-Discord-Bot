@@ -1,1 +1,1 @@
-worker: python src/umassstembot/bot.py --noauth_local_webserver
+worker: python src/umassstembot/bot.py
