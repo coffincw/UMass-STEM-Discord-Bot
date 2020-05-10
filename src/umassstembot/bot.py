@@ -374,12 +374,12 @@ async def covidp(ctx):
 
 # vvv CALENDAR STUFF VVV
 
-# @client.command(name='calendar')
-# async def get_calendar(ctx):
-#     if ctx.guild.id != 387465995176116224:
-#         await calendar.get_events(ctx)
-#     else:
-#         await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+@client.command(name='calendar')
+async def get_calendar(ctx):
+    if ctx.guild.id != 387465995176116224:
+        await calendar.get_events(ctx)
+    else:
+        await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
 # vvv ROLE COMMANDS vvv
 
