@@ -35,9 +35,10 @@ def get_credentials():
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
                                   client_secret=GOOGLE_CLIENT_SECRET,
                                   scope='https://www.googleapis.com/auth/calendar',
-                                  redirect_uris=["http://localhost:8080", "https://id.heroku.com/oauth/authorize"],
+                                  redirect_uri="https://id.heroku.com/oauth/authorize",
                                   access_type='offline')
         flow.user_agent = 'calendar-stff'
+        authorize_url = flow.step1_get_authorize_url()
         credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials 
