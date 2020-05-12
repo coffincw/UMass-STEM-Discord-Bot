@@ -2,6 +2,8 @@ import datetime
 import discord
 import pickle
 import bs4
+import time
+import re
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -17,6 +19,8 @@ GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 MONTHS = ("January", "February")
+
+CREDS = None
 
 async def get_credentials(ctx, client):
     credentials = None
@@ -54,10 +58,11 @@ async def get_events(ctx, client):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
-    creds = None
-    creds = await get_credentials(ctx, client)
+    global CREDS
+    if CREDS is None:
+        CREDS = await get_credentials(ctx, client)
    
-    service = build('calendar', 'v3', credentials=creds)
+    service = build('calendar', 'v3', credentials=CREDS)
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
@@ -87,6 +92,7 @@ async def get_events(ctx, client):
         calendar_event_link = '[Calendar Event Link](' + event['htmlLink'] + ')'
         event_desc = time[1] + ' ' + day_str + ' ' + month + ' ' + date[2] + ' ' + date[0] + '\n' + calendar_event_link
         if 'description' in event and '<a href=' in event['description'].strip():
+            print(event['description'])
             soup = bs4.BeautifulSoup(event['description'])
             aTags = soup.find_all("a")
             urls = [tag['href'] for tag in aTags if 'href' in tag.attrs]
@@ -95,3 +101,79 @@ async def get_events(ctx, client):
         calendar_output_embed.add_field(name=event['summary'], value= event_desc, inline=False)
 
     await ctx.send(embed=calendar_output_embed)
+
+async def set_time(starttime_arg):
+    time_zone_str = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
+    if not (starttime_arg.endswith('pm') or starttime_arg.endswith('am')):
+        await channel.send(embed=discord.Embed(description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", color=discord.Color.red()))
+        return ''
+
+    time_value = starttime_arg[:-2].rstrip() # trim off 'pm' or 'am'
+    hours_min = time_value.split(':')
+    if len(hours_min) != 2:
+        await channel.send(embed=discord.Embed(description="Invalid time format. Please use ex. 12:00 pm", color=discord.Color.red()))
+        return ''
+    hours = int(hours_min[0])
+    minutes = int(hours_min[1])
+
+    if starttime_arg.endswith('pm'):
+        hours += 12
+        
+    
+    if hours > 23 or minutes > 59 or hours < 0  or minutes < 0:
+        await channel.send(embed=discord.Embed(description="Invalid time!", color=discord.Color.red()))
+        return ''
+
+    if hours < 10:
+        hours_str = '0' + str(hours)
+    else:
+        hours_str = str(hours)
+
+    if minutes < 10:
+        minutes_str = '0' + str(minutes)
+    else:
+        minutes_str = str(minutes)
+
+    return hours_str + ':' + minutes_str + ':00' + time_zone_str
+
+async def add_events(ctx, client, args):
+    global CREDS
+    if CREDS is None:
+        CREDS = await get_credentials(ctx, client)
+
+    service = build('calendar', 'v3', credentials=CREDS)
+    date_arg = args[0].strip()
+    starttime_arg = args[1].strip().lower()
+    summary = args[2].strip()
+    link = args[3].strip()
+    
+    regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    
+    if not re.match(regex, link):
+        await channel.send(embed=discord.Embed(description="Invalid value used for link parameter.", color=discord.Color.red()))
+        return
+    
+    start_time = await set_time(starttime_arg)
+    if len(start_time) < 1:
+        return
+
+    # need to parse date and create end time
+
+
+
+
+    new_event = {
+        'summary': summary,
+        description: '<a href=\"' + link + '\">' + link + '</a>&nbsp;&nbsp;',
+        'start': {
+            
+        }
+
+    }
+    event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=event).execute()

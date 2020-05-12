@@ -381,6 +381,16 @@ async def get_calendar(ctx):
     else:
         await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
+@client.command(name='addevent')
+async def get_calendar(ctx, *args):
+    if ctx.guild.id != 387465995176116224:
+        if len(args) < 3:
+            await channel.send(embed=discord.Embed(description="Invalid format! Ex. $addevent \"5/22/2020\" \"3:00pm\" \"UMass Rocket League Tournament\" \"link\"\nMust at least specify date, time, and name", color=discord.Color.red()))
+            return
+        await calendar.get_events(ctx, client, args)
+    else:
+        await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+
 # vvv ROLE COMMANDS vvv
 
 @client.command(name='get')
