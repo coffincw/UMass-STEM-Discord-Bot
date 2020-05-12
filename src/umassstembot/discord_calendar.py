@@ -19,15 +19,12 @@ WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 MONTHS = ("January", "February")
 
 async def get_credentials(ctx, client):
-    home_dir = os.path.expanduser('~')
-    credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir, 'json-file.json')
-
-    store = Storage(credential_path)
-    credentials = store.get()
     credentials = None
+    home_dir = os.path.expanduser('~')
+    if os.path.exists(home_dir + '/token.pickle'):
+        with open(home_dir + '/token.pickle', 'rb') as token:
+            credentials = pickle.load(token)
+    
 
     if not credentials or credentials.invalid:
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
@@ -39,8 +36,10 @@ async def get_credentials(ctx, client):
         authorize_url = flow.step1_get_authorize_url()
         await ctx.send(authorize_url)
         code = await client.wait_for('message')
-        print(code.content)
         credentials = flow.step2_exchange(code.content)
+        home_dir = os.path.expanduser('~')
+        with open(home_dir + '/token.pickle', 'wb') as token:
+            pickle.dump(credentials, token)
         #credentials = tools.run_flow(flow, store)
         # print('Storing credentials to ' + credential_path)
     return credentials 
