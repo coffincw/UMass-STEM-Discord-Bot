@@ -377,7 +377,7 @@ async def covidp(ctx):
 @client.command(name='calendar')
 async def get_calendar(ctx):
     if ctx.guild.id != 387465995176116224:
-        await calendar.get_events(ctx)
+        await calendar.get_events(ctx, client)
     else:
         await channel.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 

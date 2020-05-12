@@ -12,14 +12,13 @@ from oauth2client.file import Storage
 from oauth2client.client import GoogleCredentials, OAuth2WebServerFlow
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 MONTHS = ("January", "February")
 
-def get_credentials():
+async def get_credentials(ctx, client):
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
@@ -31,16 +30,19 @@ def get_credentials():
     credentials = None
 
     if not credentials or credentials.invalid:
-        print('test')
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
                                   client_secret=GOOGLE_CLIENT_SECRET,
                                   scope='https://www.googleapis.com/auth/calendar',
-                                  redirect_uri="http://id.heroku.com/oauth/authorize",
-                                  access_type='offline')
+                                  redirect_uri='http://id.heroku.com/oauth/authorize',
+                                  prompt='consent')
         flow.user_agent = 'calendar-stff'
         authorize_url = flow.step1_get_authorize_url()
-        credentials = tools.run_flow(flow, store)
-        print('Storing credentials to ' + credential_path)
+        await ctx.send(authorize_url)
+        code = await client.wait_for('message')
+        print(code.content)
+        credentials = flow.step2_exchange(code.content)
+        #credentials = tools.run_flow(flow, store)
+        # print('Storing credentials to ' + credential_path)
     return credentials 
 
 def convert_time(str_time):
@@ -49,12 +51,12 @@ def convert_time(str_time):
     time = datetime.datetime.strptime(mil_time, '%H:%M:%S').strftime('%I:%M:%S %p')
     return date_time[0], time
 
-async def get_events(ctx):
+async def get_events(ctx, client):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
     creds = None
-    creds = get_credentials()
+    creds = await get_credentials(ctx, client)
    
     service = build('calendar', 'v3', credentials=creds)
 
