@@ -1,5 +1,6 @@
 import datetime
 import discord
+import requests
 import pickle
 import bs4
 import time
@@ -16,21 +17,40 @@ from oauth2client.client import GoogleCredentials, OAuth2WebServerFlow
 # If modifying these scopes, delete the file token.pickle.
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+GOOGLE_REFRESH_TOKEN = os.environ.get('GOOGLE_REFRESH_TOKEN')
+
+CREDS = None
 
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 MONTHS = ("January", "February")
 
-CREDS = None
+def refreshToken(client_id, client_secret, refresh_token):
+        params = {
+                "grant_type": "refresh_token",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "refresh_token": refresh_token
+        }
+
+        authorization_url = "https://www.googleapis.com/oauth2/v4/token"
+
+        r = requests.post(authorization_url, data=params)
+
+        if r.ok:
+                return r.json()['access_token']
+        else:
+                return None
 
 async def get_credentials(ctx, client):
     credentials = None
-    home_dir = os.path.expanduser('~')
-    if os.path.exists(home_dir + '/token.pickle'):
-        with open(home_dir + '/token.pickle', 'rb') as token:
-            credentials = pickle.load(token)
+    # with open('refresh.token', 'r') as f:
+    #     refresh_token = f.readline()
+    access_token = refreshToken(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN)
+    credentials = google.oauth2.credentials.Credentials(access_token)
+
     
 
-    if not credentials or credentials.invalid:
+    if not credentials or not credentials.valid:
         flow = OAuth2WebServerFlow(client_id=GOOGLE_CLIENT_ID,
                                   client_secret=GOOGLE_CLIENT_SECRET,
                                   scope='https://www.googleapis.com/auth/calendar',
@@ -38,12 +58,14 @@ async def get_credentials(ctx, client):
                                   prompt='consent')
         flow.user_agent = 'calendar-stff'
         authorize_url = flow.step1_get_authorize_url()
+        # change this to give an error message and dm caleb instead
         await ctx.send(authorize_url)
-        code = await client.wait_for('message')
-        credentials = flow.step2_exchange(code.content)
-        home_dir = os.path.expanduser('~')
-        with open(home_dir + '/token.pickle', 'wb') as token:
-            pickle.dump(credentials, token)
+        message = await client.wait_for('message')
+        code = message.content
+        credentials = flow.step2_exchange(code)
+        # with open('refresh.token', 'w+') as f:
+        #     f.write(credentials.refresh_token)
+        await ctx.send(credentials.refresh_token)
         #credentials = tools.run_flow(flow, store)
         # print('Storing credentials to ' + credential_path)
     return credentials 
