@@ -1,4 +1,5 @@
 import datetime
+from dateutil.parser import parse as dtparse
 import discord
 import requests
 import pickle
@@ -101,8 +102,6 @@ async def get_events(ctx, client):
     else:
         calendar_output_embed = discord.Embed(title=events[0]['organizer'].get('displayName'), color=discord.Color.dark_teal())
     for event in events:
-        
-        #print(event)
         start = event['start'].get('dateTime', event['start'].get('date'))
         time = convert_time(start)
         date = time[0].split('-')
@@ -114,7 +113,7 @@ async def get_events(ctx, client):
         calendar_event_link = '[Calendar Event Link](' + event['htmlLink'] + ')'
         event_desc = time[1] + ' ' + day_str + ' ' + month + ' ' + date[2] + ' ' + date[0] + '\n' + calendar_event_link
         if 'description' in event and '<a href=' in event['description'].strip():
-            print(event['description'])
+            # print(event['description'])
             soup = bs4.BeautifulSoup(event['description'])
             aTags = soup.find_all("a")
             urls = [tag['href'] for tag in aTags if 'href' in tag.attrs]
@@ -124,16 +123,16 @@ async def get_events(ctx, client):
 
     await ctx.send(embed=calendar_output_embed)
 
-async def set_time(starttime_arg):
+async def set_time(ctx, starttime_arg):
     time_zone_str = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
     if not (starttime_arg.endswith('pm') or starttime_arg.endswith('am')):
-        await channel.send(embed=discord.Embed(description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", color=discord.Color.red()))
         return ''
 
     time_value = starttime_arg[:-2].rstrip() # trim off 'pm' or 'am'
     hours_min = time_value.split(':')
     if len(hours_min) != 2:
-        await channel.send(embed=discord.Embed(description="Invalid time format. Please use ex. 12:00 pm", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(description="Invalid time format. Please use ex. 12:00 pm", color=discord.Color.red()))
         return ''
     hours = int(hours_min[0])
     minutes = int(hours_min[1])
@@ -143,7 +142,7 @@ async def set_time(starttime_arg):
         
     
     if hours > 23 or minutes > 59 or hours < 0  or minutes < 0:
-        await channel.send(embed=discord.Embed(description="Invalid time!", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(description="Invalid time!", color=discord.Color.red()))
         return ''
 
     if hours < 10:
@@ -158,6 +157,36 @@ async def set_time(starttime_arg):
 
     return hours_str + ':' + minutes_str + ':00' + time_zone_str
 
+async def check_and_format_date(ctx, date_arg):
+
+    if re.match(r"\d{4}-\b(0?[1-9]|[1][0-2])\b-\b(0?[1-9]|[12][0-9]|3[01])\b", date_arg): #1999-01-25 (year- month - day)
+
+        date_arr = date_arg.split('-')
+        try:
+            temp_date = datetime.datetime(int(date_arr[0]), int(date_arr[1]), int(date_arr[2]))
+        except ValueError:
+            await ctx.send(embed=discord.Embed(description="Invalid date! Please use a real date.", color=discord.Color.red()))
+            return ''
+        if len(date_arr[1]) < 2:
+            print('month less than 2 digits')
+            date_arg = date_arg[:5] + '0' + date_arg[5:]
+        print('check day')
+        print(date_arr[2])
+        if len(date_arr[2]) < 2:
+            print('day less than 2 digits')
+            date_arg = date_arg[:8] + '0' + date_arg[8:]
+    else:
+        await ctx.send(embed=discord.Embed(description="Invalid date! Please use a date in this format: year-month-day.\nex. 2020-5-20", color=discord.Color.red()))
+        return ''
+    return date_arg
+
+async def set_end_time(ctx, duration, start_time):
+    start_datetime = dtparse(start_time)
+    end_datetime = start_datetime + datetime.timedelta(minutes=int(duration))
+    end = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    time_zone_str = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
+    return end + time_zone_str
+
 async def add_events(ctx, client, args):
     global CREDS
     if CREDS is None:
@@ -166,36 +195,56 @@ async def add_events(ctx, client, args):
     service = build('calendar', 'v3', credentials=CREDS)
     date_arg = args[0].strip()
     starttime_arg = args[1].strip().lower()
-    summary = args[2].strip()
-    link = args[3].strip()
-    
-    regex = re.compile(
-        r'^(?:http|ftp)s?://' # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-        r'localhost|' #localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-        r'(?::\d+)?' # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-    
-    if not re.match(regex, link):
-        await channel.send(embed=discord.Embed(description="Invalid value used for link parameter.", color=discord.Color.red()))
+    duration = args[2].strip()
+    if int(duration) < 15 or int(duration) > 1440:
+        await ctx.send(embed=discord.Embed(description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", color=discord.Color.red()))
         return
+    summary = args[3].strip()
     
-    start_time = await set_time(starttime_arg)
+    if len(args) > 4:
+        link = args[4].strip()
+    
+        regex = re.compile(
+            r'^(?:http|ftp)s?://' # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+            r'localhost|' #localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+            r'(?::\d+)?' # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+        if not re.match(regex, link):
+            await ctx.send(embed=discord.Embed(description="Invalid value used for link parameter.", color=discord.Color.red()))
+            return
+    else:
+        link = ''
+    print(date_arg)
+    date_str = await check_and_format_date(ctx, date_arg)
+    if len(date_str) < 1:
+        return
+    start_time = await set_time(ctx, starttime_arg)
     if len(start_time) < 1:
         return
+    end_time = await set_end_time(ctx, duration, date_str + 'T' + start_time)
+    print(end_time)
+    
 
     # need to parse date and create end time
 
 
 
-
+    # to make all day events use 'date' field instead of 'dateTime' field and just use date (ex. 2020-05-20)
     new_event = {
         'summary': summary,
-        description: '<a href=\"' + link + '\">' + link + '</a>&nbsp;&nbsp;',
+        'description': '<a href=\"' + link + '\">' + link + '</a>&nbsp;&nbsp;',
         'start': {
-            
+            'dateTime': date_str + 'T' + start_time,
+            'timeZone': 'America/New_York'
+        },
+        'end': {
+            'dateTime': end_time,
+            'timeZone': 'America/New_York'
         }
 
     }
-    event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=event).execute()
+    print(new_event)
+    # event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=event).execute()
