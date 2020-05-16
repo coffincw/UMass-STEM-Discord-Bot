@@ -374,7 +374,7 @@ async def covidp(ctx):
 
 # vvv CALENDAR STUFF VVV
 
-@client.command(name='c', aliases= ['calendar'])
+@client.command(name='cshow', aliases= ['calendar'])
 async def get_calendar(ctx):
     if ctx.guild.id != 387465995176116224:
         await calendar.get_events(ctx, client)
