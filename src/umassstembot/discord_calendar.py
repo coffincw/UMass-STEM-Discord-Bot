@@ -74,7 +74,9 @@ async def get_credentials(ctx, client):
 def convert_time(str_time):
     date_time = str_time.split('T')
     mil_time = date_time[1].split('-')[0]
-    time = datetime.datetime.strptime(mil_time, '%H:%M:%S').strftime('%I:%M:%S %p')
+    time = datetime.datetime.strptime(mil_time, '%H:%M:%S').strftime('%I:%M %p')
+    if time.startswith('0'):
+        time = time[1:]
     return date_time[0], time
 
 async def get_events(ctx, client):
@@ -158,7 +160,6 @@ async def set_time(ctx, starttime_arg):
     return hours_str + ':' + minutes_str + ':00' + time_zone_str
 
 async def check_and_format_date(ctx, date_arg):
-
     if re.match(r"\d{4}-\b(0?[1-9]|[1][0-2])\b-\b(0?[1-9]|[12][0-9]|3[01])\b", date_arg): #1999-01-25 (year- month - day)
 
         date_arr = date_arg.split('-')
@@ -168,12 +169,8 @@ async def check_and_format_date(ctx, date_arg):
             await ctx.send(embed=discord.Embed(description="Invalid date! Please use a real date.", color=discord.Color.red()))
             return ''
         if len(date_arr[1]) < 2:
-            print('month less than 2 digits')
             date_arg = date_arg[:5] + '0' + date_arg[5:]
-        print('check day')
-        print(date_arr[2])
         if len(date_arr[2]) < 2:
-            print('day less than 2 digits')
             date_arg = date_arg[:8] + '0' + date_arg[8:]
     else:
         await ctx.send(embed=discord.Embed(description="Invalid date! Please use a date in this format: year-month-day.\nex. 2020-5-20", color=discord.Color.red()))
@@ -217,7 +214,6 @@ async def add_events(ctx, client, args):
             return
     else:
         link = ''
-    print(date_arg)
     date_str = await check_and_format_date(ctx, date_arg)
     if len(date_str) < 1:
         return
@@ -225,7 +221,7 @@ async def add_events(ctx, client, args):
     if len(start_time) < 1:
         return
     end_time = await set_end_time(ctx, duration, date_str + 'T' + start_time)
-    print(end_time)
+
     
 
     # need to parse date and create end time
@@ -247,4 +243,6 @@ async def add_events(ctx, client, args):
 
     }
     print(new_event)
-    # event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=event).execute()
+    event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=new_event).execute()
+    print('Event created: ' + str(event.get('htmlLink')))
+    await ctx.send(embed=discord.Embed(description="Event created with name:\n" + summary, color=discord.Color.green()))
