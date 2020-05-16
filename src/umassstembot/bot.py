@@ -375,14 +375,21 @@ async def covidp(ctx):
 # vvv CALENDAR STUFF VVV
 
 @client.command(name='cshow', aliases= ['calendar'])
-async def get_calendar(ctx):
+async def calendar_show(ctx):
     if ctx.guild.id != 387465995176116224:
-        await calendar.get_events(ctx, client)
+        await calendar.get_events(ctx, client, False)
+    else:
+        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+
+@client.command(name='ctoday', aliases= ['c_today'])
+async def calendar_show_today(ctx):
+    if ctx.guild.id != 387465995176116224:
+        await calendar.get_events(ctx, client, True)
     else:
         await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
 @client.command(name='cadd', aliases=['addevent', 'c_add'])
-async def get_calendar(ctx, *args):
+async def calendar_add(ctx, *args):
     if ctx.guild.id != 387465995176116224:
         if len(args) < 4:
             await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $addevent \"5/22/2020\" \"3:00pm\" \"90\" \"UMass Rocket League Tournament\" \"link\"\nMust at least specify date, start time, duration (in minutes), and name", color=discord.Color.red()))

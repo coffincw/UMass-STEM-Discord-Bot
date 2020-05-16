@@ -20,6 +20,8 @@ GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 GOOGLE_REFRESH_TOKEN = os.environ.get('GOOGLE_REFRESH_TOKEN')
 
+TIME_ZONE_STR = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
+
 CREDS = None
 
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
@@ -79,7 +81,7 @@ def convert_time(str_time):
         time = time[1:]
     return date_time[0], time
 
-async def get_events(ctx, client):
+async def get_events(ctx, client, is_today):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -93,9 +95,15 @@ async def get_events(ctx, client):
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
     # print(service.calendarList().list(pageToken=None).execute())
-    events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
+    if is_today:
+        date = datetime.date.today().strftime('%Y-%m-%d')
+        events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
                                         maxResults=10, singleEvents=True,
-                                        orderBy='startTime').execute()
+                                        orderBy='startTime', timeMax=date + 'T23:59:59' + TIME_ZONE_STR).execute()
+    else:
+        events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
+                                            maxResults=10, singleEvents=True,
+                                            orderBy='startTime').execute()
     events = events_result.get('items', [])
     #print(events)
     
@@ -126,7 +134,6 @@ async def get_events(ctx, client):
     await ctx.send(embed=calendar_output_embed)
 
 async def set_time(ctx, starttime_arg):
-    time_zone_str = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
     if not (starttime_arg.endswith('pm') or starttime_arg.endswith('am')):
         await ctx.send(embed=discord.Embed(description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", color=discord.Color.red()))
         return ''
@@ -157,7 +164,7 @@ async def set_time(ctx, starttime_arg):
     else:
         minutes_str = str(minutes)
 
-    return hours_str + ':' + minutes_str + ':00' + time_zone_str
+    return hours_str + ':' + minutes_str + ':00' + TIME_ZONE_STR
 
 async def check_and_format_date(ctx, date_arg):
     if re.match(r"\d{4}-\b(0?[1-9]|[1][0-2])\b-\b(0?[1-9]|[12][0-9]|3[01])\b", date_arg): #1999-01-25 (year- month - day)
@@ -181,8 +188,7 @@ async def set_end_time(ctx, duration, start_time):
     start_datetime = dtparse(start_time)
     end_datetime = start_datetime + datetime.timedelta(minutes=int(duration))
     end = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-    time_zone_str = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
-    return end + time_zone_str
+    return end + TIME_ZONE_STR
 
 async def add_events(ctx, client, args):
     global CREDS
