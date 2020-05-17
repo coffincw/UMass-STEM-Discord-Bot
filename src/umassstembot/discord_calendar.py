@@ -22,8 +22,6 @@ GOOGLE_REFRESH_TOKEN = os.environ.get('GOOGLE_REFRESH_TOKEN')
 
 TIME_ZONE_STR = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
 
-CREDS = None
-
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 MONTHS = ("January", "February")
 
@@ -85,9 +83,7 @@ async def get_events(ctx, client, is_today):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
-    global CREDS
-    if CREDS is None:
-        CREDS = await get_credentials(ctx, client)
+    CREDS = await get_credentials(ctx, client)
    
     service = build('calendar', 'v3', credentials=CREDS)
 
@@ -191,9 +187,7 @@ async def set_end_time(ctx, duration, start_time):
     return end + TIME_ZONE_STR
 
 async def add_events(ctx, client, args):
-    global CREDS
-    if CREDS is None:
-        CREDS = await get_credentials(ctx, client)
+    CREDS = await get_credentials(ctx, client)
 
     service = build('calendar', 'v3', credentials=CREDS)
     date_arg = args[0].strip()
