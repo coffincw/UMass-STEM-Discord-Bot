@@ -398,6 +398,17 @@ async def calendar_add(ctx, *args):
     else:
         await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
+@client.command(name='cdelete')
+async def calendar_delete(ctx):
+    if ctx.guild.id != 387465995176116224:
+        content = ctx.message.content[9:].strip()
+        if len(content) < 1:
+            await ctx.send(embed=discord.Embed(description="Please specify a valid name of an event you wish to be deleted.", color=discord.Color.red()))
+            return
+        await calendar.delete_event(ctx, client, content)
+    else:
+        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+
 # vvv ROLE COMMANDS vvv
 
 @client.command(name='get')

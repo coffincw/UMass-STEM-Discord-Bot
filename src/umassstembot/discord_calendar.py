@@ -89,7 +89,6 @@ async def get_events(ctx, client, is_today):
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
     # print(service.calendarList().list(pageToken=None).execute())
     if is_today:
         date = datetime.date.today().strftime('%Y-%m-%d')
@@ -222,12 +221,6 @@ async def add_events(ctx, client, args):
         return
     end_time = await set_end_time(ctx, duration, date_str + 'T' + start_time)
 
-    
-
-    # need to parse date and create end time
-
-
-
     # to make all day events use 'date' field instead of 'dateTime' field and just use date (ex. 2020-05-20)
     new_event = {
         'summary': summary,
@@ -242,7 +235,33 @@ async def add_events(ctx, client, args):
         }
 
     }
-    print(new_event)
     event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=new_event).execute()
-    print('Event created: ' + str(event.get('htmlLink')))
     await ctx.send(embed=discord.Embed(description="Event created with name:\n" + summary, color=discord.Color.green()))
+
+async def delete_event(ctx, client, contents):
+
+    CREDS = await get_credentials(ctx, client)
+   
+    service = build('calendar', 'v3', credentials=CREDS)
+
+    # Call the Calendar API
+    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+
+    events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
+                                            singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    if not events:
+        await ctx.send(embed=discord.Embed(description='No events exist on the calendar.', color=discord.Color.red()))
+        return
+    
+    event_id = ''
+    event_name = ''
+    for event in events:
+        if event['summary'].lower() == contents.lower():
+            event_id = event['id']
+            event_name = event['summary']
+    if len(event_id) > 0:
+        service.events().delete(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', eventId=event_id).execute()
+        await ctx.send(embed=discord.Embed(description='Event with name: \"' + event_name + '\" has been successfully deleted', color=discord.Color.green()))
+    else:
+        await ctx.send(embed=discord.Embed(description='No event exists with name:\n' + contents, color=discord.Color.red()))
