@@ -352,7 +352,7 @@ async def statistics(ctx):
     """
     await stem_role_commands.stats(ctx)
 
-@client.command(name = 'covid19', aliases = ['corona', 'covid', 'coronavirus'])
+@client.command(name = 'covid')
 async def covid(ctx):
     """Command to generate coronavirus statistics
 
@@ -362,7 +362,7 @@ async def covid(ctx):
     """
     await corona.coronavirus(ctx, False)
 
-@client.command(name = 'covid19p', aliases = ['coronap', 'covidp', 'coronavirusp'])
+@client.command(name = 'covidp')
 async def covidp(ctx):
     """Command to generate coronavirus statistics sorted by percentage infected
 
@@ -491,7 +491,7 @@ async def mdraw(ctx):
     """
     await custom_meme.draw_universal(ctx,'memes/marius/draw.png', 7, overlay.marius_origin, 'marius-drawing')
 
-@client.command(name='bdraw', aliases = ['barrdraw', 'barringtondraw'])
+@client.command(name='bdraw')
 async def bdraw(ctx):
     """Command to generate a meme of barr drawing on the image or text or gif
 
@@ -500,7 +500,7 @@ async def bdraw(ctx):
     """
     await custom_meme.draw_universal(ctx, 'memes/barrington/bdraw.png', 7, overlay.barr_origin, 'barrington-drawing')
 
-@client.command(name='tdraw', aliases = ['timdraw', 'timrichardsdraw'])
+@client.command(name='tdraw')
 async def tdraw(ctx):
     """Command to generate a meme of tim drawing on the image or text or gif
 
@@ -518,7 +518,7 @@ async def ldraw(ctx):
     """
     await custom_meme.draw_universal(ctx, 'memes/lan/lan-draw.png', 7, overlay.lan_origin, 'lan-drawing')
 
-@client.command(name='landrew', aliases = ['andrewlandrew'])
+@client.command(name='landrew')
 async def landrew(ctx):
     """Command to generate a meme of lan drawing on the image or text
 
@@ -527,7 +527,7 @@ async def landrew(ctx):
     """
     await custom_meme.draw_universal(ctx, 'memes/lan/landrew.png', 9, overlay.landrew_origin, 'landrew-drawing')
 
-@client.command(name='shelpoint', aliases = ['sheldonpoint'])
+@client.command(name='shelpoint')
 async def shelpoint(ctx):
     """Command to generate a meme of Dan Sheldon drawing on the image or text or gif
 
