@@ -22,6 +22,8 @@ GOOGLE_REFRESH_TOKEN = os.environ.get('GOOGLE_REFRESH_TOKEN')
 
 TIME_ZONE_STR = '-05:00' if time.localtime().tm_isdst == 0 else '-04:00'
 
+UMARL_CALENDAR_ID = 'hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com'
+
 WEEKDAYS = ("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 MONTHS = ("January", "February")
 
@@ -92,12 +94,12 @@ async def get_events(ctx, client, is_today):
     # print(service.calendarList().list(pageToken=None).execute())
     if is_today:
         date = datetime.date.today().strftime('%Y-%m-%d')
-        events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
-                                        maxResults=10, singleEvents=True,
+        events_result = service.events().list(calendarId=UMARL_CALENDAR_ID, timeMin=now,
+                                        maxResults=15, singleEvents=True,
                                         orderBy='startTime', timeMax=date + 'T23:59:59' + TIME_ZONE_STR).execute()
     else:
-        events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
-                                            maxResults=10, singleEvents=True,
+        events_result = service.events().list(calendarId=UMARL_CALENDAR_ID, timeMin=now,
+                                            maxResults=15, singleEvents=True,
                                             orderBy='startTime').execute()
     events = events_result.get('items', [])
     #print(events)
@@ -235,8 +237,34 @@ async def add_events(ctx, client, args):
         }
 
     }
-    event = service.events().insert(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', body=new_event).execute()
+    event = service.events().insert(calendarId=UMARL_CALENDAR_ID, body=new_event).execute()
     await ctx.send(embed=discord.Embed(description="Event created with name:\n" + summary, color=discord.Color.green()))
+
+def retrieve_event_id(name, events):
+    """
+    Gets the event id by searching the events for an event matching the name passed in.
+    Returns the event id and the event name with the correct capitalization.
+    """
+    event_id = ''
+    event_name = ''
+    for event in events:
+        if event['summary'].lower() == name.lower():
+            event_id = event['id']
+            event_name = event['summary']
+
+    return event_id, event_name
+
+def retrieve_all_events(service, calendar_id):
+    """
+    Gets events from the calendar with the matching calendar id
+    """
+    # Call the Calendar API
+    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+
+    events_result = service.events().list(calendarId=calendar_id, timeMin=now,
+                                            singleEvents=True, orderBy='startTime').execute()
+    return events_result.get('items', [])
+
 
 async def delete_event(ctx, client, contents):
 
@@ -244,24 +272,64 @@ async def delete_event(ctx, client, contents):
    
     service = build('calendar', 'v3', credentials=CREDS)
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-
-    events_result = service.events().list(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', timeMin=now,
-                                            singleEvents=True, orderBy='startTime').execute()
-    events = events_result.get('items', [])
+    events = retrieve_all_events(service, UMARL_CALENDAR_ID)
     if not events:
         await ctx.send(embed=discord.Embed(description='No events exist on the calendar.', color=discord.Color.red()))
         return
     
-    event_id = ''
-    event_name = ''
-    for event in events:
-        if event['summary'].lower() == contents.lower():
-            event_id = event['id']
-            event_name = event['summary']
+    event_id, event_name = retrieve_event_id(contents, events)
     if len(event_id) > 0:
-        service.events().delete(calendarId='hca1n2eds4ohvrrg117jkodmk8@group.calendar.google.com', eventId=event_id).execute()
+        service.events().delete(calendarId=UMARL_CALENDAR_ID, eventId=event_id).execute()
         await ctx.send(embed=discord.Embed(description='Event with name: \"' + event_name + '\" has been successfully deleted', color=discord.Color.green()))
     else:
         await ctx.send(embed=discord.Embed(description='No event exists with name:\n' + contents, color=discord.Color.red()))
+
+async def edit_event_time(ctx, client, args):
+    CREDS = await get_credentials(ctx, client)
+
+    service = build('calendar', 'v3', credentials=CREDS)
+
+    summary = args[0].strip()
+    starttime_arg = args[1].strip().lower()
+    
+
+    
+    start_time = await set_time(ctx, starttime_arg)
+    if len(start_time) < 1:
+        return
+
+    events = retrieve_all_events(service, UMARL_CALENDAR_ID)
+    if not events:
+        await ctx.send(embed=discord.Embed(description='No events exist on the calendar.', color=discord.Color.red()))
+        return
+    event_id, event_name = retrieve_event_id(summary, events)
+
+    
+
+    event = service.events().get(calendarId=UMARL_CALENDAR_ID, eventId=event_id).execute()
+
+    if len(args) > 2:
+        date_arg = args[2].strip()
+        date_str = await check_and_format_date(ctx, date_arg)
+        if len(date_str) < 1:
+            return
+    else:
+        date_str = event['start']['dateTime'].split('T')[0]
+    
+    if len(args) > 3:
+        duration = args[3].strip()
+        if int(duration) < 15 or int(duration) > 1440:
+            await ctx.send(embed=discord.Embed(description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", color=discord.Color.red()))
+            return
+    else:
+        start_datetime = dtparse(event['start']['dateTime'])
+        end_datetime = dtparse(event['end']['dateTime'])
+        minutes_difference_timedelta = end_datetime - start_datetime
+        duration = int(minutes_difference_timedelta.seconds / 60)
+
+    event['start']['dateTime'] = date_str + 'T' + start_time
+    event['end']['dateTime'] = await set_end_time(ctx, duration, date_str + 'T' + start_time)
+
+    updated_event = service.events().update(calendarId=UMARL_CALENDAR_ID, eventId=event_id, body=event).execute()
+    await ctx.send(embed=discord.Embed(description="Event time updated!", color=discord.Color.green()))
+
