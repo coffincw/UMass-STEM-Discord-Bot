@@ -392,9 +392,19 @@ async def calendar_show_today(ctx):
 async def calendar_add(ctx, *args):
     if ctx.guild.id != 387465995176116224:
         if len(args) < 4:
-            await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $addevent \"5/22/2020\" \"3:00pm\" \"90\" \"UMass Rocket League Tournament\" \"link\"\nMust at least specify date, start time, duration (in minutes), and name", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $addevent \"2020-5-30\" \"3:00pm\" \"90\" \"UMass Rocket League Tournament\" \"link\"\nMust at least specify date, start time, duration (in minutes), and name", color=discord.Color.red()))
             return
         await calendar.add_events(ctx, client, args)
+    else:
+        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+
+@client.command(name='cet', aliases=['c_edit_time', 'edittime'])
+async def calendar_edit_time(ctx, *args):
+    if ctx.guild.id != 387465995176116224:
+        if len(args) < 2:
+            await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $cet \"Rocket League Tournament\" \"3:00pm\" \"2020-5-30\" \"180\"\nMust at least specify summary and start time.", color=discord.Color.red()))
+            return
+        await calendar.edit_event_time(ctx, client, args)
     else:
         await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
 
