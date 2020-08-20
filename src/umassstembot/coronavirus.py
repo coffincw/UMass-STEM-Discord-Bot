@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+import dateutil.parser
 import discord
 import requests
 import os
@@ -56,6 +58,8 @@ us_areas = {'AL': ['Alabama', '4903185'],
             'WY': ['Wyoming', '578759'],
             'DC': ['District of Columbia', '705749']
             }
+
+UMASS_CASE_EPOCH = dateutil.parser.parse("2020-08-14 00:00:00")
 
 
 async def coronavirus(ctx, sort_by_percentage):
@@ -175,3 +179,43 @@ def build_top_corona_output(state):
     deaths_output = '{:,d}'.format(state['death']) + ' ({:,.2f}%)'.format(fatal_perc)
     
     return state['state'], cases_output, deaths_output
+
+async def umass_coronavirus(ctx):
+    """Generate UMass-specific coronavirus statistics
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    try:
+        data = requests.get('https://www.umass.edu/coronavirus/confirmed-cases-covid-19-umass-amherst').text
+    except:
+        print(requests.get('https://www.umass.edu/coronavirus/confirmed-cases-covid-19-umass-amherst'))
+        await ctx.channel.send(embed=discord.Embed(description="Could not access reporting page, please wait before running the command again.", color=discord.Color.red()))
+        return
+
+    total_cases = 0
+    most_recent_report = None
+    most_recent_count  = None
+
+    soup = BeautifulSoup(data, 'html.parser')
+    for accordion in soup.select(".field-group-accordion-wrapper"):
+        date = accordion.select(".field--name-node-title")[0].get_text().strip()
+        date = dateutil.parser.parse(date)
+
+        case_count = accordion.select(".field--name-field__of-reported-cases")[0] \
+                              .select(".field__item")[0] \
+                              .get_text()
+        case_count = int(case_count)
+
+        if date >= UMASS_CASE_EPOCH:
+            if most_recent_report is None or date > most_recent_report:
+                most_recent_report = date
+                most_recent_count = case_count
+
+            total_cases += case_count
+
+    embed = discord.Embed(title='UMass Coronavirus Statistics', color=discord.Color.teal())
+    embed.description = "{} cases since {}".format(total_cases, UMASS_CASE_EPOCH.strftime("%B %-d")) + \
+        "\n" + \
+        "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%B %-d"))
+    await ctx.send(embed=embed)

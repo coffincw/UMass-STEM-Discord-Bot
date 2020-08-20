@@ -166,7 +166,8 @@ async def help(ctx):
         '*$members*': 'Displays the number of members on the server',
         '*$leaderboard*': 'Displays the top 10 most active users on the server measured by quantity of messages',
         '*$covid* [optional: state]': 'Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S',
-        '*covidp*': 'Displays the number of cases, and deaths related to COVID19 in the top 15 U.S states. Sorted by percentage of the state infected.'
+        '*covidp*': 'Displays the number of cases, and deaths related to COVID19 in the top 15 U.S states. Sorted by percentage of the state infected.',
+        '*$covidumass*': 'Displays the number of COVID19 cases confirmed by UMass Amherst.'
     }
     
     embed.set_author(name='Help', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
@@ -371,6 +372,15 @@ async def covidp(ctx):
         - args: optional, if state is passed in return the states cases and deaths, if nothing then return the top 15
     """
     await corona.coronavirus(ctx, True)
+
+@client.command(name = 'covidumass')
+async def covidumass(ctx):
+    """Command to generate coronavirus statistics based on data reported by UMass
+
+       Args:
+        - ctx: context that the command occured use this to access the message and other attributes
+    """
+    await corona.umass_coronavirus(ctx)
 
 # vvv CALENDAR STUFF VVV
 
