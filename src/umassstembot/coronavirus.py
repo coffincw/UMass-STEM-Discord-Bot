@@ -214,8 +214,9 @@ async def umass_coronavirus(ctx):
 
             total_cases += case_count
 
+    text = "{} cases since {}".format(total_cases, UMASS_CASE_EPOCH.strftime("%B %-d"))
+    text += "\n"
+    text += "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%B %-d"))
+
     embed = discord.Embed(title='UMass Coronavirus Statistics', color=discord.Color.teal())
-    embed.description = "{} cases since {}".format(total_cases, UMASS_CASE_EPOCH.strftime("%B %-d")) + \
-        "\n" + \
-        "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%B %-d"))
     await ctx.send(embed=embed)
