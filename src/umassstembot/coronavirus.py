@@ -219,4 +219,5 @@ async def umass_coronavirus(ctx):
     text += "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%B %-d"))
 
     embed = discord.Embed(title='UMass Coronavirus Statistics', color=discord.Color.teal())
+    embed.description = text
     await ctx.send(embed=embed)
