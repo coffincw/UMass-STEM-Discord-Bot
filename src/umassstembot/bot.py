@@ -373,7 +373,7 @@ async def covidp(ctx):
     """
     await corona.coronavirus(ctx, True)
 
-@client.command(name = 'covidumass')
+@client.command(name = 'covidumass', aliases=['coronaumass'])
 async def covidumass(ctx):
     """Command to generate coronavirus statistics based on data reported by UMass
 
