@@ -10,10 +10,10 @@ def merge_dict(dicts): # merges dictionaries together
     return z
 
 def capitalize_all_words(in_str, separator):
-    words = in_str.split(seperator)
+    words = in_str.split(separator)
     output = ''
     for word in words:
-        output += word.capitalize() + seperator
+        output += word.capitalize() + separator
     return output[:-1]
 
 
@@ -38,25 +38,25 @@ async def list_roles(ctx, client):
     getlist.add_field(name = 'Graduation Year Roles', value=grad_role_list, inline=False)
     pronoun_role_list = ''
     for role in PRONOUN_ROLE_IDS.values():
-        grad_role_list += capitalize_all_words(role[0], '/') + '\n'
+        pronoun_role_list += capitalize_all_words(role[0], '/') + '\n'
     getlist.add_field(name = 'Pronoun Roles', value=pronoun_role_list, inline=False)
     class_role_list = ''
     for role in CLASS_ROLE_IDS.values():
         name = role[0].upper()
         if class_role_list == '':
-            class_role_list += '**Computer Science**\n'
+            class_role_list += '__Computer Science__\n'
         if name.startswith('CS') or name.startswith('CICS'):
             class_role_list += name + ', '
             continue
         if name.endswith('127'):
             class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
-            class_role_list += '\n**Mathematics**\n'
+            class_role_list += '\n__Mathematics__\n'
         if name.startswith('MATH') or name.startswith('STATS'):
             class_role_list += name + ', '
             continue
         if name.endswith('499'):
             class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
-            class_role_list += '\n**Other**\n'
+            class_role_list += '\n__Other__\n'
         class_role_list += name + ', '
     class_role_list = class_role_list[:len(class_role_list)-2] # trim last ', '
     getlist.add_field(name = 'Class Specific Roles', value=class_role_list, inline=False)
