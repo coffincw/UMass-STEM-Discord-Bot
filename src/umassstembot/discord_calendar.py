@@ -105,9 +105,14 @@ async def get_events(ctx, client, is_today):
     #print(events)
     
     if not events:
-        calendar_output_embed = discord.Embed(title=events_result['summary'], description='No upcoming events!', color=discord.Color.red())
+        calendar_output_embed = discord.Embed(
+            title=events_result['summary'], 
+            description='No upcoming events!', 
+            color=discord.Color.red())
     else:
-        calendar_output_embed = discord.Embed(title=events[0]['organizer'].get('displayName'), color=discord.Color.dark_teal())
+        calendar_output_embed = discord.Embed(
+            title=events[0]['organizer'].get('displayName'), 
+            color=discord.Color.dark_teal())
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         time = convert_time(start)
@@ -132,13 +137,17 @@ async def get_events(ctx, client, is_today):
 
 async def set_time(ctx, starttime_arg):
     if not (starttime_arg.endswith('pm') or starttime_arg.endswith('am')):
-        await ctx.send(embed=discord.Embed(description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description="Invalid time format. Please end with 'am' or 'pm'! ex. 12:00 pm", 
+            color=discord.Color.red()))
         return ''
 
     time_value = starttime_arg[:-2].rstrip() # trim off 'pm' or 'am'
     hours_min = time_value.split(':')
     if len(hours_min) != 2:
-        await ctx.send(embed=discord.Embed(description="Invalid time format. Please use ex. 12:00 pm", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description="Invalid time format. Please use ex. 12:00 pm", 
+            color=discord.Color.red()))
         return ''
     hours = int(hours_min[0])
     minutes = int(hours_min[1])
@@ -170,14 +179,19 @@ async def check_and_format_date(ctx, date_arg):
         try:
             temp_date = datetime.datetime(int(date_arr[0]), int(date_arr[1]), int(date_arr[2]))
         except ValueError:
-            await ctx.send(embed=discord.Embed(description="Invalid date! Please use a real date.", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Invalid date! Please use a real date.", 
+                color=discord.Color.red()))
             return ''
         if len(date_arr[1]) < 2:
             date_arg = date_arg[:5] + '0' + date_arg[5:]
         if len(date_arr[2]) < 2:
             date_arg = date_arg[:8] + '0' + date_arg[8:]
     else:
-        await ctx.send(embed=discord.Embed(description="Invalid date! Please use a date in this format: year-month-day.\nex. 2020-5-20", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description="Invalid date! Please use a date in this format: year-month-day.\n" \
+                        "ex. 2020-5-20", 
+            color=discord.Color.red()))
         return ''
     return date_arg
 
@@ -195,7 +209,9 @@ async def add_events(ctx, client, args):
     starttime_arg = args[1].strip().lower()
     duration = args[2].strip()
     if int(duration) < 15 or int(duration) > 1440:
-        await ctx.send(embed=discord.Embed(description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", 
+            color=discord.Color.red()))
         return
     summary = args[3].strip()
     
@@ -211,7 +227,9 @@ async def add_events(ctx, client, args):
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
         if not re.match(regex, link):
-            await ctx.send(embed=discord.Embed(description="Invalid value used for link parameter.", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Invalid value used for link parameter.", 
+                color=discord.Color.red()))
             return
     else:
         link = ''
@@ -238,7 +256,9 @@ async def add_events(ctx, client, args):
 
     }
     event = service.events().insert(calendarId=UMARL_CALENDAR_ID, body=new_event).execute()
-    await ctx.send(embed=discord.Embed(description="Event created with name:\n" + summary, color=discord.Color.green()))
+    await ctx.send(embed=discord.Embed(
+        description="Event created with name:\n" + summary, 
+        color=discord.Color.green()))
 
 def retrieve_event_id(name, events):
     """
@@ -274,15 +294,21 @@ async def delete_event(ctx, client, contents):
 
     events = retrieve_all_events(service, UMARL_CALENDAR_ID)
     if not events:
-        await ctx.send(embed=discord.Embed(description='No events exist on the calendar.', color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description='No events exist on the calendar.', 
+            color=discord.Color.red()))
         return
     
     event_id, event_name = retrieve_event_id(contents, events)
     if len(event_id) > 0:
         service.events().delete(calendarId=UMARL_CALENDAR_ID, eventId=event_id).execute()
-        await ctx.send(embed=discord.Embed(description='Event with name: \"' + event_name + '\" has been successfully deleted', color=discord.Color.green()))
+        await ctx.send(embed=discord.Embed(
+            description='Event with name: \"' + event_name + '\" has been successfully deleted', 
+            color=discord.Color.green()))
     else:
-        await ctx.send(embed=discord.Embed(description='No event exists with name:\n' + contents, color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description='No event exists with name:\n' + contents, 
+            color=discord.Color.red()))
 
 async def edit_event_time(ctx, client, args):
     CREDS = await get_credentials(ctx, client)
@@ -300,7 +326,9 @@ async def edit_event_time(ctx, client, args):
 
     events = retrieve_all_events(service, UMARL_CALENDAR_ID)
     if not events:
-        await ctx.send(embed=discord.Embed(description='No events exist on the calendar.', color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description='No events exist on the calendar.', 
+            color=discord.Color.red()))
         return
     event_id, event_name = retrieve_event_id(summary, events)
 
@@ -319,7 +347,9 @@ async def edit_event_time(ctx, client, args):
     if len(args) > 3:
         duration = args[3].strip()
         if int(duration) < 15 or int(duration) > 1440:
-            await ctx.send(embed=discord.Embed(description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Invalid duration, please input a duration (in minutes) between 15 and 1440.", 
+                color=discord.Color.red()))
             return
     else:
         start_datetime = dtparse(event['start']['dateTime'])

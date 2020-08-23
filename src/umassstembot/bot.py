@@ -49,7 +49,10 @@ async def on_member_join(member):
         # used to randomly pick one of the available drawing professors
         professor_chosen = random.randint(0, 6)
 
-        welcome_message = 'Welcome ' + member.display_name + '!|You are member ' + str(num_members) + '!|To see all the channels set your major|and housing roles in #role-assignment!'
+        welcome_message = 'Welcome ' + member.display_name + '!|' + \
+                          'You are member ' + str(num_members) + '!|' + \
+                          'To see all the channels set your major|' + \
+                          'and housing roles in #role-assignment!'
         if professor_chosen == 0:
             output = overlay.draw_text(welcome_message, Path('memes/barrington/bdraw.png'), overlay.barr_origin)
         elif professor_chosen == 1:
@@ -72,7 +75,13 @@ async def on_member_join(member):
         embed.set_author(name='Welcome to the UMass Amherst STEM Discord Server', icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
         embed.add_field(
                 name = 'How to see all the channels',
-                value = 'Set at least one housing role and at least one major role\nTo set roles go to **#role-assignment** and use the `$get` command\n\nFor example, if you live off campus and you\'re a chemistry major you would run these two commands:\n\n`$get Off-Campus`\n`$get Chemistry`\n\n*If you would like to see all the possible housing and major roles run the `$getlist` command*\n\n*If you have graduated already you may use the `Almuni` role in place of a housing role, if you are considering or planning on attending UMass and don\'t yet have a residential area you should assign yourself the `Prospective Student` role*',
+                value = 'Set at least one housing role and at least one major role\n' \
+                        'To set roles go to **#role-assignment** and use the `$get` command\n\n' \
+                        'For example, if you live off campus and you\'re a chemistry major you would run these two commands:\n\n' \
+                        '`$get Off-Campus`\n' \
+                        '`$get Chemistry`\n\n' \
+                        '*If you would like to see all the possible housing and major roles run the `$getlist` command*\n\n' \
+                        '*If you have graduated already you may use the `Almuni` role in place of a housing role, if you are considering or planning on attending UMass and don\'t yet have a residential area you should assign yourself the `Prospective Student` role*',
                 inline = False
             )
         await member.send(embed=embed)
@@ -93,7 +102,10 @@ async def on_message(message):
         elif message.guild.id == 387465995176116224 and message.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
             if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
                 if not is_message_role_command(message):                    
-                    output = await message.channel.send(embed=discord.Embed(description="Any message that doesn't start with `$get`, `$remove`, `$myroles`, `$getlist`, or `$help` will be auto-removed\nThis message will auto-delete in 10 seconds", color=discord.Color.dark_red()))
+                    output = await message.channel.send(embed=discord.Embed(
+                        description="Any message that doesn't start with `$get`, `$remove`, `$myroles`, `$getlist`, or `$help` will be auto-removed\n" \
+                                    "This message will auto-delete in 10 seconds", 
+                        color=discord.Color.dark_red()))
                     await message.delete()
                     await output.delete(delay=10)
                     return
@@ -139,7 +151,13 @@ async def on_message_edit(before, after):
             if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
                 before_content = before.content
                 after_content = after.content
-                await channel.send('_Edited Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + before.channel.mention + '\n**Pre-edit contents:** *' + before_content + '*\n**Post-edit contents:** *'+ after_content + '*\n--------------')
+                await channel.send(
+                    '_Edited Message_\n' \
+                    '**Message sent by:** ' + author.mention + '\n' \
+                    '**Channel:** ' + before.channel.mention + '\n' \
+                    '**Pre-edit contents:** *' + before_content + '*\n' \
+                    '**Post-edit contents:** *'+ after_content + '*\n' \
+                    '--------------')
     except:
         pass
 
@@ -293,10 +311,15 @@ async def display_leaderboard(ctx):
             location = '#' + channel.name
 
     else:
-        await ctx.send(embed=discord.Embed(description='Leaderboard only supports one channel at this time.', color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description='Leaderboard only supports one channel at this time.', 
+            color=discord.Color.red()))
         return
 
-    await ctx.send(embed=discord.Embed(title=location + ' Message Leaderboard', description=top_10, color=discord.Color.purple()))
+    await ctx.send(embed=discord.Embed(
+        title=location + ' Message Leaderboard', 
+        description=top_10, 
+        color=discord.Color.purple()))
 
 def get_top_10(data):
     top_10 = ''
@@ -389,45 +412,63 @@ async def calendar_show(ctx):
     if ctx.guild.id != 387465995176116224:
         await calendar.get_events(ctx, client, False)
     else:
-        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+        await ctx.send(embed=discord.Embed(
+            description="Calendar commands are not yet supported for the STEM server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='ctoday', aliases= ['c_today'])
 async def calendar_show_today(ctx):
     if ctx.guild.id != 387465995176116224:
         await calendar.get_events(ctx, client, True)
     else:
-        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+        await ctx.send(embed=discord.Embed(
+            description="Calendar commands are not yet supported for the STEM server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='cadd', aliases=['addevent', 'c_add'])
 async def calendar_add(ctx, *args):
     if ctx.guild.id != 387465995176116224:
         if len(args) < 4:
-            await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $addevent \"2020-5-30\" \"3:00pm\" \"90\" \"UMass Rocket League Tournament\" \"link\"\nMust at least specify date, start time, duration (in minutes), and name", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Invalid format! Ex. $addevent \"2020-5-30\" \"3:00pm\" \"90\" \"UMass Rocket League Tournament\" \"link\"\n" \
+                            "Must at least specify date, start time, duration (in minutes), and name", 
+                color=discord.Color.red()))
             return
         await calendar.add_events(ctx, client, args)
     else:
-        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+        await ctx.send(embed=discord.Embed(
+            description="Calendar commands are not yet supported for the STEM server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='cet', aliases=['c_edit_time', 'edittime'])
 async def calendar_edit_time(ctx, *args):
     if ctx.guild.id != 387465995176116224:
         if len(args) < 2:
-            await ctx.send(embed=discord.Embed(description="Invalid format! Ex. $cet \"Rocket League Tournament\" \"3:00pm\" \"2020-5-30\" \"180\"\nMust at least specify summary and start time.", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Invalid format! Ex. $cet \"Rocket League Tournament\" \"3:00pm\" \"2020-5-30\" \"180\"\n" \
+                            "Must at least specify summary and start time.", 
+                color=discord.Color.red()))
             return
         await calendar.edit_event_time(ctx, client, args)
     else:
-        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+        await ctx.send(embed=discord.Embed(
+            description="Calendar commands are not yet supported for the STEM server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='cdelete')
 async def calendar_delete(ctx):
     if ctx.guild.id != 387465995176116224:
         content = ctx.message.content[9:].strip()
         if len(content) < 1:
-            await ctx.send(embed=discord.Embed(description="Please specify a valid name of an event you wish to be deleted.", color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(
+                description="Please specify a valid name of an event you wish to be deleted.", 
+                color=discord.Color.red()))
             return
         await calendar.delete_event(ctx, client, content)
     else:
-        await ctx.send(embed=discord.Embed(description="Calendar commands are not yet supported for the STEM server", color=discord.Color.dark_red()))
+        await ctx.send(embed=discord.Embed(
+            description="Calendar commands are not yet supported for the STEM server", 
+            color=discord.Color.dark_red()))
 
 # vvv ROLE COMMANDS vvv
 
@@ -444,11 +485,16 @@ async def get_role(requested_role):
         if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
             await stem_role_commands.stem_add_role(requested_role, member, client)
         else:
-            message = await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment\nThis message will auto-delete in 15 seconds", color=discord.Color.dark_red()))
+            message = await channel.send(embed=discord.Embed(
+                description="In order to decrease spam, role commands are restricted to #role-assignment\n" \
+                            "This message will auto-delete in 15 seconds", 
+                color=discord.Color.dark_red()))
             await message.delete(delay=15)
             await requested_role.message.delete(delay=15)
     else:
-        await channel.send(embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
+        await channel.send(embed=discord.Embed(
+            description="Roles are not yet supported on this server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='remove')
 async def remove_role(requested_role):
@@ -463,11 +509,16 @@ async def remove_role(requested_role):
         if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
             await stem_role_commands.stem_remove_role(requested_role, member, client)
         else:
-            message = await channel.send(embed=discord.Embed(description="In order to decrease spam, role commands are restricted to #role-assignment\nThis message will auto-delete in 15 seconds", color=discord.Color.dark_red()))
+            message = await channel.send(embed=discord.Embed(
+                description="In order to decrease spam, role commands are restricted to #role-assignment\n" \
+                            "This message will auto-delete in 15 seconds", 
+                color=discord.Color.dark_red()))
             await message.delete(delay=15)
             await requested_role.message.delete(delay=15)
     else:
-        await channel.send(embed=discord.Embed(description="Roles are not yet supported on this server", color=discord.Color.dark_red()))
+        await channel.send(embed=discord.Embed(
+            description="Roles are not yet supported on this server", 
+            color=discord.Color.dark_red()))
 
 @client.command(name='getlist')
 async def get_list(ctx):
@@ -477,7 +528,9 @@ async def get_list(ctx):
         - ctx: context that the command occured use this to access the message and other attributes
     """
     await stem_role_commands.list_roles(ctx, client)
-    dm = await ctx.send(embed=discord.Embed(description='The bot has private messaged you!', color=discord.Color.blue()))
+    dm = await ctx.send(embed=discord.Embed(
+        description='The bot has private messaged you!', 
+        color=discord.Color.blue()))
     await ctx.message.delete(delay=15)
     await dm.delete(delay=15)
 
@@ -495,7 +548,10 @@ async def my_roles(ctx):
     elif len(mentions) == 1:
         member = mentions[0]
     else:
-        error = await channel.send(embed=discord.Embed(description="Too many users specified, please mention less than two users\nThis message will auto-delete in 15 seconds", color=discord.Color.red()))
+        error = await channel.send(embed=discord.Embed(
+            description="Too many users specified, please mention less than two users\n" \
+                        "This message will auto-delete in 15 seconds", 
+            color=discord.Color.red()))
         await ctx.error.delete(delay=15)
         await ctx.message.delete(delay=15)
         return
@@ -799,7 +855,9 @@ async def custom_edge_highlight(ctx, *args):
         return
     output = filters.custom_edge_highlight_image(overlay.url_to_image(url), red, green, blue)
     if output == 0: #if the RGB values are invalid
-        await channel.send(embed=discord.Embed(description="Invalid RGB Values, please input numbers between 0-255", color=discord.Color.red()))
+        await channel.send(embed=discord.Embed(
+            description="Invalid RGB Values, please input numbers between 0-255", 
+            color=discord.Color.red()))
         return
     output.save('custom_highlight.png')
     try:

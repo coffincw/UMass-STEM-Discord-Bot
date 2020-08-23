@@ -78,7 +78,9 @@ async def coronavirus(ctx, sort_by_percentage):
         data = requests.get('https://finnhub.io/api/v1/covid19/us?&token=' + FINNHUB_CORONA_TOKEN).json()
     except:
         print(requests.get('https://finnhub.io/api/v1/covid19/us?&token=' + FINNHUB_CORONA_TOKEN))
-        await ctx.channel.send(embed=discord.Embed(description="API limit reached, please wait before running the command again.", color=discord.Color.red()))
+        await ctx.channel.send(embed=discord.Embed(
+            description="API limit reached, please wait before running the command again.", 
+            color=discord.Color.red()))
         return
     only_states_data = [block for block in data if block['state'] in get_states()]
     if len(argument) < 1:
@@ -87,18 +89,24 @@ async def coronavirus(ctx, sort_by_percentage):
         case_count = 0
         pop_count = 0
         death_count = 0
-        for state in sorted(only_states_data, key=lambda state: state['case'] if not sort_by_percentage else (state['case']/get_pop(state['state'].strip())), reverse=True): # iterate through the state blocks sorted by case number
+        for state in sorted(only_states_data, 
+                            key=lambda state: state['case'] if not sort_by_percentage else (state['case']/get_pop(state['state'].strip())), 
+                            reverse=True): # iterate through the state blocks sorted by case number
             
             case_count += state['case']
             death_count += state['death']
             pop_count += get_pop(state['state'].strip())
             if i < 16:
                 state_name, cases_output, deaths_output = build_top_corona_output(state)
-                embed.add_field(name = str(i) + '. ' + state_name + '\n', value = 'Cases: ' + cases_output + 'Deaths: ' + deaths_output, inline=True)
+                embed.add_field(
+                    name = str(i) + '. ' + state_name + '\n', 
+                    value = 'Cases: ' + cases_output + 'Deaths: ' + deaths_output, 
+                    inline=True)
             i += 1
 
-        embed.description = ('-------= U.S Totals =-------\nCases: ' + '{:,d} '.format(case_count) + '(' + str(round((case_count/pop_count) * 100, 4)) + '%)' + '\nDeaths: '
-                            '{:,d} '.format(death_count) + '(' + str(round((death_count/pop_count) * 100, 4)) + '%)')
+        embed.description = '-------= U.S Totals =-------\n' \
+                            'Cases: {:,d} '.format(case_count) + '(' + str(round((case_count/pop_count) * 100, 4)) + '%)' + '\n' \
+                            'Deaths: {:,d} '.format(death_count) + '(' + str(round((death_count/pop_count) * 100, 4)) + '%)'
         await ctx.send(embed=embed)
 
     else:
@@ -108,7 +116,9 @@ async def coronavirus(ctx, sort_by_percentage):
         except:
             state = capitalize_all_words(argument)
             if get_abbrev(state) == '':
-                await ctx.channel.send(embed=discord.Embed(description="Invalid state, make sure you use the full name not the abbreviation", color=discord.Color.red()))
+                await ctx.channel.send(embed=discord.Embed(
+                    description="Invalid state, make sure you use the full name not the abbreviation", 
+                    color=discord.Color.red()))
                 return
             population = get_pop(state)
         description = ''
@@ -120,7 +130,10 @@ async def coronavirus(ctx, sort_by_percentage):
                 description += '\nDeaths: ' + '{:,d}'.format(block['death'])
                 description += '\nFatality Rate: ' + '{:,.2f}%'.format((block['death']/block['case']) * 100)
                 break
-        embed = discord.Embed(title=state + ' Coronavirus Statistics', description=description, color=discord.Color.teal())
+        embed = discord.Embed(
+            title=state + ' Coronavirus Statistics', 
+            description=description, 
+            color=discord.Color.teal())
         await ctx.send(embed=embed)
 
 def get_states():
@@ -171,11 +184,11 @@ def build_top_corona_output(state):
         - state: state in which to get the statistics
     """
     pop = get_pop(state['state'].strip())
-    pop_percent = round((state['case']/pop) * 100, 4)
     
-    pop_percentage = ' (' + str(pop_percent) + '%)'
+    cases_perc = state['case']/pop * 100
     fatal_perc = state['death']/state['case'] * 100 # calculate fatality rate
-    cases_output = '{:,d}'.format(state['case']) + pop_percentage + '\n' # format integers with commas
+
+    cases_output = '{:,d}'.format(state['case']) + ' ({:,.2f}%)'.format(cases_perc) + '\n' # format integers with commas
     deaths_output = '{:,d}'.format(state['death']) + ' ({:,.2f}%)'.format(fatal_perc)
     
     return state['state'], cases_output, deaths_output
@@ -190,7 +203,9 @@ async def umass_coronavirus(ctx):
         data = requests.get('https://www.umass.edu/coronavirus/confirmed-cases-covid-19-umass-amherst').text
     except:
         print(requests.get('https://www.umass.edu/coronavirus/confirmed-cases-covid-19-umass-amherst'))
-        await ctx.channel.send(embed=discord.Embed(description="Could not access reporting page, please wait before running the command again.", color=discord.Color.red()))
+        await ctx.channel.send(embed=discord.Embed(
+            description="Could not access reporting page, please wait before running the command again.", 
+            color=discord.Color.red()))
         return
 
     total_cases = 0
@@ -216,6 +231,6 @@ async def umass_coronavirus(ctx):
 
     embed = discord.Embed(title='UMass Coronavirus Statistics', color=discord.Color.teal())
     embed.description = "{} cases since {}".format(total_cases, UMASS_CASE_EPOCH.strftime("%Y-%m-%d")) + \
-        "\n" + \
-        "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%Y-%m-%d"))
+                        "\n" + \
+                        "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%Y-%m-%d"))
     await ctx.send(embed=embed)

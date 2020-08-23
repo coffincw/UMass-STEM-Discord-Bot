@@ -29,7 +29,9 @@ async def draw_universal(ctx, path, command_end_index, origin, name):
                     url = over.get_image_url(message, 0)
                     output = over.overlay_image(over.url_to_image(url), Path(path), origin)
                 else:
-                    await channel.send(embed=discord.Embed(description="No previous bot command to pull from. Please specify text or an image.", color=discord.Color.red()))
+                    await channel.send(embed=discord.Embed(
+                        description="No previous bot command to pull from. Please specify text or an image.", 
+                        color=discord.Color.red()))
                     return
             else:
                 output = over.draw_text(ctx.message.content[command_end_index:], Path(path), origin)
@@ -62,15 +64,21 @@ async def ify(ctx, scale, path, file_name, *args):
                 message = bot_last_command[ctx.author.id]
                 url = over.get_image_url(message, 0)           
             else:
-                await channel.send(embed=discord.Embed(description="No previous bot command to pull from. Please specify a valid image.", color=discord.Color.red()))
+                await channel.send(embed=discord.Embed(
+                    description="No previous bot command to pull from. Please specify a valid image.", 
+                    color=discord.Color.red()))
                 return
         try:
             output = paste_on_face(Path(path), url, scale)
         except:
-            await channel.send(embed=discord.Embed(description='Unidentified Image, try a different image', color=discord.Color.red()))
+            await channel.send(embed=discord.Embed(
+                description='Unidentified Image, try a different image', 
+                color=discord.Color.red()))
         # if there were no faces found then send error
         if output == 0:
-            await channel.send(embed=discord.Embed(description='No faces found, please input another image', color=discord.Color.red()))
+            await channel.send(embed=discord.Embed(
+                description='No faces found, please input another image', 
+                color=discord.Color.red()))
             return
 
         output.save(file_name)
@@ -99,12 +107,16 @@ async def zoomcam(ctx, path, file_name, *args):
                 message = bot_last_command[ctx.author.id]
                 url = over.get_image_url(message, 0)           
             else:
-                await channel.send(embed=discord.Embed(description="No previous bot command to pull from. Please specify a valid image.", color=discord.Color.red()))
+                await channel.send(embed=discord.Embed(
+                    description="No previous bot command to pull from. Please specify a valid image.", 
+                    color=discord.Color.red()))
                 return
         output = over.paste_in_streamer_corner(Path(path), url)
 
         if output == 0:
-            await channel.send(embed=discord.Embed(description="Encountered issue converting image to RGBA, please try a different image", color=discord.Color.red()))
+            await channel.send(embed=discord.Embed(
+                description="Encountered issue converting image to RGBA, please try a different image", 
+                color=discord.Color.red()))
             return
 
         output.save(file_name)
