@@ -141,6 +141,12 @@ GRAD_YEAR_ROLE_IDS = {570652917133213700: ('2019',),
                       572977093244092416: ('grad student', 'graduate student', 'grad')
 }
 
+PRONOUN_ROLE_IDS = {746967021832503360: ('he/him/his', 'he', 'him', 'his'),
+                    746967183543894077: ('she/her/hers', 'she', 'her', 'hers'),
+                    746967240410267749: ('they/them/theirs', 'they', 'them', 'theirs'),
+                    746967323902083073: ('pronouns: other', 'other pronouns', 'other pronoun', 'other', 'pronoun other', 'pronouns other')
+}
+
 SPECIAL_ROLE_IDS = {
     692237964679577670: ('bot contributor',),
     666125056589692928: ('moderator', 'mod')
