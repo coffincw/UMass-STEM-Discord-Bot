@@ -30,6 +30,8 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Displays the number of cases and deaths related to COVID19 in the specified state, if no state given displays the top 15 states by cases in the U.S
 - covidp
     - Displays the number of cases, and deaths related to COVID19 in the top 15 U.S states. Sorted by percentage of the state infected.
+- covidumass
+    - Displays the number of COVID19 cases confirmed by UMass Amherst.
 - help
     - Displays the available *Role* and *General* commands
 - memehelp
