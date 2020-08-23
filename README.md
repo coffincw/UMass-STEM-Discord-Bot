@@ -103,6 +103,7 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
 ## How to contribute
 1. Fork repo
 2. Install required dependencies
+    - `pip install -r requirements.txt`
 2. Write additional implementations
 3. Create a bot on the [Discord Developer Portal](https://discordapp.com/developers/applications/)
 4. Add your bot's token to your computer's environmental variables
