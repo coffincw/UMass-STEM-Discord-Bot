@@ -73,6 +73,10 @@ Bot designed for the UMass STEM Discord server for memes and other server functi
     - Similar to barrify the bot responds with the inputed image with liam's face over the indentified faces
 - zoombarr [image/image link/nothing]
     - Pastes an image of barr from Zoom onto the given image in the top right corner
+- zoommar [image/image link/nothing]
+    - Pastes an image of marius from Zoom onto the given image in the top right corner
+- zoomarun [image/image link/nothing]
+    - Pastes an image of arun from Zoom onto the given image in the top right corner
 - *okay* [image/image link]
     - The bot turns the given image into a video with marius saying okay as the background noise
 - meme ["top" "bottom" image]
