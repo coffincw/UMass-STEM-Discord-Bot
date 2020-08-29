@@ -144,9 +144,9 @@ async def stats(ctx):
     message.delete(delay=30)
     ctx.message.delete(delay=30)
 
-async def block_multiple_restricted_roles(member, channel, requested_role, id_dict, role_name, has_role, str_role_type):
+async def block_multiple_restricted_roles(member, channel, requested_role, id_dict, role_name, str_role_type):
     for roles in id_dict.values():
-        if role_name in roles and has_role:
+        if role_name in roles:
             message = await channel.send(embed=discord.Embed(
                 description="I'm sorry, " + member.name + ", you already have a " + str_role_type +" role!\n" \
                             "Use the $remove [role] command to remove it in order to add a different one!\n" \
@@ -164,67 +164,61 @@ async def stem_add_role(requested_role, member, client):
     is_grad_role, is_pronoun_role = False, False
 
     #check if user already has a graduation role or a pronoun role
-    
     for role in member.roles:
         for grad_years in GRAD_YEAR_ROLE_IDS.values():
-            # TODO: check if this can be changed to if role.name.lower() == grad_years[0]
             if role.name.lower() in grad_years:
                 is_grad_role = True
         for pronouns in PRONOUN_ROLE_IDS.values():
             if role.name.lower() in pronouns:
-                if role.name.lower() in pronouns:
-                    is_pronoun_role = True
+                is_pronoun_role = True
 
     for role_names in available_roles.values():
-        for alias in role_names:
-            if role_lower == alias: # valid role
+        if role_lower in role_names:
 
-                # check if member already has the requested role
-                for member_role in member.roles:
-                    if member_role.name.lower() == role_names[0]:
-                        message = await channel.send(embed=discord.Embed(
-                            description="I'm sorry, " + member.name + ", you already have this role!\n" \
-                                        "Use the `$remove " + member_role.name + "` command to remove it!\n" \
-                                        "This message will auto-delete in 15 seconds",
-                            color=discord.Color.gold()))
-                        await message.delete(delay=15)
-                        await requested_role.message.delete(delay=15)
-                        return
+            # check if member already has the requested role
+            for member_role in member.roles:
+                if member_role.name.lower() == role_names[0]:
+                    message = await channel.send(embed=discord.Embed(
+                        description="I'm sorry, " + member.name + ", you already have this role!\n" \
+                                    "Use the `$remove " + member_role.name + "` command to remove it!\n" \
+                                    "This message will auto-delete in 15 seconds",
+                        color=discord.Color.gold()))
+                    await message.delete(delay=15)
+                    await requested_role.message.delete(delay=15)
+                    return
 
-                # if the member doesnt already have the requested role get the role from the guild roles
-                for role in requested_role.message.guild.roles:
-                    if role.name.lower() == role_names[0]:
-                        role_to_add = role
-                        
-                # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
-                if await block_multiple_restricted_roles(member, 
-                                                         channel,
-                                                         requested_role,
-                                                         GRAD_YEAR_ROLE_IDS,
-                                                         role_to_add.name.lower(),
-                                                         is_grad_role,
-                                                         'graduation year'): return
-                
-                # make sure member isn't trying to add a second pronoun role
-                if await block_multiple_restricted_roles(member, 
-                                                         channel,
-                                                         requested_role,
-                                                         PRONOUN_ROLE_IDS,
-                                                         role_to_add.name.lower(),
-                                                         is_pronoun_role,
-                                                         'pronoun'): return 
+            # if the member doesnt already have the requested role get the role from the guild roles
+            for role in requested_role.message.guild.roles:
+                if role.name.lower() == role_names[0]:
+                    role_to_add = role
+                    
+            # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
+            if is_grad_role and await block_multiple_restricted_roles(member, 
+                                                                      channel,
+                                                                      requested_role,
+                                                                      GRAD_YEAR_ROLE_IDS,
+                                                                      role_to_add.name.lower(),
+                                                                      'graduation year'): return
+            
+            # make sure member isn't trying to add a second pronoun role
+            if is_pronoun_role and await block_multiple_restricted_roles(member, 
+                                                                         channel,
+                                                                         requested_role,
+                                                                         PRONOUN_ROLE_IDS,
+                                                                         role_to_add.name.lower(),
+                                                                         'pronoun'): return 
 
-                await member.add_roles(role_to_add)
-                await asyncio.sleep(1)
-                await check_major_housing_role(member, client)
-                message = await channel.send(embed=discord.Embed(
-                    description="Added " + role_to_add.name + " to " + member.name + "\n" \
-                                "Use the `$remove " + role_to_add.name + "` command to remove it!\n" \
-                                "This message will auto-delete in 15 seconds", 
-                    color=discord.Color.green()))
-                await message.delete(delay=15)
-                await requested_role.message.delete(delay=15)
-                return
+            await member.add_roles(role_to_add)
+            await asyncio.sleep(1)
+            await check_major_housing_role(member, client)
+            message = await channel.send(embed=discord.Embed(
+                description="Added " + role_to_add.name + " to " + member.name + "\n" \
+                            "Use the `$remove " + role_to_add.name + "` command to remove it!\n" \
+                            "This message will auto-delete in 15 seconds", 
+                color=discord.Color.green()))
+            await message.delete(delay=15)
+            await requested_role.message.delete(delay=15)
+            return
     message = await channel.send(embed=discord.Embed(
         description="I'm sorry, " + member.name + ", there is no role with that name!\n" \
                     "Use the `$getlist` command to see the available roles\n" \
@@ -273,7 +267,7 @@ async def stem_remove_role(requested_role, member, client):
         await message.delete(delay=15)
         await requested_role.message.delete(delay=15)
         return
-        
+
     # check to see if the user has the requested role
     for role in member.roles:
         if role.id == rid:
