@@ -62,36 +62,23 @@ async def list_roles(ctx, client):
     await ctx.message.author.send(embed=getlist)
 
 async def list_my_roles(ctx, client, member):
-    housing_roles, major_roles, graduation_year, pronoun = '', '', '', ''
+    housing_roles, major_roles, graduation_year, pronoun, class_specific, special = '', '', '', '', '', ''
     class_specific_roles, special_roles = [], []
     
     for role in sorted(member.roles, key=lambda x: x.name):
         if role.id in PRONOUN_ROLE_IDS:
             pronoun = capitalize_all_words(role.name, '/') + '\n'
+        if role.id in CLASS_ROLE_IDS:
+            class_specific += role.name.upper() + '\n'
         name = capitalize_all_words(role.name, ' ')
         if role.id in HOUSING_ROLE_IDS:
             housing_roles += name + '\n'
         if role.id in MAJOR_ROLE_IDS:
             major_roles += name + '\n'
-        if role.id in CLASS_ROLE_IDS:
-            class_specific_roles.append(role.name.upper())
         if role.id in GRAD_YEAR_ROLE_IDS:
             graduation_year = name + '\n'
         if role.id in SPECIAL_ROLE_IDS:
-            special_roles.append(name)
-        
-
-    # add class roles in alphabetic order
-    class_specific = ''
-    class_specific_roles = sorted(class_specific_roles)
-    for role in class_specific_roles:
-        class_specific += role + '\n'
-    
-    # add special roles in alphabetic order
-    special = ''
-    special_roles = sorted(special_roles)
-    for role in special_roles:
-        special += role + '\n'
+            special += name + '\n'
 
     if special:
         mylist = discord.Embed(color=0xb5a2c8, description= '**' + special + '**')
@@ -197,7 +184,7 @@ async def stem_add_role(requested_role, member, client):
                     if member_role.name.lower() == role_names[0]:
                         message = await channel.send(embed=discord.Embed(
                             description="I'm sorry, " + member.name + ", you already have this role!\n" \
-                                        "Use the $remove [role] command to remove it!\n" \
+                                        "Use the `$remove " + member_role.name + "` command to remove it!\n" \
                                         "This message will auto-delete in 15 seconds",
                             color=discord.Color.gold()))
                         await message.delete(delay=15)
@@ -232,7 +219,7 @@ async def stem_add_role(requested_role, member, client):
                 await check_major_housing_role(member, client)
                 message = await channel.send(embed=discord.Embed(
                     description="Added " + role_to_add.name + " to " + member.name + "\n" \
-                                "Use the $remove [role] command to remove it!\n" \
+                                "Use the `$remove " + role_to_add.name + "` command to remove it!\n" \
                                 "This message will auto-delete in 15 seconds", 
                     color=discord.Color.green()))
                 await message.delete(delay=15)
@@ -240,7 +227,7 @@ async def stem_add_role(requested_role, member, client):
                 return
     message = await channel.send(embed=discord.Embed(
         description="I'm sorry, " + member.name + ", there is no role with that name!\n" \
-                    "Use the $getlist command to see the available roles\n" \
+                    "Use the `$getlist` command to see the available roles\n" \
                     "This message will auto-delete in 15 seconds",
         color=discord.Color.red()))
     await message.delete(delay=15)
@@ -268,26 +255,36 @@ async def check_major_housing_role(member, client):
 async def stem_remove_role(requested_role, member, client):
     channel = requested_role.channel
     removable_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, PRONOUN_ROLE_IDS])
-    role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '')
+    role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '') # requested role 
+    rid = -1 # requested role id
+
+    # get the requested role's role id
+    for role_id, r_aliases in removable_roles.items():
+        if role_lower in r_aliases:
+            rid = role_id
+            break
+
+    # role doesn't exist or it's a role that shouldn't be removed
+    if rid == -1:
+        message = await channel.send(embed=discord.Embed(
+                    description="I'm sorry, " + member.name + ", that is not a valid removable role.\n" \
+                                "This message will auto-delete in 15 seconds", 
+                    color=discord.Color.red()))
+        await message.delete(delay=15)
+        await requested_role.message.delete(delay=15)
+        return
+        
+    # check to see if the user has the requested role
     for role in member.roles:
-        if role.id in removable_roles.keys() and role_lower in removable_roles[role.id]:
-            for housing_major_role in removable_roles.values():
-                for alias in housing_major_role:
-                    if role_lower == alias:
-                        await member.remove_roles(role)
-                        await asyncio.sleep(1)
-                        await check_major_housing_role(member, client)
-                        message = await channel.send(embed=discord.Embed(
-                            description="Removed " + role.name + " from " + member.name + "\n" \
-                                        "This message will auto-delete in 15 seconds",
-                            color=discord.Color.green()))
-                        await message.delete(delay=15)
-                        await requested_role.message.delete(delay=15)
-                        return
+        if role.id == rid:
+            await member.remove_roles(role)
+            await asyncio.sleep(1)
+            await check_major_housing_role(member, client)
             message = await channel.send(embed=discord.Embed(
-                description="I'm sorry, " + member.name + ", you can't remove that role\n" \
-                            "This message will auto-delete in 15 seconds", 
-                color=discord.Color.red()))
+                description="Removed " + role.name + " from " + member.name + "\n" \
+                            "Use the `$get " + role.name + "` command to add it back!\n" \
+                            "This message will auto-delete in 15 seconds",
+                color=discord.Color.green()))
             await message.delete(delay=15)
             await requested_role.message.delete(delay=15)
             return
