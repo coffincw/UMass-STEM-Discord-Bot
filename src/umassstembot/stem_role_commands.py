@@ -23,13 +23,11 @@ async def list_roles(ctx, client):
         name='Roles | Use $get [role] in #role-assignment to add a role', 
         icon_url='https://cdn.discordapp.com/attachments/501594682820788224/558396074868342785/UMass_Stem_discord_logo.png')
     housing_role_list = ''
-    housing_roles = sorted(HOUSING_ROLE_IDS.values(), key=lambda x: x[0])
-    for role in housing_roles:
+    for role in HOUSING_ROLE_IDS.values():
         housing_role_list += capitalize_all_words(role[0], ' ') + '\n'
     getlist.add_field(name = 'Housing Roles', value=housing_role_list, inline=False)
     major_role_list = ''
-    major_roles = sorted(MAJOR_ROLE_IDS.values(), key=lambda x: x[0])
-    for role in major_roles:
+    for role in MAJOR_ROLE_IDS.values():
         major_role_list += capitalize_all_words(role[0], ' ') + '\n'
     getlist.add_field(name = 'Major Roles', value=major_role_list, inline=False)
     grad_role_list = ''
