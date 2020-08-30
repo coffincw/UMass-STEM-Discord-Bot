@@ -328,3 +328,13 @@ def get_image_url_args(message, args, num_args, image_arg_index):
             return 0
     return image_url
 
+
+def draw_outbreak_sign(n):
+    base_image = Image.open('memes/covid-outbreak.png')                                    # load in sign base
+    font = ImageFont.truetype('fonts/PermanentMarker-Regular.ttf', size=35)                # load in font
+    origin = (84, 34)
+    text_fill = (0x94, 0x00, 0x00)
+    background_fill = (0xc8, 0xbd, 0x9c)
+    line = render_line(font, str(n), text_fill, background_fill)
+    base_image.paste(line, origin)
+    return base_image
