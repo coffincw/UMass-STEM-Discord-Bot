@@ -1,8 +1,11 @@
 from bs4 import BeautifulSoup
+import overlay as over
 import dateutil.parser
+import dateutil.utils
 import discord
 import requests
 import os
+import tempfile
 
 FINNHUB_CORONA_TOKEN = os.environ.get('FINNHUB_API_TOKEN_5')
 
@@ -234,3 +237,10 @@ async def umass_coronavirus(ctx):
                         "\n" + \
                         "Most recent report: {} case(s) on {}.".format(most_recent_count, most_recent_report.strftime("%Y-%m-%d"))
     await ctx.send(embed=embed)
+
+    async with ctx.typing():
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, 'days_elapsed.png')
+            image = over.draw_outbreak_sign((dateutil.utils.today() - most_recent_report).days)
+            image.save(path)
+            await ctx.send(file=discord.File(path))
