@@ -1,4 +1,4 @@
-<img align="right" src="https://external-preview.redd.it/BfvZqX8HmnCQvnTozQCE0SbqaOh8TiRaQx4YTJVXYhY.jpg?auto=webp&s=e9cea581614e81c5daf7a267355c7cc4e0705998">
+<img align="right" src="https://github.com/coffincw/UMass-STEM-Discord-Bot/blob/master/UMass%20STEM%20discord%20bot%20logo.png?raw=true">
 
 # UMass STEM Discord Bot 
 
