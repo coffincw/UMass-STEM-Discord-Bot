@@ -1,4 +1,6 @@
-# UMass STEM Discord Bot
+<img align="right" src="https://external-preview.redd.it/BfvZqX8HmnCQvnTozQCE0SbqaOh8TiRaQx4YTJVXYhY.jpg?auto=webp&s=e9cea581614e81c5daf7a267355c7cc4e0705998">
+
+# UMass STEM Discord Bot 
 
 Bot designed for the UMass STEM Discord server for memes and other server functionality.
 
