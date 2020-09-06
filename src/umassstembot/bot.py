@@ -19,6 +19,7 @@ import custom_meme
 import coronavirus as corona
 import os
 import time
+from bot_helper import del_convo
 
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
@@ -106,8 +107,7 @@ async def on_message(message):
                         description="Any message that doesn't start with `$get`, `$remove`, `$myroles`, `$getlist`, or `$help` will be auto-removed\n" \
                                     "This message will auto-delete in 10 seconds", 
                         color=discord.Color.dark_red()))
-                    await message.delete()
-                    await output.delete(delay=10)
+                    await del_convo(message, output, 10)
                     return
 
     except:
@@ -216,8 +216,7 @@ async def help(ctx):
     embed.set_footer(text='To see the meme and image filter commands use the $memehelp command')
     await ctx.message.author.send(embed=embed)
     dm = await ctx.send(embed=discord.Embed(description='The bot has private messaged you!', color=discord.Color.blue()))
-    await ctx.message.delete(delay=15)
-    await dm.delete(delay=15)
+    await del_convo(ctx.message, dm, 15)
 
 @client.command(name = 'memehelp')
 async def meme_help(ctx):
@@ -280,8 +279,7 @@ async def meme_help(ctx):
     embed.set_footer(text='If no argument specified for draw, ify, and zoom commands the bot will use the last image outputted by the bot')
     await ctx.message.author.send(embed=embed)
     dm = await ctx.send(embed=discord.Embed(description='The bot has private messaged you!', color=discord.Color.blue()))
-    await ctx.message.delete(delay=15)
-    await dm.delete(delay=15)
+    await del_convo(ctx.message, dm, 15)
 
 
 @client.command(name = 'leaderboard')
@@ -473,48 +471,46 @@ async def calendar_delete(ctx):
 # vvv ROLE COMMANDS vvv
 
 @client.command(name='get')
-async def get_role(requested_role):
+async def get_role(ctx):
     """Command to get the requested role
 
        Args:
-        - requested_role: context that the command occured use this to access the message and other attributes
+        - ctx: context that the command occured use this to access the message and other attributes
     """
-    member = requested_role.author
-    channel = requested_role.channel
-    if requested_role.guild.id == 387465995176116224:
-        if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
-            await stem_role_commands.stem_add_role(requested_role, member, client)
+    member = ctx.author
+    channel = ctx.channel
+    if ctx.guild.id == 387465995176116224:
+        if ctx.channel.id == 705669448421343282 or ctx.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
+            await stem_role_commands.stem_add_role(ctx, member, client)
         else:
             message = await channel.send(embed=discord.Embed(
                 description="In order to decrease spam, role commands are restricted to #role-assignment\n" \
                             "This message will auto-delete in 15 seconds", 
                 color=discord.Color.dark_red()))
-            await message.delete(delay=15)
-            await requested_role.message.delete(delay=15)
+            await del_convo(ctx.message, message, 15)
     else:
         await channel.send(embed=discord.Embed(
             description="Roles are not yet supported on this server", 
             color=discord.Color.dark_red()))
 
 @client.command(name='remove')
-async def remove_role(requested_role):
+async def remove_role(ctx):
     """Command to remove the requested role
 
        Args:
-        - requested_role: context that the command occured use this to access the message and other attributes
+        - ctx: context that the command occured use this to access the message and other attributes
     """
-    member = requested_role.author
-    channel = requested_role.channel
-    if requested_role.guild.id == 387465995176116224:
-        if requested_role.channel.id == 705669448421343282 or requested_role.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
-            await stem_role_commands.stem_remove_role(requested_role, member, client)
+    member = ctx.author
+    channel = ctx.channel
+    if ctx.guild.id == 387465995176116224:
+        if ctx.channel.id == 705669448421343282 or ctx.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
+            await stem_role_commands.stem_remove_role(ctx, member, client)
         else:
             message = await channel.send(embed=discord.Embed(
                 description="In order to decrease spam, role commands are restricted to #role-assignment\n" \
                             "This message will auto-delete in 15 seconds", 
                 color=discord.Color.dark_red()))
-            await message.delete(delay=15)
-            await requested_role.message.delete(delay=15)
+            await del_convo(ctx.message, message, 15)
     else:
         await channel.send(embed=discord.Embed(
             description="Roles are not yet supported on this server", 
@@ -531,8 +527,7 @@ async def get_list(ctx):
     dm = await ctx.send(embed=discord.Embed(
         description='The bot has private messaged you!', 
         color=discord.Color.blue()))
-    await ctx.message.delete(delay=15)
-    await dm.delete(delay=15)
+    await del_convo(ctx.message, dm, 15)
 
 @client.command(name='myroles')
 async def my_roles(ctx):
@@ -552,8 +547,7 @@ async def my_roles(ctx):
             description="Too many users specified, please mention less than two users\n" \
                         "This message will auto-delete in 15 seconds", 
             color=discord.Color.red()))
-        await ctx.error.delete(delay=15)
-        await ctx.message.delete(delay=15)
+        await del_convo(ctx.message, error, 15)
         return
     await stem_role_commands.list_my_roles(ctx, client, member) # found in stem_role_commands.py
 

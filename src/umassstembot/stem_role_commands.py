@@ -2,6 +2,7 @@ import discord
 import asyncio
 from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS, PRONOUN_ROLE_IDS
 from discord.utils import get
+from bot_helper import del_convo
 
 def merge_dict(dicts): # merges dictionaries together
     z = dicts[0].copy()
@@ -107,8 +108,7 @@ async def list_my_roles(ctx, client, member):
     if pronoun:
         mylist.add_field(name = 'Pronoun', value=pronoun, inline=False)
     message = await ctx.channel.send(embed=mylist)    
-    await message.delete(delay=30)
-    await ctx.message.delete(delay=30)
+    await del_convo(ctx.message, message, 30)
 
 async def stats(ctx):
     contents = ctx.message.content[6:].strip().lower()
@@ -117,8 +117,7 @@ async def stats(ctx):
             description="You must specify a valid role, for example: $stats Computer Science\n" \
                         "This message will auto-delete in 15 seconds",             
             color=discord.Color.red()))
-        message.delete(delay=15)
-        ctx.message.delete(delay=15)
+        await del_convo(ctx.message, message, 15)
         return
     possible_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, PRONOUN_ROLE_IDS, SPECIAL_ROLE_IDS, PRONOUN_ROLE_IDS])
     found = False
@@ -133,18 +132,16 @@ async def stats(ctx):
             description="Invalid role specified. You must specify a valid role, for example: $stats Computer Science\n" \
                         "This message will auto-delete in 15 seconds", 
             color=discord.Color.red()))
-        message.delete(delay=15)
-        ctx.message.delete(delay=15)
+        await del_convo(ctx.message, message, 15)
         return
     message = await ctx.send(embed=discord.Embed(
         title=role.name + " Role Statistics", 
         description = "Count: " + str(len(role.members)) + "\n" \
                       "Percentage of Members: {:.3f}%".format((len(role.members)/ctx.message.guild.member_count)*100), 
         color=discord.Color.greyple()))
-    message.delete(delay=30)
-    ctx.message.delete(delay=30)
+    await del_convo(ctx.message, message, 30)
 
-async def block_multiple_restricted_roles(member, channel, requested_role, id_dict, role_name, str_role_type):
+async def block_multiple_restricted_roles(member, channel, ctx, id_dict, role_name, str_role_type):
     for roles in id_dict.values():
         if role_name in roles:
             message = await channel.send(embed=discord.Embed(
@@ -152,15 +149,14 @@ async def block_multiple_restricted_roles(member, channel, requested_role, id_di
                             "Use the $remove [role] command to remove it in order to add a different one!\n" \
                             "This message will auto-delete in 15 seconds", 
                 color=discord.Color.gold()))
-            await message.delete(delay=15)
-            await requested_role.message.delete(delay=15)
+            await del_convo(ctx.message, message, 15)
             return True
     return False
 
-async def stem_add_role(requested_role, member, client):
-    channel = requested_role.channel
+async def stem_add_role(ctx, member, client):
+    channel = ctx.channel
     available_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, PRONOUN_ROLE_IDS])
-    role_lower = requested_role.message.content[5:].lower().strip().replace('[', '').replace(']', '')
+    role_lower = ctx.message.content[5:].lower().strip().replace('[', '').replace(']', '')
     is_grad_role, is_pronoun_role = False, False
 
     #check if user already has a graduation role or a pronoun role
@@ -183,19 +179,18 @@ async def stem_add_role(requested_role, member, client):
                                     "Use the `$remove " + member_role.name + "` command to remove it!\n" \
                                     "This message will auto-delete in 15 seconds",
                         color=discord.Color.gold()))
-                    await message.delete(delay=15)
-                    await requested_role.message.delete(delay=15)
+                    await del_convo(ctx.message, message, 15)
                     return
 
             # if the member doesnt already have the requested role get the role from the guild roles
-            for role in requested_role.message.guild.roles:
+            for role in ctx.message.guild.roles:
                 if role.name.lower() == role_names[0]:
                     role_to_add = role
                     
             # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
             if is_grad_role and await block_multiple_restricted_roles(member, 
                                                                       channel,
-                                                                      requested_role,
+                                                                      ctx,
                                                                       GRAD_YEAR_ROLE_IDS,
                                                                       role_to_add.name.lower(),
                                                                       'graduation year'): return
@@ -203,7 +198,7 @@ async def stem_add_role(requested_role, member, client):
             # make sure member isn't trying to add a second pronoun role
             if is_pronoun_role and await block_multiple_restricted_roles(member, 
                                                                          channel,
-                                                                         requested_role,
+                                                                         ctx,
                                                                          PRONOUN_ROLE_IDS,
                                                                          role_to_add.name.lower(),
                                                                          'pronoun'): return 
@@ -216,16 +211,14 @@ async def stem_add_role(requested_role, member, client):
                             "Use the `$remove " + role_to_add.name + "` command to remove it!\n" \
                             "This message will auto-delete in 15 seconds", 
                 color=discord.Color.green()))
-            await message.delete(delay=15)
-            await requested_role.message.delete(delay=15)
+            await del_convo(ctx.message, message, 15)
             return
     message = await channel.send(embed=discord.Embed(
         description="I'm sorry, " + member.name + ", there is no role with that name!\n" \
                     "Use the `$getlist` command to see the available roles\n" \
                     "This message will auto-delete in 15 seconds",
         color=discord.Color.red()))
-    await message.delete(delay=15)
-    await requested_role.message.delete(delay=15)
+    await del_convo(ctx.message, message, 15)
 
 
 async def check_major_housing_role(member, client):
@@ -246,10 +239,10 @@ async def check_major_housing_role(member, client):
         if not member_has_hr or not member_has_m:
             await member.add_roles(mhom) #adds missing housing or major role if they dont have the roles
 
-async def stem_remove_role(requested_role, member, client):
-    channel = requested_role.channel
+async def stem_remove_role(ctx, member, client):
+    channel = ctx.channel
     removable_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, PRONOUN_ROLE_IDS])
-    role_lower = requested_role.message.content[8:].lower().strip().replace('[', '').replace(']', '') # requested role 
+    role_lower = ctx.message.content[8:].lower().strip().replace('[', '').replace(']', '') # requested role 
     rid = -1 # requested role id
 
     # get the requested role's role id
@@ -264,8 +257,7 @@ async def stem_remove_role(requested_role, member, client):
                     description="I'm sorry, " + member.name + ", that is not a valid removable role.\n" \
                                 "This message will auto-delete in 15 seconds", 
                     color=discord.Color.red()))
-        await message.delete(delay=15)
-        await requested_role.message.delete(delay=15)
+        await del_convo(ctx.message, message, 15)
         return
 
     # check to see if the user has the requested role
@@ -279,12 +271,10 @@ async def stem_remove_role(requested_role, member, client):
                             "Use the `$get " + role.name + "` command to add it back!\n" \
                             "This message will auto-delete in 15 seconds",
                 color=discord.Color.green()))
-            await message.delete(delay=15)
-            await requested_role.message.delete(delay=15)
+            await del_convo(ctx.message, message, 15)
             return
     message = await channel.send(embed=discord.Embed(
         description="I'm sorry, " + member.name + ", you don't have a role with that name\n" \
                     "This message will auto-delete in 15 seconds", 
         color=discord.Color.red()))
-    await message.delete(delay=15)
-    await requested_role.message.delete(delay=15)
+    await del_convo(ctx.message, message, 15)
