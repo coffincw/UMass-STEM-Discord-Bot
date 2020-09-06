@@ -2,9 +2,9 @@
 
 # UMass STEM Discord Bot 
 
-Bot designed for the UMass STEM Discord server for memes and other server functionality.
+Bot designed for the UMass STEM Discord server for meme generation, coronavirus stats, and other server functionality.
 
-**Bot Prefix**: Start a command with $ to use the bot
+***Bot Prefix***: Start a command with **$** to use the bot
 
 ## Add to your server
 
