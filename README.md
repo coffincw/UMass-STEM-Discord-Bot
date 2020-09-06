@@ -1,4 +1,4 @@
-<img align="right" src="https://github.com/coffincw/UMass-STEM-Discord-Bot/blob/master/Umass-stem-logo-400.png?raw=true">
+<img align="right" src="https://github.com/coffincw/UMass-STEM-Discord-Bot/blob/master/media/Umass-stem-logo-400.png?raw=true">
 
 # UMass STEM Discord Bot 
 
@@ -12,6 +12,8 @@ Start a command with **$** to use the bot
 [Invite bot to server](https://discordapp.com/api/oauth2/authorize?client_id=552254598279069708&permissions=1342179392&scope=bot)
 
 ## Commands
+<img src="https://github.com/coffincw/UMass-STEM-Discord-Bot/blob/master/media/roles-banner.png?raw=true">
+
 ### Roles
 - get [role]
   - The bot gives the specified role to the user
