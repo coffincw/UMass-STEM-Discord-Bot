@@ -4,6 +4,8 @@ from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, 
 from discord.utils import get
 from bot_helper import del_convo
 
+WAIT_FOR_DISCORD = 2
+
 def merge_dict(dicts): # merges dictionaries together
     z = dicts[0].copy()
     for i in range(1, len(dicts)):
@@ -204,7 +206,7 @@ async def stem_add_role(ctx, member, client):
                                                                          'pronoun'): return 
 
             await member.add_roles(role_to_add)
-            await asyncio.sleep(1)
+            await asyncio.sleep(WAIT_FOR_DISCORD)
             await check_major_housing_role(member, client)
             message = await channel.send(embed=discord.Embed(
                 description="Added " + role_to_add.name + " to " + member.name + "\n" \
@@ -264,7 +266,7 @@ async def stem_remove_role(ctx, member, client):
     for role in member.roles:
         if role.id == rid:
             await member.remove_roles(role)
-            await asyncio.sleep(1)
+            await asyncio.sleep(WAIT_FOR_DISCORD)
             await check_major_housing_role(member, client)
             message = await channel.send(embed=discord.Embed(
                 description="Removed " + role.name + " from " + member.name + "\n" \
