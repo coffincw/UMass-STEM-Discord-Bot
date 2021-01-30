@@ -21,12 +21,15 @@ import os
 import time
 from bot_helper import del_convo
 
+intents = discord.Intents.default()
+intents.members = True
+
 BOT_PREFIX = "$"
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_ROLE = "bots"
 ROLE_ASSIGNMENT_CHANNEL_ID = 705686740467449877
 
-client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
+client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True, intents=intents)
 client.remove_command('help')
 
 
