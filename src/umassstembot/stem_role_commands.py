@@ -2,7 +2,7 @@ import discord
 import asyncio
 from stem_server_roles import HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, SPECIAL_ROLE_IDS, PRONOUN_ROLE_IDS
 from discord.utils import get
-from bot_helper import del_convo
+from bot_helper import del_convo, get_mhom, contains_role
 
 def merge_dict(dicts): # merges dictionaries together
     z = dicts[0].copy()
@@ -219,7 +219,6 @@ async def stem_add_role(ctx, member, client):
         color=discord.Color.red()))
     await del_convo(ctx.message, message, 15)
 
-
 async def check_major_housing_role(member, client, role, is_add):
     member_has_hr = False
     member_has_m = False
@@ -234,9 +233,7 @@ async def check_major_housing_role(member, client, role, is_add):
             member_has_hr = True
         if role.id in MAJOR_ROLE_IDS:
             member_has_m = True
-    for role in member.guild.roles:
-        if role.name.lower() == 'missing housing or major role':
-            mhom = role
+    mhom = await get_mhom(member.guild.roles)
     if mhom in member.roles: # check if the member has the missing housing or major role
         if member_has_hr and member_has_m:
             await member.remove_roles(mhom) #removes missing housing or major role
