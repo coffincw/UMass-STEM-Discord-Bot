@@ -19,7 +19,7 @@ import custom_meme
 import coronavirus as corona
 import os
 import time
-from bot_helper import del_convo
+from bot_helper import del_convo, get_mhom
 
 intents = discord.Intents.all()
 intents.members = True
@@ -130,14 +130,18 @@ async def on_message_delete(message):
         - message: context of the deleted message (used to get the message contents)
     """
     author = message.author
-    channel = client.get_channel(557002016782680076)
     try:
-        if message.guild.id == 387465995176116224 and author.id != 98138045173227520: # UMass STEM Discord server ID and not caleb
-            if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
-                content = message.content
-                await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------')
+        is_bot = BOT_ROLE in [role.name.lower() for role in author.roles]
+        if message.guild.id == 387465995176116224 and author.id != 98138045173227520 and not is_bot: # UMass STEM Discord server ID and not caleb
+            content = message.content
+            if message.channel.id == ROLE_ASSIGNMENT_CHANNEL_ID:
+                channel = client.get_channel(833907648846888982) # role-messages
+                await channel.send('_Role Message_\n**User:** ' + author.mention + '\n**Contents:** *' + content + '*\n**Setup Complete:** ' + str(await get_mhom(author.roles) is None) + '\n--------------')
+            else:     
+                channel = client.get_channel(557002016782680076) # deleted-messages
+                await channel.send('_Deleted Message_\n**Message sent by:** ' + author.mention + '\n**Channel:** ' + message.channel.mention + '\n**Contents:** *' + content + '*\n--------------') 
     except:
-        pass
+        print('Deleted message from {} failed to send to the channel'.format(author.mention))
 
 @client.event
 async def on_message_edit(before, after):
@@ -151,7 +155,7 @@ async def on_message_edit(before, after):
     channel = client.get_channel(557002016782680076)
     try:
         if before.guild.id == 387465995176116224 and author.id != 98138045173227520: # UMass STEM Discord server ID and not caleb
-            if (BOT_ROLE not in [role.name.lower() for role in author.roles]) and author.id != '98138045173227520':
+            if (BOT_ROLE not in [role.name.lower() for role in author.roles]):
                 before_content = before.content
                 after_content = after.content
                 await channel.send(
@@ -162,7 +166,7 @@ async def on_message_edit(before, after):
                     '**Post-edit contents:** *'+ after_content + '*\n' \
                     '--------------')
     except:
-        pass
+        print('Edited message from {} failed to send to the channel'.format(author.mention))
 
 # vvv GENERAL COMMANDS vvv
 

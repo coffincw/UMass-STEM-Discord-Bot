@@ -1,6 +1,6 @@
 import discord
 import asyncio
-
+from discord.utils import get
 
 async def del_convo(user_msg, bot_msg, delay):
     """
@@ -13,3 +13,30 @@ async def del_convo(user_msg, bot_msg, delay):
     """
     await bot_msg.delete(delay=delay)
     await user_msg.delete(delay=delay)
+
+async def get_mhom(roles):
+    """
+    Returns the 'Missing Housing or Major Role' if the role list has the role
+
+    Parameters:
+    - member: roles list to check
+    
+    Returns:
+    - role: 'Missing Housing or Major' role object, if the list doesn't have it then None is returned
+    """
+    return get(roles, id=444868818997608460) # Missing Housing or Major role id
+
+async def contains_role(roles, name):
+    """
+    Checks if the role list contains a role with the name 'name'
+
+    Parameters:
+    - roles: list of role objects
+    - name: name of role
+    
+    Returns:
+    - role: role object that has the name 'name'
+    """
+    for r in roles:
+        if r.name.lower() == name:
+            return r
