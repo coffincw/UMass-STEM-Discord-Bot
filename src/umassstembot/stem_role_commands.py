@@ -153,6 +153,21 @@ async def block_multiple_restricted_roles(member, channel, ctx, id_dict, role_na
             return True
     return False
 
+async def contains_role(roles, name):
+    """
+    Checks if the role list contains a role with the name 'name'
+
+    Parameters:
+    - roles: list of role objects
+    - name: name of role
+    
+    Returns:
+    - role: role object that has the name 'name'
+    """
+    for r in roles:
+        if r.name.lower() == name:
+            return r
+
 async def stem_add_role(ctx, member, client):
     channel = ctx.channel
     available_roles = merge_dict([HOUSING_ROLE_IDS, MAJOR_ROLE_IDS, CLASS_ROLE_IDS, GRAD_YEAR_ROLE_IDS, PRONOUN_ROLE_IDS])
@@ -168,24 +183,23 @@ async def stem_add_role(ctx, member, client):
             if role.name.lower() in pronouns:
                 is_pronoun_role = True
 
+    role_to_add = None # role requested by the user to be added
     for role_names in available_roles.values():
         if role_lower in role_names:
 
             # check if member already has the requested role
-            for member_role in member.roles:
-                if member_role.name.lower() == role_names[0]:
-                    message = await channel.send(embed=discord.Embed(
-                        description="I'm sorry, " + member.name + ", you already have this role!\n" \
-                                    "Use the `$remove " + member_role.name + "` command to remove it!\n" \
-                                    "This message will auto-delete in 15 seconds",
-                        color=discord.Color.gold()))
-                    await del_convo(ctx.message, message, 15)
-                    return
+            member_role = await contains_role(member.roles, role_names[0])
+            if member_role is not None:
+                message = await channel.send(embed=discord.Embed(
+                    description="I'm sorry, " + member.name + ", you already have this role!\n" \
+                                "Use the `$remove " + member_role.name + "` command to remove it!\n" \
+                                "This message will auto-delete in 15 seconds",
+                    color=discord.Color.gold()))
+                await del_convo(ctx.message, message, 15)
+                return
 
             # if the member doesnt already have the requested role get the role from the guild roles
-            for role in ctx.message.guild.roles:
-                if role.name.lower() == role_names[0]:
-                    role_to_add = role
+            role_to_add = await contains_role(ctx.message.guild.roles, role_names[0])
                     
             # make sure member isn't trying to add a second grad year role, they should only be allowed to have one
             if is_grad_role and await block_multiple_restricted_roles(member, 
@@ -212,12 +226,16 @@ async def stem_add_role(ctx, member, client):
                 color=discord.Color.green()))
             await del_convo(ctx.message, message, 15)
             return
+
     message = await channel.send(embed=discord.Embed(
         description="I'm sorry, " + member.name + ", there is no role with that name!\n" \
                     "Use the `$getlist` command to see the available roles\n" \
                     "This message will auto-delete in 15 seconds",
         color=discord.Color.red()))
+
     await del_convo(ctx.message, message, 15)
+    # recheck after 15 seconds to confirm if the user should still have the mhom role or if they should have it
+    await check_major_housing_role(member, client, role_to_add, True)
 
 
 async def check_major_housing_role(member, client, role, is_add):
@@ -281,4 +299,7 @@ async def stem_remove_role(ctx, member, client):
         description="I'm sorry, " + member.name + ", you don't have a role with that name\n" \
                     "This message will auto-delete in 15 seconds", 
         color=discord.Color.red()))
+
     await del_convo(ctx.message, message, 15)
+    # recheck after 15 seconds to confirm if the user should still have the mhom role or if they should have it
+    await check_major_housing_role(member, client, role_to_add, True)

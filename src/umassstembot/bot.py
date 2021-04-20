@@ -21,7 +21,7 @@ import os
 import time
 from bot_helper import del_convo
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 
 BOT_PREFIX = "$"
