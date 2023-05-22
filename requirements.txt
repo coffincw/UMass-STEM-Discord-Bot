@@ -5,7 +5,7 @@ discord.py==1.5.1
 numpy==1.18.1
 imageio==2.4.1
 opencv_python==4.2.0.32
-requests==2.22.0
+requests==2.31.0
 beautifulsoup4==4.9.1
 discord==1.0.1
 google_api_python_client==1.10.0
